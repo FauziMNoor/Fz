@@ -14,8 +14,7 @@ const ICONS = {
   user: icon('ic-user'),
   folder: icon('ic-folder'),
   dashboard: icon('ic-dashboard'),
-  analytics: icon('ic-analytics'),
-  settings: icon('ic-setting'),
+  lock: icon('ic-lock'),
 };
 
 // ----------------------------------------------------------------------
@@ -78,7 +77,7 @@ export const navData = [
       {
         title: 'Account Settings',
         path: paths.dashboard.user.account,
-        icon: ICONS.settings,
+        icon: ICONS.lock,
         caption: 'Password & preferences',
       },
     ],

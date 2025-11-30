@@ -8,9 +8,9 @@ import { useTheme } from '@mui/material/styles';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { _appFeatured } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { MotivationIllustration } from 'src/assets/illustrations';
-import { _appFeatured } from 'src/_mock';
 
 import { svgColorClasses } from 'src/components/svg-color';
 

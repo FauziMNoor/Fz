@@ -73,9 +73,9 @@ export function HomeHero({ sx, ...other }) {
         ]}
       >
         <Box component="span" sx={{ width: 1, opacity: 0.24 }}>
-          Boost your building
+          Pendidik Visioner
         </Box>
-        process with
+        Dengan Prinsip
         <Box
           component={m.span}
           animate={{ backgroundPosition: '200% center' }}
@@ -95,7 +95,7 @@ export function HomeHero({ sx, ...other }) {
             }),
           ]}
         >
-          Minimal
+          Agile
         </Box>
       </Box>
     </m.div>
@@ -113,7 +113,7 @@ export function HomeHero({ sx, ...other }) {
           }),
         ]}
       >
-        {`The starting point for your next project is based on MUI. \nEasy customization helps you build apps faster and better.`}
+        {`"Saya Fauzi M. Noor, Kepala Sekolah & pembelajar sepanjang hayat. Saya menulis tentang\npendidikan, Agile, dan pengalaman membangun perubahan di dunia pesantren."`}
       </Typography>
     </m.div>
   );
@@ -139,7 +139,7 @@ export function HomeHero({ sx, ...other }) {
             />
           ))}
         </AvatarGroup>
-        160+ Happy customers
+        170+ Santri Aktif
       </Box>
     </m.div>
   );
@@ -164,7 +164,7 @@ export function HomeHero({ sx, ...other }) {
             startIcon={<Iconify width={24} icon="custom:flash-outline" />}
           >
             <span>
-              Live preview
+              Tentang Saya
               <Box
                 component="small"
                 sx={[
@@ -177,23 +177,9 @@ export function HomeHero({ sx, ...other }) {
                   }),
                 ]}
               >
-                v{CONFIG.appVersion}
               </Box>
             </span>
           </Button>
-
-          <Link
-            color="inherit"
-            variant="body2"
-            target="_blank"
-            rel="noopener"
-            href={paths.freeUI}
-            underline="always"
-            sx={{ gap: 0.75, alignItems: 'center', display: 'inline-flex' }}
-          >
-            <Iconify width={16} icon="eva:external-link-fill" />
-            Get free version
-          </Link>
         </Stack>
       </m.div>
 
@@ -208,7 +194,7 @@ export function HomeHero({ sx, ...other }) {
           startIcon={<Iconify width={24} icon="solar:figma-outline" />}
           sx={{ borderColor: 'text.primary' }}
         >
-          Figma preview
+          Baca Artikel Terbaru
         </Button>
       </m.div>
     </Box>

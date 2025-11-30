@@ -9,11 +9,6 @@ import { Iconify } from 'src/components/iconify';
 export const navData = [
   { title: 'Home', path: '/', icon: <Iconify width={22} icon="solar:home-angle-bold-duotone" /> },
   {
-    title: 'Components',
-    path: paths.components,
-    icon: <Iconify width={22} icon="solar:atom-bold-duotone" />,
-  },
-  {
     title: 'Pages',
     path: '/pages',
     icon: <Iconify width={22} icon="solar:file-bold-duotone" />,
@@ -21,11 +16,7 @@ export const navData = [
       {
         subheader: 'Other',
         items: [
-          { title: 'About us', path: paths.about },
-          { title: 'Contact us', path: paths.contact },
-          { title: 'FAQs', path: paths.faqs },
-          { title: 'Pricing', path: paths.pricing },
-          { title: 'Payment', path: paths.payment },
+          { title: 'Tentang Saya', path: paths.about },
           { title: 'Maintenance', path: paths.maintenance },
           { title: 'Coming soon', path: paths.comingSoon },
         ],
@@ -62,10 +53,5 @@ export const navData = [
       },
       { subheader: 'Dashboard', items: [{ title: 'Dashboard', path: CONFIG.auth.redirectPath }] },
     ],
-  },
-  {
-    title: 'Docs',
-    icon: <Iconify width={22} icon="solar:notebook-bold-duotone" />,
-    path: paths.docs,
   },
 ];

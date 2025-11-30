@@ -19,11 +19,10 @@ import { Iconify } from 'src/components/iconify';
 
 const LINKS = [
   {
-    headline: 'Minimal',
+    headline: 'Blog',
     children: [
-      { name: 'About us', href: paths.about },
-      { name: 'Contact us', href: paths.contact },
-      { name: 'FAQs', href: paths.faqs },
+      { name: 'Tentang Saya', href: paths.about },
+      { name: 'Artikel', href: paths.post.root },
     ],
   },
   {
@@ -33,7 +32,7 @@ const LINKS = [
       { name: 'Privacy policy', href: '#' },
     ],
   },
-  { headline: 'Contact', children: [{ name: 'support@minimals.cc', href: '#' }] },
+  { headline: 'Contact', children: [{ name: 'fauzinoor@email.com', href: '#' }] },
 ];
 
 // ----------------------------------------------------------------------

@@ -22,7 +22,7 @@ import { ProfilePostItem } from './profile-post-item';
 
 // ----------------------------------------------------------------------
 
-export function ProfileHome({ info, posts }) {
+export function ProfileHome({ info, posts, isPublic = false }) {
   const fileRef = useRef(null);
 
   const handleAttach = () => {
@@ -208,7 +208,7 @@ export function ProfileHome({ info, posts }) {
       </Grid>
 
       <Grid size={{ xs: 12, md: 8 }} sx={{ gap: 3, display: 'flex', flexDirection: 'column' }}>
-        {renderPostInput()}
+        {!isPublic && renderPostInput()}
 
         {posts.map((post) => (
           <ProfilePostItem key={post.id} post={post} />

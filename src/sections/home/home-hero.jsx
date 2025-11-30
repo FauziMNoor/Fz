@@ -157,11 +157,11 @@ export function HomeHero({ sx, ...other }) {
         <Stack spacing={2.5} sx={{ alignItems: 'center' }}>
           <Button
             component={RouterLink}
-            href={paths.dashboard.root}
+            href="/tentang-saya"
             color="inherit"
             size="large"
             variant="contained"
-            startIcon={<Iconify width={24} icon="custom:flash-outline" />}
+            startIcon={<Iconify width={24} icon="solar:user-bold" />}
           >
             <span>
               Tentang Saya
@@ -185,13 +185,12 @@ export function HomeHero({ sx, ...other }) {
 
       <m.div {...motionProps}>
         <Button
+          component={RouterLink}
+          href="/post"
           color="inherit"
           size="large"
           variant="outlined"
-          target="_blank"
-          rel="noopener"
-          href={paths.figmaUrl}
-          startIcon={<Iconify width={24} icon="solar:figma-outline" />}
+          startIcon={<Iconify width={24} icon="solar:document-text-outline" />}
           sx={{ borderColor: 'text.primary' }}
         >
           Baca Artikel Terbaru

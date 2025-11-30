@@ -214,12 +214,12 @@ export function HomeFAQs({ sx, ...other }) {
       ]}
     >
       <m.div variants={varFade('in')}>
-        <Typography variant="h4">Still have questions?</Typography>
+        <Typography variant="h4">Punya ide atau pertanyaan??</Typography>
       </m.div>
 
       <m.div variants={varFade('in')}>
         <Typography sx={{ mt: 2, mb: 3, color: 'text.secondary' }}>
-          Please describe your case to receive the most accurate advice
+          Ayo ngobrol sebentar ☕
         </Typography>
       </m.div>
 
@@ -227,10 +227,12 @@ export function HomeFAQs({ sx, ...other }) {
         <Button
           color="inherit"
           variant="contained"
-          href="mailto:support@minimals.cc?subject=[Feedback] from Customer"
-          startIcon={<Iconify icon="solar:letter-bold" />}
+          href="https://wa.me/6289623039600?text=Assalamu 'alaikum warahmatullahi wa barakaatuh%20saya%20ingin%20bertanya..."
+          target="_blank"
+          rel="noopener noreferrer"
+          startIcon={<Iconify icon="ic:baseline-whatsapp" />}
         >
-          Contact us
+          Hubungi via WhatsApp
         </Button>
       </m.div>
     </Box>

@@ -143,7 +143,7 @@ export function Footer({ sx, layoutQuery = 'md', ...other }) {
         </Grid>
 
         <Typography variant="body2" sx={{ mt: 10 }}>
-          © All rights reserved.
+          © 2026 Fauzi M. Noor — Agile Principal & Educator
         </Typography>
       </Container>
     </FooterRoot>
@@ -167,9 +167,7 @@ export function HomeFooter({ sx, ...other }) {
       <Container>
         <Logo />
         <Box sx={{ mt: 1, typography: 'caption' }}>
-          © All rights reserved.
-          <br /> made by
-          <Link href="https://minimals.cc/"> minimals.cc </Link>
+          © 2026 Fauzi M. Noor — Agile Principal & Educator
         </Box>
       </Container>
     </FooterRoot>

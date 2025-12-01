@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 
-import { paths } from 'src/routes/paths';
+import { RouterLink } from 'src/routes/components';
 
 import { CONFIG } from 'src/global-config';
 
@@ -83,8 +83,8 @@ const renderDescription = () => (
         typography: { xs: 'h2', md: 'h1' },
       }}
     >
-      Get started with
-      <br /> Minimal kit
+      Belajar bukanlah
+      <br /> Sebuah
       <Box
         component="span"
         sx={(theme) => ({
@@ -94,8 +94,22 @@ const renderDescription = () => (
           ml: 1,
         })}
       >
-        today
+        Kompetisi
       </Box>
+    </Box>
+
+    <Box
+      component={m.p}
+      variants={varFade('inUp', { distance: 24 })}
+      sx={{
+        m: 0,
+        mt: -3,
+        color: 'grey.400',
+        fontStyle: 'italic',
+        typography: { xs: 'body2', md: 'body1' },
+      }}
+    >
+      "...tapi mencari sesuatu yang tersembunyi antara kita dan Rabb kita"
     </Box>
 
     <Box
@@ -108,33 +122,32 @@ const renderDescription = () => (
     >
       <m.div variants={varFade('inRight', { distance: 24 })}>
         <Button
+          component={RouterLink}
+          href="/tentang-saya"
           color="primary"
           size="large"
           variant="contained"
-          target="_blank"
-          rel="noopener"
-          href={paths.minimalStore}
+          startIcon={<Iconify width={24} icon="solar:user-bold" />}
         >
-          Purchase now
+          Tentang Saya
         </Button>
       </m.div>
 
       <m.div variants={varFade('inRight', { distance: 24 })}>
         <Button
+          component={RouterLink}
+          href="/post"
           color="inherit"
           size="large"
           variant="outlined"
-          target="_blank"
-          rel="noopener"
-          href={paths.freeUI}
-          startIcon={<Iconify width={16} icon="eva:external-link-fill" sx={{ mr: 0.5 }} />}
+          startIcon={<Iconify width={24} icon="solar:document-text-outline" />}
           sx={{
             color: 'common.white',
             borderColor: 'common.white',
             '&:hover': { borderColor: 'currentColor' },
           }}
         >
-          Get free version
+          Baca Artikel Terbaru
         </Button>
       </m.div>
     </Box>
@@ -148,7 +161,7 @@ const renderImage = () => (
       animate={{ y: [-20, 0, -20] }}
       transition={{ duration: 4, repeat: Infinity }}
       alt="Rocket"
-      src={`${CONFIG.assetsDir}/assets/illustrations/illustration-rocket-large.webp`}
+      src={`${CONFIG.assetsDir}/assets/illustrations/characters/fauzi-cta.png`}
       sx={{
         zIndex: 9,
         width: 360,

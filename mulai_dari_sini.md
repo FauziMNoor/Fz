@@ -144,7 +144,7 @@ Mendukung multi-bahasa dengan `i18next`:
 ### Home Hero (`src/sections/home/home-hero.jsx`)
 - Tagline: "Pendidik Visioner Dengan Prinsip **Agile**"
 - Deskripsi: Fauzi M. Noor, Kepala Sekolah & pembelajar sepanjang hayat
-- Buttons: "Tentang Saya" & "Baca Artikel Terbaru"
+- Buttons: "Tentang Saya" & "Baca Tulisan Terbaru"
 
 ### FAQs (`src/sections/home/home-faqs.jsx`)
 - CTA: "Punya ide atau pertanyaan??"

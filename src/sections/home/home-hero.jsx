@@ -176,8 +176,7 @@ export function HomeHero({ sx, ...other }) {
                     fontWeight: theme.typography.fontWeightMedium,
                   }),
                 ]}
-              >
-              </Box>
+              ></Box>
             </span>
           </Button>
         </Stack>
@@ -193,37 +192,52 @@ export function HomeHero({ sx, ...other }) {
           startIcon={<Iconify width={24} icon="solar:document-text-outline" />}
           sx={{ borderColor: 'text.primary' }}
         >
-          Baca Artikel Terbaru
+          Baca Tulisan Terbaru
         </Button>
       </m.div>
     </Box>
   );
 
+  const socialMedia = [
+    {
+      name: 'Facebook',
+      icon: 'fb.svg',
+      url: 'https://web.facebook.com/profile.php?id=100093548618826',
+    },
+    { name: 'Instagram', icon: 'ig.svg', url: 'https://www.instagram.com/dudu_creative/' },
+    { name: 'Threads', icon: 'Threads.svg', url: 'https://www.threads.com/@dudu_creative' },
+    { name: 'WhatsApp', icon: 'wa.svg', url: 'https://wa.me/6289623039600' },
+    { name: 'Telegram', icon: 'telegram.svg', url: 'https://t.me/6285298010621' },
+  ];
+
   const renderIcons = () => (
     <Stack spacing={3} sx={{ textAlign: 'center' }}>
       <m.div {...motionProps}>
         <Typography variant="overline" sx={{ opacity: 0.4 }}>
-          Available For
+          Open to discuss
         </Typography>
       </m.div>
 
-      <Box sx={{ gap: 2.5, display: 'flex' }}>
-        {['js', 'ts', 'nextjs', 'vite', 'figma'].map((platform) => (
-          <m.div {...motionProps} key={platform}>
-            <Box
-              component="img"
-              alt={platform}
-              src={`${CONFIG.assetsDir}/assets/icons/platforms/ic-${platform}.svg`}
-              sx={[
-                (theme) => ({
-                  width: 24,
-                  height: 24,
-                  ...theme.applyStyles('dark', {
-                    ...(platform === 'nextjs' && { filter: 'invert(1)' }),
-                  }),
-                }),
-              ]}
-            />
+      <Box sx={{ gap: 2.5, display: 'flex', justifyContent: 'center' }}>
+        {socialMedia.map((social) => (
+          <m.div {...motionProps} key={social.name}>
+            <Link
+              href={social.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                display: 'inline-flex',
+                transition: 'transform 0.2s',
+                '&:hover': { transform: 'scale(1.2)' },
+              }}
+            >
+              <Box
+                component="img"
+                alt={social.name}
+                src={`${CONFIG.assetsDir}/assets/icons/socialmedia/${social.icon}`}
+                sx={{ width: 24, height: 24 }}
+              />
+            </Link>
           </m.div>
         ))}
       </Box>

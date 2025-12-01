@@ -147,7 +147,7 @@ const renderDescription = () => (
             '&:hover': { borderColor: 'currentColor' },
           }}
         >
-          Baca Artikel Terbaru
+          Baca Tulisan Terbaru
         </Button>
       </m.div>
     </Box>

@@ -43,21 +43,28 @@ const renderLines = () => (
 export function HomeIntegrations({ sx, ...other }) {
   const renderDescription = () => (
     <SectionTitle
-      caption="Integrations"
-      title="Robust integration"
-      txtGradient="framework"
+      title="My Core Competencies"
       description={
         <>
           <Box component="span" sx={{ mb: 1, display: 'block' }}>
-            A comprehensive suite of integrations offers diverse functionalities.
+            Berpadu antara kepemimpinan, inovasi, dan sistem digital.
           </Box>
 
           <Box
             component="span"
             sx={{ fontStyle: 'italic', color: 'text.disabled', typography: 'caption' }}
           >
-            * Only includes authentication methods.
-            <br />* Database not included.
+            * Agile Leadership.
+            <br />* Optimalisasi sistem pendidikan berbasis digital
+            <br />* Automasi proses kerja (n8n & workflow digital)
+            <br />* Coaching, mentoring, dan manajemen tim
+            <br />* Pengembangan aplikasi untuk pendidikan
+            <br />* Desain grafis & multimedia
+            <br />* Penulisan & publikasi konten
+            <br />* Pembuatan video & editing
+            <br />* Pemikiran & Penguatan Aqidah
+            <br />* Dakwah edukatif dan pembinaan remaja
+            <br />* Pengembangan pendidikan berbasis nilai-nilai Islam
           </Box>
         </>
       }

@@ -293,8 +293,8 @@ export async function updateSocialLinks(userId, socialLinks) {
     .update({
       social_facebook: socialLinks.facebook,
       social_instagram: socialLinks.instagram,
-      social_linkedin: socialLinks.linkedin,
-      social_twitter: socialLinks.twitter,
+      social_threads: socialLinks.threads,
+      social_youtube: socialLinks.youtube,
     })
     .eq('id', userId)
     .select()

@@ -40,8 +40,8 @@ export function AccountSocialsView() {
   const socialLinks = {
     facebook: profile?.social_facebook || '',
     instagram: profile?.social_instagram || '',
-    linkedin: profile?.social_linkedin || '',
-    twitter: profile?.social_twitter || '',
+    threads: profile?.social_threads || '',
+    youtube: profile?.social_youtube || '',
   };
 
   return <AccountSocials socialLinks={socialLinks} />;

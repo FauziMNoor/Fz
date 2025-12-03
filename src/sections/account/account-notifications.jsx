@@ -18,21 +18,21 @@ import { updateNotificationPreferences } from 'src/lib/supabase-client';
 
 const NOTIFICATIONS = [
   {
-    subheader: 'Activity',
-    caption: 'Donec mi odio, faucibus at, scelerisque quis',
+    subheader: 'Aktivitas',
+    caption: 'Notifikasi terkait aktivitas pada artikel dan konten Anda',
     items: [
-      { id: 'activity_comments', label: 'Email me when someone comments onmy article' },
-      { id: 'activity_answers', label: 'Email me when someone answers on my form' },
-      { id: 'activityFollows', label: 'Email me hen someone follows me' },
+      { id: 'activity_comments', label: 'Kirim email ketika ada yang berkomentar di artikel saya' },
+      { id: 'activity_answers', label: 'Kirim email ketika ada yang menjawab formulir saya' },
+      { id: 'activityFollows', label: 'Kirim email ketika ada yang mengikuti saya' },
     ],
   },
   {
-    subheader: 'Application',
-    caption: 'Donec mi odio, faucibus at, scelerisque quis',
+    subheader: 'Aplikasi',
+    caption: 'Notifikasi terkait pembaruan dan informasi aplikasi',
     items: [
-      { id: 'application_news', label: 'News and announcements' },
-      { id: 'application_product', label: 'Weekly product updates' },
-      { id: 'application_blog', label: 'Weekly blog digest' },
+      { id: 'application_news', label: 'Berita dan pengumuman' },
+      { id: 'application_product', label: 'Pembaruan produk mingguan' },
+      { id: 'application_blog', label: 'Ringkasan blog mingguan' },
     ],
   },
 ];
@@ -58,7 +58,7 @@ export function AccountNotifications({ initialPreferences, sx, ...other }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (!user?.id) {
-        toast.error('User not authenticated');
+        toast.error('Pengguna tidak terautentikasi');
         return;
       }
 
@@ -75,7 +75,7 @@ export function AccountNotifications({ initialPreferences, sx, ...other }) {
       // Update notification preferences in Supabase
       await updateNotificationPreferences(user.id, preferences);
 
-      toast.success('Notification preferences updated successfully!');
+      toast.success('Preferensi notifikasi berhasil diperbarui!');
       console.info('Updated preferences:', preferences);
     } catch (error) {
       console.error('Error updating notification preferences:', error);
@@ -83,7 +83,7 @@ export function AccountNotifications({ initialPreferences, sx, ...other }) {
         message: error?.message,
         code: error?.code,
       });
-      toast.error(error?.message || 'Failed to update notification preferences');
+      toast.error(error?.message || 'Gagal memperbarui preferensi notifikasi');
     }
   });
 
@@ -164,7 +164,7 @@ export function AccountNotifications({ initialPreferences, sx, ...other }) {
         ))}
 
         <Button type="submit" variant="contained" loading={isSubmitting} sx={{ ml: 'auto' }}>
-          Save changes
+          Simpan Perubahan
         </Button>
       </Card>
     </Form>

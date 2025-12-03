@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { toast } from 'src/components/snackbar';
-import { Iconify } from 'src/components/iconify';
+import { SocialIcon } from 'src/components/social-icon';
 import { Form, Field } from 'src/components/hook-form';
 
 import { useAuthContext } from 'src/auth/hooks';
@@ -19,8 +19,8 @@ export function AccountSocials({ socialLinks }) {
   const defaultValues = {
     facebook: '',
     instagram: '',
-    linkedin: '',
-    twitter: '',
+    threads: '',
+    youtube: '',
   };
 
   const methods = useForm({
@@ -71,14 +71,13 @@ export function AccountSocials({ socialLinks }) {
           <Field.Text
             key={social}
             name={social}
+            label={social.charAt(0).toUpperCase() + social.slice(1)}
+            placeholder={`Enter your ${social.charAt(0).toUpperCase() + social.slice(1)} URL`}
             slotProps={{
               input: {
                 startAdornment: (
                   <InputAdornment position="start">
-                    {social === 'twitter' && <Iconify width={24} icon="socials:twitter" />}
-                    {social === 'facebook' && <Iconify width={24} icon="socials:facebook" />}
-                    {social === 'instagram' && <Iconify width={24} icon="socials:instagram" />}
-                    {social === 'linkedin' && <Iconify width={24} icon="socials:linkedin" />}
+                    <SocialIcon name={social} />
                   </InputAdornment>
                 ),
               },

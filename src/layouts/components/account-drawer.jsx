@@ -1,13 +1,11 @@
 'use client';
 
-import { varAlpha } from 'minimal-shared/utils';
 import { useBoolean } from 'minimal-shared/hooks';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Avatar from '@mui/material/Avatar';
 import Drawer from '@mui/material/Drawer';
-import Tooltip from '@mui/material/Tooltip';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
@@ -17,16 +15,13 @@ import { paths } from 'src/routes/paths';
 import { usePathname } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
-import { _mock } from 'src/_mock';
-
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 import { AnimateBorder } from 'src/components/animate';
 
-import { useMockedUser } from 'src/auth/hooks';
+import { useAuthContext } from 'src/auth/hooks';
 
-import { UpgradeBlock } from './nav-upgrade';
 import { AccountButton } from './account-button';
 import { SignOutButton } from './sign-out-button';
 
@@ -35,7 +30,7 @@ import { SignOutButton } from './sign-out-button';
 export function AccountDrawer({ data = [], sx, ...other }) {
   const pathname = usePathname();
 
-  const { user } = useMockedUser();
+  const { user } = useAuthContext();
 
   const { value: open, onFalse: onClose, onTrue: onOpen } = useBoolean();
 
@@ -46,8 +41,8 @@ export function AccountDrawer({ data = [], sx, ...other }) {
         primaryBorder: { size: 120, sx: { color: 'primary.main' } },
       }}
     >
-      <Avatar src={user?.photoURL} alt={user?.displayName} sx={{ width: 1, height: 1 }}>
-        {user?.displayName?.charAt(0).toUpperCase()}
+      <Avatar src={user?.avatar_url} alt={user?.full_name} sx={{ width: 1, height: 1 }}>
+        {user?.full_name?.charAt(0).toUpperCase()}
       </Avatar>
     </AnimateBorder>
   );
@@ -65,44 +60,39 @@ export function AccountDrawer({ data = [], sx, ...other }) {
         }),
       ]}
     >
-      {data.map((option) => {
-        const rootLabel = pathname.includes('/dashboard') ? 'Home' : 'Dashboard';
-        const rootHref = pathname.includes('/dashboard') ? '/' : paths.dashboard.root;
+      {data.map((option) => (
+        <MenuItem key={option.label}>
+          <Link
+            component={RouterLink}
+            href={option.href}
+            color="inherit"
+            underline="none"
+            onClick={onClose}
+            sx={{
+              p: 1,
+              width: 1,
+              display: 'flex',
+              typography: 'body2',
+              alignItems: 'center',
+              color: 'text.secondary',
+              '& svg': { width: 24, height: 24 },
+              '&:hover': { color: 'text.primary' },
+            }}
+          >
+            {option.icon}
 
-        return (
-          <MenuItem key={option.label}>
-            <Link
-              component={RouterLink}
-              href={option.label === 'Home' ? rootHref : option.href}
-              color="inherit"
-              underline="none"
-              onClick={onClose}
-              sx={{
-                p: 1,
-                width: 1,
-                display: 'flex',
-                typography: 'body2',
-                alignItems: 'center',
-                color: 'text.secondary',
-                '& svg': { width: 24, height: 24 },
-                '&:hover': { color: 'text.primary' },
-              }}
-            >
-              {option.icon}
+            <Box component="span" sx={{ ml: 2 }}>
+              {option.label}
+            </Box>
 
-              <Box component="span" sx={{ ml: 2 }}>
-                {option.label === 'Home' ? rootLabel : option.label}
-              </Box>
-
-              {option.info && (
-                <Label color="error" sx={{ ml: 1 }}>
-                  {option.info}
-                </Label>
-              )}
-            </Link>
-          </MenuItem>
-        );
-      })}
+            {option.info && (
+              <Label color="error" sx={{ ml: 1 }}>
+                {option.info}
+              </Label>
+            )}
+          </Link>
+        </MenuItem>
+      ))}
     </MenuList>
   );
 
@@ -110,8 +100,8 @@ export function AccountDrawer({ data = [], sx, ...other }) {
     <>
       <AccountButton
         onClick={onOpen}
-        photoURL={user?.photoURL}
-        displayName={user?.displayName}
+        photoURL={user?.avatar_url}
+        displayName={user?.full_name}
         sx={sx}
         {...other}
       />
@@ -149,7 +139,7 @@ export function AccountDrawer({ data = [], sx, ...other }) {
             {renderAvatar()}
 
             <Typography variant="subtitle1" noWrap sx={{ mt: 2 }}>
-              {user?.displayName}
+              {user?.full_name}
             </Typography>
 
             <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }} noWrap>
@@ -157,47 +147,11 @@ export function AccountDrawer({ data = [], sx, ...other }) {
             </Typography>
           </Box>
 
-          <Box
-            sx={{
-              p: 3,
-              gap: 1,
-              flexWrap: 'wrap',
-              display: 'flex',
-              justifyContent: 'center',
-            }}
-          >
-            {Array.from({ length: 3 }, (_, index) => (
-              <Tooltip
-                key={_mock.fullName(index + 1)}
-                title={`Switch to: ${_mock.fullName(index + 1)}`}
-              >
-                <Avatar
-                  alt={_mock.fullName(index + 1)}
-                  src={_mock.image.avatar(index + 1)}
-                  onClick={() => {}}
-                />
-              </Tooltip>
-            ))}
-
-            <Tooltip title="Add account">
-              <IconButton
-                sx={[
-                  (theme) => ({
-                    bgcolor: varAlpha(theme.vars.palette.grey['500Channel'], 0.08),
-                    border: `dashed 1px ${varAlpha(theme.vars.palette.grey['500Channel'], 0.32)}`,
-                  }),
-                ]}
-              >
-                <Iconify icon="mingcute:add-line" />
-              </IconButton>
-            </Tooltip>
-          </Box>
+          {/* Removed "Switch to" avatars - not needed for personal blog */}
 
           {renderList()}
 
-          <Box sx={{ px: 2.5, py: 3 }}>
-            <UpgradeBlock />
-          </Box>
+          {/* Removed "Upgrade to Pro" block - not needed for personal blog */}
         </Scrollbar>
 
         <Box sx={{ p: 2.5 }}>

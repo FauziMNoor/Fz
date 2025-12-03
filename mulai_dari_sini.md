@@ -232,10 +232,34 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ### 5. ⚙️ Account Settings
 
-- Change password
-- Email preferences
-- Notification settings
-- Billing & plans (jika diperlukan)
+**Status:** ✅ **Terintegrasi penuh dengan Supabase Database!**
+
+4 Tab yang tersedia:
+
+1. **General** - Profile information
+
+   - Full name, email, phone number
+   - Country, address, state, city, zip code
+   - Avatar upload (Supabase Storage)
+   - Bio/about text
+   - Public profile toggle
+
+2. **Notifications** - Email notification preferences
+
+   - Activity notifications (comments, answers, follows)
+   - Application notifications (news, updates, blog digest)
+   - Tersimpan sebagai JSONB di database
+
+3. **Social Links** - Social media URLs
+
+   - Facebook, Instagram, LinkedIn, Twitter/X
+   - Tersimpan di kolom terpisah di database
+
+4. **Security** - Change password
+   - Menggunakan Supabase Auth API
+   - Validasi old password, new password, confirm password
+
+**Dokumentasi lengkap:** Lihat `ACCOUNT_SETTINGS_INTEGRATION.md`
 
 ---
 
@@ -340,7 +364,12 @@ Lihat detail lengkap di `SUPABASE_SETUP.md`
 
 **Tables:**
 
-- ✅ `profiles` - User profiles dengan role (admin/user)
+- ✅ `profiles` - User profiles dengan role (admin/user) - **20 kolom**
+  - Basic info: id, email, full_name, avatar_url, bio, role
+  - Contact: phone_number, country, address, state, city, zip_code
+  - Social: social_facebook, social_instagram, social_linkedin, social_twitter
+  - Settings: is_public, notification_preferences (JSONB)
+  - Timestamps: created_at, updated_at
 - ✅ `posts` - Blog articles dengan status (draft/published/archived)
 - ✅ `categories` - Kategori artikel (Pendidikan, Agile, Kepemimpinan, Pesantren)
 - ✅ `tags` - Tags untuk artikel
@@ -348,36 +377,64 @@ Lihat detail lengkap di `SUPABASE_SETUP.md`
 - ✅ `post_tags` - Many-to-many relationship
 - ✅ `comments` - Komentar dengan nested support
 
+**Storage Buckets:**
+
+- ✅ `avatars` - User profile pictures (public)
+- ✅ `post-images` - Blog post images (public)
+
 **Features:**
 
 - ✅ Row Level Security (RLS) policies
 - ✅ Auto-update timestamps dengan triggers
 - ✅ Auto-create profile saat user register
 - ✅ Performance indexes
+- ✅ Storage policies untuk upload/download files
 
 ### Supabase Helper Functions
 
 File: `src/lib/supabase-client.js`
 
+**Posts Management:**
+
 ```javascript
-// Get published posts
 const posts = await getPublishedPosts();
-
-// Get post by slug
 const post = await getPostBySlug('my-article');
-
-// Create new post
-const newPost = await createPost({
-  title: 'Judul Artikel',
-  slug: 'judul-artikel',
-  content: 'Isi artikel...',
-  author_id: user.id,
-  status: 'draft',
-});
-
-// Get categories & tags
+const newPost = await createPost({ title, slug, content, author_id, status });
 const categories = await getCategories();
 const tags = await getTags();
+```
+
+**Profile Management:**
+
+```javascript
+const profile = await getUserProfile(userId);
+const updated = await updateUserProfile(userId, profileData);
+```
+
+**Social Links:**
+
+```javascript
+await updateSocialLinks(userId, { facebook, instagram, linkedin, twitter });
+```
+
+**Notifications:**
+
+```javascript
+await updateNotificationPreferences(userId, preferences);
+```
+
+**Storage:**
+
+```javascript
+const avatarUrl = await uploadAvatar(userId, file);
+await deleteAvatar(userId);
+const imageUrl = await uploadPostImage(postId, file);
+```
+
+**Password:**
+
+```javascript
+await changePassword(newPassword);
 ```
 
 ---
@@ -417,7 +474,7 @@ vercel --prod
 ### ✅ Sudah Selesai
 
 - [x] Setup Supabase authentication
-- [x] Buat database schema lengkap
+- [x] Buat database schema lengkap (20 kolom di tabel profiles)
 - [x] Integrasi Supabase dengan aplikasi
 - [x] Buat user admin pertama
 - [x] Kustomisasi home page hero
@@ -425,6 +482,12 @@ vercel --prod
 - [x] Implementasi post management (CRUD)
 - [x] Rich text editor untuk blog
 - [x] File manager untuk media
+- [x] **Account Settings - General tab** (profile info + avatar upload)
+- [x] **Account Settings - Social Links tab** (Facebook, Instagram, LinkedIn, Twitter)
+- [x] **Account Settings - Notifications tab** (email preferences)
+- [x] **Account Settings - Security tab** (change password)
+- [x] Setup Supabase Storage buckets (avatars, post-images)
+- [x] Helper functions untuk profile, social, notifications, storage, password
 
 ### 🔲 Belum Selesai
 
@@ -439,7 +502,7 @@ vercel --prod
 
    - [ ] Connect blog posts dengan Supabase (saat ini masih mock data)
    - [ ] Implementasi comment system
-   - [ ] Setup Storage untuk upload gambar
+   - [x] ~~Setup Storage untuk upload gambar~~ ✅ Sudah selesai (avatars, post-images)
    - [ ] Implementasi search functionality
 
 3. [ ] **SEO & Analytics:**
@@ -463,6 +526,9 @@ vercel --prod
 
 - **Aplikasi:** `mulai_dari_sini.md` (file ini)
 - **Supabase Setup:** `SUPABASE_SETUP.md`
+- **Account Settings Integration:** `ACCOUNT_SETTINGS_INTEGRATION.md`
+- **Storage Setup:** `SUPABASE_STORAGE_SETUP.md`
+- **Profile Integration:** `UPDATE_PROFILE_INTEGRATION.md`
 - **Next.js Docs:** https://nextjs.org/docs
 - **MUI Docs:** https://mui.com/material-ui/
 - **Minimal UI Docs:** https://docs.minimals.cc/
@@ -485,5 +551,31 @@ vercel --prod
 _Dokumentasi ini dibuat sebagai panduan untuk memahami dan mengembangkan aplikasi._
 
 **Last Updated:** 2025-12-03
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Author:** Fauzi M. Noor
+
+---
+
+## 📝 Changelog
+
+### Version 1.2.0 (2025-12-03)
+
+**✅ Account Settings - Full Database Integration**
+
+- ✅ Menambahkan 12 kolom baru ke tabel `profiles` (total 20 kolom)
+- ✅ Integrasi General tab dengan database (profile info + avatar upload)
+- ✅ Integrasi Social Links tab dengan database (4 social media)
+- ✅ Integrasi Notifications tab dengan database (JSONB preferences)
+- ✅ Integrasi Security tab dengan Supabase Auth (change password)
+- ✅ Setup Supabase Storage buckets (avatars, post-images)
+- ✅ Menambahkan 9 helper functions baru di `supabase-client.js`
+- ✅ Enhanced error handling dengan detailed logging
+- ✅ Dokumentasi lengkap: `ACCOUNT_SETTINGS_INTEGRATION.md`, `SUPABASE_STORAGE_SETUP.md`
+
+### Version 1.1.0 (2025-12-03)
+
+- ✅ Setup Supabase authentication
+- ✅ Buat database schema lengkap
+- ✅ Integrasi Supabase dengan aplikasi
+- ✅ Buat user admin pertama
+- ✅ Kustomisasi home page hero

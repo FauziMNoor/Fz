@@ -29,7 +29,25 @@ export function AuthProvider({ children }) {
       if (session) {
         const accessToken = session?.access_token;
 
-        setState({ user: { ...session, ...session?.user }, loading: false });
+        // Fetch user profile from database
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+        }
+
+        // Merge session data with profile data
+        const userData = {
+          ...session,
+          ...session?.user,
+          ...(profile || {}), // Add profile data (avatar_url, full_name, etc.)
+        };
+
+        setState({ user: userData, loading: false });
         axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
       } else {
         setState({ user: null, loading: false });
@@ -59,8 +77,25 @@ export function AuthProvider({ children }) {
             ...state.user,
             id: state.user?.id,
             accessToken: state.user?.access_token,
-            displayName: state.user?.user_metadata.display_name,
+            displayName: state.user?.full_name || state.user?.user_metadata?.display_name,
             role: state.user?.role ?? 'admin',
+            // Ensure all profile fields are available
+            avatar_url: state.user?.avatar_url,
+            full_name: state.user?.full_name,
+            email: state.user?.email,
+            phone_number: state.user?.phone_number,
+            country: state.user?.country,
+            address: state.user?.address,
+            state: state.user?.state,
+            city: state.user?.city,
+            zip_code: state.user?.zip_code,
+            bio: state.user?.bio,
+            is_public: state.user?.is_public,
+            social_facebook: state.user?.social_facebook,
+            social_instagram: state.user?.social_instagram,
+            social_threads: state.user?.social_threads,
+            social_youtube: state.user?.social_youtube,
+            notification_preferences: state.user?.notification_preferences,
           }
         : null,
       checkUserSession,

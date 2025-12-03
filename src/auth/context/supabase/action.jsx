@@ -11,13 +11,21 @@ import { supabase } from 'src/lib/supabase';
 // ----------------------------------------------------------------------
 
 export const signInWithPassword = async ({ email, password }) => {
+  console.log('[Supabase] Attempting sign in with:', { email, password: '***' });
+
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    console.error(error);
+    console.error('[Supabase] Sign in error:', error);
+    console.error('[Supabase] Error details:', {
+      message: error.message,
+      status: error.status,
+      name: error.name,
+    });
     throw error;
   }
 
+  console.log('[Supabase] Sign in success:', data);
   return { data, error };
 };
 

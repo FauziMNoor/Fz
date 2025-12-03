@@ -88,7 +88,7 @@ export function AuthSplitSection({
                 <Tooltip title={option.label} placement="top">
                   <Link
                     component={RouterLink}
-                    href={option.path}
+                    href={option.path || '#'}
                     sx={{ ...(!selected && { pointerEvents: 'none' }) }}
                   >
                     <Box

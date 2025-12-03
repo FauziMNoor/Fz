@@ -18,6 +18,8 @@ export const paths = {
   comingSoon: '/coming-soon',
   maintenance: '/maintenance',
   about: '/tentang-saya',
+  faqs: '/faqs',
+  contact: '/contact',
   page403: '/error/403',
   page404: '/error/404',
   page500: '/error/500',

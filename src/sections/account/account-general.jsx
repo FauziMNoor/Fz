@@ -1,4 +1,5 @@
 import { z as zod } from 'zod';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
@@ -15,7 +16,8 @@ import { fData } from 'src/utils/format-number';
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
-import { useMockedUser } from 'src/auth/hooks';
+import { useAuthContext } from 'src/auth/hooks';
+import { getUserProfile, updateUserProfile, uploadAvatar } from 'src/lib/supabase-client';
 
 // ----------------------------------------------------------------------
 
@@ -43,20 +45,41 @@ export const UpdateUserSchema = zod.object({
 // ----------------------------------------------------------------------
 
 export function AccountGeneral() {
-  const { user } = useMockedUser();
+  const { user } = useAuthContext();
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch user profile from Supabase
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (user?.id) {
+        try {
+          const profileData = await getUserProfile(user.id);
+          setProfile(profileData);
+        } catch (error) {
+          console.error('Error fetching profile:', error);
+          toast.error('Failed to load profile data');
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchProfile();
+  }, [user?.id]);
 
   const currentUser = {
-    displayName: user?.displayName,
-    email: user?.email,
-    photoURL: user?.photoURL,
-    phoneNumber: user?.phoneNumber,
-    country: user?.country,
-    address: user?.address,
-    state: user?.state,
-    city: user?.city,
-    zipCode: user?.zipCode,
-    about: user?.about,
-    isPublic: user?.isPublic,
+    displayName: profile?.full_name || user?.displayName || '',
+    email: profile?.email || user?.email || '',
+    photoURL: profile?.avatar_url || null,
+    phoneNumber: profile?.phone_number || '',
+    country: profile?.country || null,
+    address: profile?.address || '',
+    state: profile?.state || '',
+    city: profile?.city || '',
+    zipCode: profile?.zip_code || '',
+    about: profile?.bio || '',
+    isPublic: profile?.is_public || false,
   };
 
   const defaultValues = {
@@ -81,19 +104,85 @@ export function AccountGeneral() {
   });
 
   const {
+    reset,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      toast.success('Update success!');
-      console.info('DATA', data);
+      if (!user?.id) {
+        toast.error('User not authenticated');
+        return;
+      }
+
+      console.log('Form data:', data);
+      console.log('User ID:', user.id);
+
+      let avatarUrl = profile?.avatar_url;
+
+      // Upload avatar if user selected a new file
+      if (data.photoURL && typeof data.photoURL !== 'string') {
+        try {
+          console.log('Uploading avatar...');
+          toast.info('Uploading avatar...');
+          avatarUrl = await uploadAvatar(user.id, data.photoURL);
+          console.log('Avatar uploaded:', avatarUrl);
+          toast.success('Avatar uploaded successfully!');
+        } catch (uploadError) {
+          console.error('Error uploading avatar:', uploadError);
+          console.error('Upload error details:', {
+            message: uploadError?.message,
+            code: uploadError?.code,
+            details: uploadError?.details,
+            hint: uploadError?.hint,
+          });
+          toast.error(
+            uploadError?.message || 'Failed to upload avatar. Continuing with profile update...'
+          );
+          // Continue with profile update even if avatar upload fails
+        }
+      }
+
+      // Map form data to database fields
+      const profileData = {
+        full_name: data.displayName,
+        email: data.email,
+        avatar_url: avatarUrl,
+        phone_number: data.phoneNumber,
+        country: data.country,
+        address: data.address,
+        state: data.state,
+        city: data.city,
+        zip_code: data.zipCode,
+        bio: data.about,
+        is_public: data.isPublic,
+      };
+
+      console.log('Updating profile with data:', profileData);
+
+      // Update profile in Supabase
+      const updatedProfile = await updateUserProfile(user.id, profileData);
+      setProfile(updatedProfile);
+
+      toast.success('Profile updated successfully!');
+      console.info('Updated profile:', updatedProfile);
     } catch (error) {
-      console.error(error);
+      console.error('Error updating profile:', error);
+      console.error('Error details:', {
+        message: error?.message,
+        code: error?.code,
+        details: error?.details,
+        hint: error?.hint,
+        stack: error?.stack,
+      });
+      toast.error(error?.message || error?.code || 'Failed to update profile');
     }
   });
+
+  if (loading) {
+    return <Typography>Loading profile...</Typography>;
+  }
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>

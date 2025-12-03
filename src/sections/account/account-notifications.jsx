@@ -11,6 +11,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { toast } from 'src/components/snackbar';
 import { Form } from 'src/components/hook-form';
 
+import { useAuthContext } from 'src/auth/hooks';
+import { updateNotificationPreferences } from 'src/lib/supabase-client';
+
 // ----------------------------------------------------------------------
 
 const NOTIFICATIONS = [
@@ -36,9 +39,11 @@ const NOTIFICATIONS = [
 
 // ----------------------------------------------------------------------
 
-export function AccountNotifications({ sx, ...other }) {
+export function AccountNotifications({ initialPreferences, sx, ...other }) {
+  const { user } = useAuthContext();
+
   const methods = useForm({
-    defaultValues: { selected: ['activity_comments', 'application_product'] },
+    defaultValues: { selected: initialPreferences || ['activity_comments', 'application_product'] },
   });
 
   const {
@@ -52,11 +57,33 @@ export function AccountNotifications({ sx, ...other }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      toast.success('Update success!');
-      console.info('DATA', data);
+      if (!user?.id) {
+        toast.error('User not authenticated');
+        return;
+      }
+
+      console.log('Updating notification preferences:', data);
+
+      // Convert array to object for database storage
+      const preferences = {};
+      NOTIFICATIONS.forEach((notification) => {
+        notification.items.forEach((item) => {
+          preferences[item.id] = data.selected.includes(item.id);
+        });
+      });
+
+      // Update notification preferences in Supabase
+      await updateNotificationPreferences(user.id, preferences);
+
+      toast.success('Notification preferences updated successfully!');
+      console.info('Updated preferences:', preferences);
     } catch (error) {
-      console.error(error);
+      console.error('Error updating notification preferences:', error);
+      console.error('Error details:', {
+        message: error?.message,
+        code: error?.code,
+      });
+      toast.error(error?.message || 'Failed to update notification preferences');
     }
   });
 

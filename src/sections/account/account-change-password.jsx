@@ -13,6 +13,8 @@ import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
+import { changePassword } from 'src/lib/supabase-client';
+
 // ----------------------------------------------------------------------
 
 export const ChangePassWordSchema = zod
@@ -58,12 +60,21 @@ export function AccountChangePassword() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      console.log('Changing password...');
+
+      // Change password using Supabase Auth
+      await changePassword(data.newPassword);
+
       reset();
-      toast.success('Update success!');
-      console.info('DATA', data);
+      toast.success('Password changed successfully!');
+      console.info('Password changed successfully');
     } catch (error) {
-      console.error(error);
+      console.error('Error changing password:', error);
+      console.error('Error details:', {
+        message: error?.message,
+        code: error?.code,
+      });
+      toast.error(error?.message || 'Failed to change password');
     }
   });
 

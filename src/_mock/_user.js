@@ -95,13 +95,6 @@ export const _userCards = Array.from({ length: 21 }, (_, index) => ({
   totalFollowing: _mock.number.nativeL(index + 1),
 }));
 
-export const _userPayment = Array.from({ length: 3 }, (_, index) => ({
-  id: _mock.id(index),
-  cardNumber: ['**** **** **** 1234', '**** **** **** 5678', '**** **** **** 7878'][index],
-  cardType: ['mastercard', 'visa', 'visa'][index],
-  primary: index === 1,
-}));
-
 export const _userAddressBook = Array.from({ length: 4 }, (_, index) => ({
   id: _mock.id(index),
   primary: index === 0,
@@ -110,19 +103,6 @@ export const _userAddressBook = Array.from({ length: 4 }, (_, index) => ({
   fullAddress: _mock.fullAddress(index),
   addressType: (index === 0 && 'Home') || 'Office',
 }));
-
-export const _userInvoices = Array.from({ length: 10 }, (_, index) => ({
-  id: _mock.id(index),
-  invoiceNumber: `INV-199${index}`,
-  createdAt: _mock.time(index),
-  price: _mock.number.price(index),
-}));
-
-export const _userPlans = [
-  { subscription: 'basic', price: 0, primary: false },
-  { subscription: 'starter', price: 4.99, primary: true },
-  { subscription: 'premium', price: 9.99, primary: false },
-];
 
 export const _userList = Array.from({ length: 20 }, (_, index) => ({
   id: _mock.id(index),

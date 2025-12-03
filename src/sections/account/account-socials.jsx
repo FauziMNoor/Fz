@@ -8,9 +8,14 @@ import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
+import { useAuthContext } from 'src/auth/hooks';
+import { updateSocialLinks } from 'src/lib/supabase-client';
+
 // ----------------------------------------------------------------------
 
 export function AccountSocials({ socialLinks }) {
+  const { user } = useAuthContext();
+
   const defaultValues = {
     facebook: '',
     instagram: '',
@@ -30,11 +35,25 @@ export function AccountSocials({ socialLinks }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      toast.success('Update success!');
-      console.info('DATA', data);
+      if (!user?.id) {
+        toast.error('User not authenticated');
+        return;
+      }
+
+      console.log('Updating social links:', data);
+
+      // Update social links in Supabase
+      await updateSocialLinks(user.id, data);
+
+      toast.success('Social links updated successfully!');
+      console.info('Updated social links:', data);
     } catch (error) {
-      console.error(error);
+      console.error('Error updating social links:', error);
+      console.error('Error details:', {
+        message: error?.message,
+        code: error?.code,
+      });
+      toast.error(error?.message || 'Failed to update social links');
     }
   });
 

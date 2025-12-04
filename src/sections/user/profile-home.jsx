@@ -8,11 +8,8 @@ import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import InputBase from '@mui/material/InputBase';
 import CardHeader from '@mui/material/CardHeader';
-
-import { fNumber } from 'src/utils/format-number';
 
 import { _socials } from 'src/_mock';
 
@@ -30,29 +27,6 @@ export function ProfileHome({ info, posts, isPublic = false }) {
       fileRef.current.click();
     }
   };
-
-  const renderFollows = () => (
-    <Card sx={{ py: 3, textAlign: 'center', typography: 'h4' }}>
-      <Stack
-        divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
-        sx={{ flexDirection: 'row' }}
-      >
-        <Stack sx={{ width: 1 }}>
-          {fNumber(info.totalFollowers)}
-          <Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
-            Follower
-          </Box>
-        </Stack>
-
-        <Stack sx={{ width: 1 }}>
-          {fNumber(info.totalFollowing)}
-          <Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
-            Following
-          </Box>
-        </Stack>
-      </Stack>
-    </Card>
-  );
 
   const renderAbout = () => (
     <Card>
@@ -202,7 +176,6 @@ export function ProfileHome({ info, posts, isPublic = false }) {
   return (
     <Grid container spacing={3}>
       <Grid size={{ xs: 12, md: 4 }} sx={{ gap: 3, display: 'flex', flexDirection: 'column' }}>
-        {renderFollows()}
         {renderAbout()}
         {renderSocials()}
       </Grid>

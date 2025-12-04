@@ -252,7 +252,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 3. **Social Links** - Social media URLs
 
-   - Facebook, Instagram, LinkedIn, Twitter/X
+   - Facebook, Instagram, Threads, YouTube
+   - Menggunakan custom icon dari `public/assets/icons/socialmedia/`
    - Tersimpan di kolom terpisah di database
 
 4. **Security** - Change password
@@ -260,6 +261,33 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
    - Validasi old password, new password, confirm password
 
 **Dokumentasi lengkap:** Lihat `ACCOUNT_SETTINGS_INTEGRATION.md`
+
+### 6. 🎨 UI Customizations
+
+**Dashboard Layout:**
+
+- ✅ Hapus workspace dropdown (tidak relevan untuk blog personal)
+- ✅ Hapus "Upgrade to Pro" section
+- ✅ Profile photo di header & sidebar menggunakan data dari database
+- ✅ Badge "Admin" di sidebar untuk user dengan role admin
+
+**Account Drawer Menu:**
+
+- ✅ Home - Link ke homepage
+- ✅ Profile - Link ke halaman profile publik
+- ✅ Security - Link ke change password
+- ✅ Account settings - Link ke account settings
+- ❌ Projects & Subscription - Dihapus (tidak relevan)
+
+**Social Media Icons:**
+
+- ✅ Custom SVG icons dari `public/assets/icons/socialmedia/`
+- ✅ Mendukung: Facebook, Instagram, Threads, YouTube, Twitter, Telegram, WhatsApp
+
+**Bahasa:**
+
+- ✅ Halaman Notifications menggunakan Bahasa Indonesia
+- ✅ Toast messages dalam Bahasa Indonesia
 
 ---
 
@@ -367,7 +395,7 @@ Lihat detail lengkap di `SUPABASE_SETUP.md`
 - ✅ `profiles` - User profiles dengan role (admin/user) - **20 kolom**
   - Basic info: id, email, full_name, avatar_url, bio, role
   - Contact: phone_number, country, address, state, city, zip_code
-  - Social: social_facebook, social_instagram, social_linkedin, social_twitter
+  - Social: social_facebook, social_instagram, social_threads, social_youtube
   - Settings: is_public, notification_preferences (JSONB)
   - Timestamps: created_at, updated_at
 - ✅ `posts` - Blog articles dengan status (draft/published/archived)
@@ -414,7 +442,7 @@ const updated = await updateUserProfile(userId, profileData);
 **Social Links:**
 
 ```javascript
-await updateSocialLinks(userId, { facebook, instagram, linkedin, twitter });
+await updateSocialLinks(userId, { facebook, instagram, threads, youtube });
 ```
 
 **Notifications:**
@@ -483,11 +511,14 @@ vercel --prod
 - [x] Rich text editor untuk blog
 - [x] File manager untuk media
 - [x] **Account Settings - General tab** (profile info + avatar upload)
-- [x] **Account Settings - Social Links tab** (Facebook, Instagram, LinkedIn, Twitter)
-- [x] **Account Settings - Notifications tab** (email preferences)
+- [x] **Account Settings - Social Links tab** (Facebook, Instagram, Threads, YouTube)
+- [x] **Account Settings - Notifications tab** (email preferences dalam Bahasa Indonesia)
 - [x] **Account Settings - Security tab** (change password)
 - [x] Setup Supabase Storage buckets (avatars, post-images)
 - [x] Helper functions untuk profile, social, notifications, storage, password
+- [x] Custom social media icons dari `public/assets/icons/socialmedia/`
+- [x] Cleanup dashboard layout (hapus workspace dropdown, upgrade to pro)
+- [x] Cleanup account drawer menu (hapus Projects & Subscription)
 
 ### 🔲 Belum Selesai
 
@@ -551,12 +582,46 @@ vercel --prod
 _Dokumentasi ini dibuat sebagai panduan untuk memahami dan mengembangkan aplikasi._
 
 **Last Updated:** 2025-12-03
-**Version:** 1.2.0
+**Version:** 1.3.0
 **Author:** Fauzi M. Noor
 
 ---
 
 ## 📝 Changelog
+
+### Version 1.3.0 (2025-12-03)
+
+**✅ UI/UX Improvements & Social Media Update**
+
+- ✅ Update social media links: LinkedIn & Twitter → Threads & YouTube
+- ✅ Implementasi custom social media icons dari `public/assets/icons/socialmedia/`
+- ✅ Komponen baru: `SocialIcon` untuk render SVG icons
+- ✅ Database migration: Update kolom social_linkedin & social_twitter → social_threads & social_youtube
+- ✅ Terjemahkan halaman Notifications ke Bahasa Indonesia
+- ✅ Cleanup dashboard layout:
+  - Hapus workspace dropdown ("Team 1, Team 2, Team 3")
+  - Hapus "Upgrade to Pro" section
+  - Hapus "Switch to" avatars
+- ✅ Cleanup account drawer menu:
+  - Hapus menu "Projects" (dengan badge "3")
+  - Hapus menu "Subscription"
+  - Pertahankan: Home, Profile, Security, Account Settings
+- ✅ Fix profile photo display di header & sidebar (menggunakan data dari database)
+- ✅ Update `AuthProvider` untuk fetch profile data dari database
+
+**Files Modified:**
+
+- `src/components/social-icon.jsx` (NEW)
+- `src/sections/account/account-socials.jsx`
+- `src/sections/account/account-notifications.jsx`
+- `src/sections/account/view/account-socials-view.jsx`
+- `src/lib/supabase-client.js`
+- `src/auth/context/supabase/auth-provider.jsx`
+- `src/layouts/nav-config-account.jsx`
+- `src/layouts/components/account-drawer.jsx`
+- `src/layouts/components/nav-upgrade.jsx`
+- `src/layouts/dashboard/layout.jsx`
+- `supabase_migrations/update_social_links.sql` (NEW)
 
 ### Version 1.2.0 (2025-12-03)
 

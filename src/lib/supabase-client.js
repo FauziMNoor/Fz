@@ -359,3 +359,583 @@ export async function changePassword(newPassword) {
   console.log('changePassword success');
   return data;
 }
+
+// ============================================
+// PORTFOLIOS
+// ============================================
+
+/**
+ * Get user's portfolios
+ */
+export async function getUserPortfolios(userId) {
+  const { data, error } = await supabase
+    .from('portfolios')
+    .select('*')
+    .eq('user_id', userId)
+    .order('display_order', { ascending: true })
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('getUserPortfolios error:', error);
+    throw new Error(error.message || 'Failed to fetch portfolios');
+  }
+
+  return data;
+}
+
+/**
+ * Create portfolio
+ */
+export async function createPortfolio(userId, portfolioData) {
+  const { data, error } = await supabase
+    .from('portfolios')
+    .insert({
+      user_id: userId,
+      ...portfolioData,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('createPortfolio error:', error);
+    throw new Error(error.message || 'Failed to create portfolio');
+  }
+
+  return data;
+}
+
+/**
+ * Update portfolio
+ */
+export async function updatePortfolio(portfolioId, portfolioData) {
+  const { data, error } = await supabase
+    .from('portfolios')
+    .update(portfolioData)
+    .eq('id', portfolioId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('updatePortfolio error:', error);
+    throw new Error(error.message || 'Failed to update portfolio');
+  }
+
+  return data;
+}
+
+/**
+ * Delete portfolio
+ */
+export async function deletePortfolio(portfolioId) {
+  const { error } = await supabase.from('portfolios').delete().eq('id', portfolioId);
+
+  if (error) {
+    console.error('deletePortfolio error:', error);
+    throw new Error(error.message || 'Failed to delete portfolio');
+  }
+
+  return true;
+}
+
+// ============================================
+// USER POSTS (Social Media Style)
+// ============================================
+
+/**
+ * Get user's posts with likes and comments count
+ */
+export async function getUserPosts(userId) {
+  const { data, error } = await supabase
+    .from('user_posts')
+    .select(
+      `
+      *,
+      author:profiles!user_posts_user_id_fkey(id, full_name, avatar_url),
+      likes:post_likes(count),
+      comments:post_comments(
+        id,
+        message,
+        created_at,
+        user:profiles!post_comments_user_id_fkey(id, full_name, avatar_url)
+      )
+    `
+    )
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('getUserPosts error:', error);
+    throw new Error(error.message || 'Failed to fetch posts');
+  }
+
+  return data;
+}
+
+/**
+ * Create user post
+ */
+export async function createUserPost(userId, postData) {
+  const { data, error } = await supabase
+    .from('user_posts')
+    .insert({
+      user_id: userId,
+      ...postData,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('createUserPost error:', error);
+    throw new Error(error.message || 'Failed to create post');
+  }
+
+  return data;
+}
+
+/**
+ * Update user post
+ */
+export async function updateUserPost(postId, postData) {
+  const { data, error } = await supabase
+    .from('user_posts')
+    .update(postData)
+    .eq('id', postId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('updateUserPost error:', error);
+    throw new Error(error.message || 'Failed to update post');
+  }
+
+  return data;
+}
+
+/**
+ * Delete user post
+ */
+export async function deleteUserPost(postId) {
+  const { error } = await supabase.from('user_posts').delete().eq('id', postId);
+
+  if (error) {
+    console.error('deleteUserPost error:', error);
+    throw new Error(error.message || 'Failed to delete post');
+  }
+
+  return true;
+}
+
+// ============================================
+// POST LIKES
+// ============================================
+
+/**
+ * Toggle like on a post
+ */
+export async function togglePostLike(postId, userId) {
+  // Check if already liked
+  const { data: existingLike } = await supabase
+    .from('post_likes')
+    .select('id')
+    .eq('post_id', postId)
+    .eq('user_id', userId)
+    .single();
+
+  if (existingLike) {
+    // Unlike
+    const { error } = await supabase
+      .from('post_likes')
+      .delete()
+      .eq('post_id', postId)
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error('togglePostLike (unlike) error:', error);
+      throw new Error(error.message || 'Failed to unlike post');
+    }
+
+    return { liked: false };
+  }
+  // Like
+  const { error } = await supabase.from('post_likes').insert({
+    post_id: postId,
+    user_id: userId,
+  });
+
+  if (error) {
+    console.error('togglePostLike (like) error:', error);
+    throw new Error(error.message || 'Failed to like post');
+  }
+
+  return { liked: true };
+}
+
+/**
+ * Get post likes count
+ */
+export async function getPostLikesCount(postId) {
+  const { count, error } = await supabase
+    .from('post_likes')
+    .select('*', { count: 'exact', head: true })
+    .eq('post_id', postId);
+
+  if (error) {
+    console.error('getPostLikesCount error:', error);
+    throw new Error(error.message || 'Failed to get likes count');
+  }
+
+  return count || 0;
+}
+
+// ============================================
+// POST COMMENTS
+// ============================================
+
+/**
+ * Add comment to post
+ */
+export async function addPostComment(postId, userId, message) {
+  const { data, error } = await supabase
+    .from('post_comments')
+    .insert({
+      post_id: postId,
+      user_id: userId,
+      message,
+    })
+    .select(
+      `
+      *,
+      user:profiles!post_comments_user_id_fkey(id, full_name, avatar_url)
+    `
+    )
+    .single();
+
+  if (error) {
+    console.error('addPostComment error:', error);
+    throw new Error(error.message || 'Failed to add comment');
+  }
+
+  return data;
+}
+
+/**
+ * Delete comment
+ */
+export async function deletePostComment(commentId) {
+  const { error } = await supabase.from('post_comments').delete().eq('id', commentId);
+
+  if (error) {
+    console.error('deletePostComment error:', error);
+    throw new Error(error.message || 'Failed to delete comment');
+  }
+
+  return true;
+}
+
+// ============================================
+// ACHIEVEMENTS
+// ============================================
+
+/**
+ * Get user's achievements
+ */
+export async function getUserAchievements(userId) {
+  const { data, error } = await supabase
+    .from('achievements')
+    .select('*')
+    .eq('user_id', userId)
+    .order('display_order', { ascending: true })
+    .order('date_received', { ascending: false });
+
+  if (error) {
+    console.error('getUserAchievements error:', error);
+    throw new Error(error.message || 'Failed to fetch achievements');
+  }
+
+  return data;
+}
+
+/**
+ * Create achievement
+ */
+export async function createAchievement(userId, achievementData) {
+  const { data, error } = await supabase
+    .from('achievements')
+    .insert({
+      user_id: userId,
+      ...achievementData,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('createAchievement error:', error);
+    throw new Error(error.message || 'Failed to create achievement');
+  }
+
+  return data;
+}
+
+/**
+ * Update achievement
+ */
+export async function updateAchievement(achievementId, achievementData) {
+  const { data, error } = await supabase
+    .from('achievements')
+    .update(achievementData)
+    .eq('id', achievementId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('updateAchievement error:', error);
+    throw new Error(error.message || 'Failed to update achievement');
+  }
+
+  return data;
+}
+
+/**
+ * Delete achievement
+ */
+export async function deleteAchievement(achievementId) {
+  const { error } = await supabase.from('achievements').delete().eq('id', achievementId);
+
+  if (error) {
+    console.error('deleteAchievement error:', error);
+    throw new Error(error.message || 'Failed to delete achievement');
+  }
+
+  return true;
+}
+
+// ============================================
+// CERTIFICATIONS
+// ============================================
+
+/**
+ * Get user's certifications
+ */
+export async function getUserCertifications(userId) {
+  const { data, error } = await supabase
+    .from('certifications')
+    .select('*')
+    .eq('user_id', userId)
+    .order('display_order', { ascending: true })
+    .order('issue_date', { ascending: false });
+
+  if (error) {
+    console.error('getUserCertifications error:', error);
+    throw new Error(error.message || 'Failed to fetch certifications');
+  }
+
+  return data;
+}
+
+/**
+ * Create certification
+ */
+export async function createCertification(userId, certificationData) {
+  const { data, error } = await supabase
+    .from('certifications')
+    .insert({
+      user_id: userId,
+      ...certificationData,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('createCertification error:', error);
+    throw new Error(error.message || 'Failed to create certification');
+  }
+
+  return data;
+}
+
+/**
+ * Update certification
+ */
+export async function updateCertification(certificationId, certificationData) {
+  const { data, error } = await supabase
+    .from('certifications')
+    .update(certificationData)
+    .eq('id', certificationId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('updateCertification error:', error);
+    throw new Error(error.message || 'Failed to update certification');
+  }
+
+  return data;
+}
+
+/**
+ * Delete certification
+ */
+export async function deleteCertification(certificationId) {
+  const { error } = await supabase.from('certifications').delete().eq('id', certificationId);
+
+  if (error) {
+    console.error('deleteCertification error:', error);
+    throw new Error(error.message || 'Failed to delete certification');
+  }
+
+  return true;
+}
+
+// ============================================
+// TEACHING EXPERIENCES
+// ============================================
+
+/**
+ * Get user's teaching experiences
+ */
+export async function getUserTeachingExperiences(userId) {
+  const { data, error } = await supabase
+    .from('teaching_experiences')
+    .select('*')
+    .eq('user_id', userId)
+    .order('display_order', { ascending: true })
+    .order('start_date', { ascending: false });
+
+  if (error) {
+    console.error('getUserTeachingExperiences error:', error);
+    throw new Error(error.message || 'Failed to fetch teaching experiences');
+  }
+
+  return data;
+}
+
+/**
+ * Create teaching experience
+ */
+export async function createTeachingExperience(userId, experienceData) {
+  const { data, error } = await supabase
+    .from('teaching_experiences')
+    .insert({
+      user_id: userId,
+      ...experienceData,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('createTeachingExperience error:', error);
+    throw new Error(error.message || 'Failed to create teaching experience');
+  }
+
+  return data;
+}
+
+/**
+ * Update teaching experience
+ */
+export async function updateTeachingExperience(experienceId, experienceData) {
+  const { data, error } = await supabase
+    .from('teaching_experiences')
+    .update(experienceData)
+    .eq('id', experienceId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('updateTeachingExperience error:', error);
+    throw new Error(error.message || 'Failed to update teaching experience');
+  }
+
+  return data;
+}
+
+/**
+ * Delete teaching experience
+ */
+export async function deleteTeachingExperience(experienceId) {
+  const { error } = await supabase.from('teaching_experiences').delete().eq('id', experienceId);
+
+  if (error) {
+    console.error('deleteTeachingExperience error:', error);
+    throw new Error(error.message || 'Failed to delete teaching experience');
+  }
+
+  return true;
+}
+
+// ============================================
+// CAREER TIMELINE
+// ============================================
+
+/**
+ * Get user's career timeline
+ */
+export async function getUserCareerTimeline(userId) {
+  const { data, error } = await supabase
+    .from('career_timeline')
+    .select('*')
+    .eq('user_id', userId)
+    .order('display_order', { ascending: true })
+    .order('event_date', { ascending: false });
+
+  if (error) {
+    console.error('getUserCareerTimeline error:', error);
+    throw new Error(error.message || 'Failed to fetch career timeline');
+  }
+
+  return data;
+}
+
+/**
+ * Create career timeline event
+ */
+export async function createCareerTimelineEvent(userId, eventData) {
+  const { data, error } = await supabase
+    .from('career_timeline')
+    .insert({
+      user_id: userId,
+      ...eventData,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('createCareerTimelineEvent error:', error);
+    throw new Error(error.message || 'Failed to create career timeline event');
+  }
+
+  return data;
+}
+
+/**
+ * Update career timeline event
+ */
+export async function updateCareerTimelineEvent(eventId, eventData) {
+  const { data, error } = await supabase
+    .from('career_timeline')
+    .update(eventData)
+    .eq('id', eventId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('updateCareerTimelineEvent error:', error);
+    throw new Error(error.message || 'Failed to update career timeline event');
+  }
+
+  return data;
+}
+
+/**
+ * Delete career timeline event
+ */
+export async function deleteCareerTimelineEvent(eventId) {
+  const { error } = await supabase.from('career_timeline').delete().eq('id', eventId);
+
+  if (error) {
+    console.error('deleteCareerTimelineEvent error:', error);
+    throw new Error(error.message || 'Failed to delete career timeline event');
+  }
+
+  return true;
+}

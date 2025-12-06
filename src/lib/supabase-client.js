@@ -278,6 +278,112 @@ export async function uploadPostImage(postId, file) {
   return publicUrl;
 }
 
+/**
+ * Upload post images to Supabase Storage
+ * @param {string} userId - User ID
+ * @param {File[]} files - Array of file objects to upload
+ * @returns {Promise<string[]>} - Array of public URLs of uploaded images
+ */
+export async function uploadPostImages(userId, files) {
+  console.log('uploadPostImages called with:', { userId, fileCount: files.length });
+
+  const uploadPromises = files.map(async (file) => {
+    const fileExt = file.name.split('.').pop();
+    const timestamp = Date.now();
+    const randomId = Math.random().toString(36).substring(7);
+    const fileName = `${userId}/post_${timestamp}_${randomId}.${fileExt}`;
+
+    // Upload file to storage
+    const { data, error } = await supabase.storage.from('post-images').upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: false,
+    });
+
+    if (error) {
+      console.error('uploadPostImages error:', error);
+      throw new Error(error.message || 'Failed to upload post image');
+    }
+
+    // Get public URL
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('post-images').getPublicUrl(fileName);
+
+    return publicUrl;
+  });
+
+  const urls = await Promise.all(uploadPromises);
+  console.log('All images uploaded:', urls);
+  return urls;
+}
+
+/**
+ * Upload portfolio cover image to Supabase Storage
+ * @param {string} userId - User ID
+ * @param {string} portfolioId - Portfolio ID (or temp ID)
+ * @param {File} file - File object to upload
+ * @returns {Promise<string>} - Public URL of uploaded image
+ */
+export async function uploadPortfolioCoverImage(userId, portfolioId, file) {
+  console.log('uploadPortfolioCoverImage called with:', {
+    userId,
+    portfolioId,
+    fileName: file.name,
+  });
+
+  const fileExt = file.name.split('.').pop();
+  const timestamp = Date.now();
+  const fileName = `${userId}/${portfolioId}_cover_${timestamp}.${fileExt}`;
+
+  // Upload file to storage
+  const { data, error } = await supabase.storage.from('portfolio-images').upload(fileName, file, {
+    cacheControl: '3600',
+    upsert: true, // Replace if exists
+  });
+
+  if (error) {
+    console.error('uploadPortfolioCoverImage error:', error);
+    throw new Error(error.message || 'Failed to upload portfolio cover image');
+  }
+
+  console.log('Upload successful:', data);
+
+  // Get public URL
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from('portfolio-images').getPublicUrl(fileName);
+
+  console.log('Public URL:', publicUrl);
+  return publicUrl;
+}
+
+/**
+ * Delete portfolio images from Supabase Storage
+ * @param {string} userId - User ID
+ * @param {string} portfolioId - Portfolio ID
+ */
+export async function deletePortfolioImages(userId, portfolioId) {
+  const { data: files, error: listError } = await supabase.storage
+    .from('portfolio-images')
+    .list(`${userId}`);
+
+  if (listError) throw listError;
+
+  if (files && files.length > 0) {
+    // Filter files that belong to this portfolio
+    const portfolioFiles = files.filter((file) => file.name.includes(portfolioId));
+
+    if (portfolioFiles.length > 0) {
+      const filePaths = portfolioFiles.map((file) => `${userId}/${file.name}`);
+      const { error: deleteError } = await supabase.storage
+        .from('portfolio-images')
+        .remove(filePaths);
+
+      if (deleteError) throw deleteError;
+    }
+  }
+}
+
 // ============================================
 // SOCIAL LINKS
 // ============================================
@@ -387,20 +493,24 @@ export async function getUserPortfolios(userId) {
  * Create portfolio
  */
 export async function createPortfolio(userId, portfolioData) {
-  const { data, error } = await supabase
-    .from('portfolios')
-    .insert({
-      user_id: userId,
-      ...portfolioData,
-    })
-    .select()
-    .single();
+  console.log('createPortfolio called with:', { userId, portfolioData });
+
+  const insertData = {
+    user_id: userId,
+    ...portfolioData,
+  };
+
+  console.log('Inserting data:', insertData);
+
+  const { data, error } = await supabase.from('portfolios').insert(insertData).select().single();
 
   if (error) {
     console.error('createPortfolio error:', error);
-    throw new Error(error.message || 'Failed to create portfolio');
+    console.error('Error details:', JSON.stringify(error, null, 2));
+    throw new Error(error.message || error.hint || 'Failed to create portfolio');
   }
 
+  console.log('createPortfolio success:', data);
   return data;
 }
 
@@ -442,24 +552,15 @@ export async function deletePortfolio(portfolioId) {
 // ============================================
 
 /**
- * Get user's posts with likes and comments count
+ * Get user's posts with author profile and comments
  */
 export async function getUserPosts(userId) {
-  const { data, error } = await supabase
+  console.log('getUserPosts called with userId:', userId);
+
+  // First get posts
+  const { data: posts, error } = await supabase
     .from('user_posts')
-    .select(
-      `
-      *,
-      author:profiles!user_posts_user_id_fkey(id, full_name, avatar_url),
-      likes:post_likes(count),
-      comments:post_comments(
-        id,
-        message,
-        created_at,
-        user:profiles!post_comments_user_id_fkey(id, full_name, avatar_url)
-      )
-    `
-    )
+    .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
@@ -468,27 +569,108 @@ export async function getUserPosts(userId) {
     throw new Error(error.message || 'Failed to fetch posts');
   }
 
-  return data;
+  if (!posts || posts.length === 0) {
+    console.log('No posts found for user:', userId);
+    return [];
+  }
+
+  console.log(`Found ${posts.length} posts`);
+
+  // Get post IDs for fetching comments
+  const postIds = posts.map((post) => post.id);
+
+  // Fetch comments for all posts (including guest comments)
+  const { data: comments, error: commentsError } = await supabase
+    .from('post_comments')
+    .select('*')
+    .in('post_id', postIds)
+    .order('created_at', { ascending: true });
+
+  if (commentsError) {
+    console.error('Error fetching comments:', commentsError);
+    // Continue without comments if fetch fails
+  }
+
+  console.log(`Found ${comments?.length || 0} comments`);
+
+  // Get unique user IDs from posts and comments (excluding nulls for guests)
+  const postUserIds = posts.map((post) => post.user_id);
+  const commentUserIds = (comments || [])
+    .filter((comment) => comment.user_id)
+    .map((comment) => comment.user_id);
+  const userIds = [...new Set([...postUserIds, ...commentUserIds])];
+
+  console.log(`Fetching profiles for ${userIds.length} users`);
+
+  // Fetch profiles for all users
+  const { data: profiles, error: profileError } = await supabase
+    .from('profiles')
+    .select('id, full_name, avatar_url')
+    .in('id', userIds);
+
+  if (profileError) {
+    console.error('Error fetching profiles:', profileError);
+  }
+
+  // Map profiles by ID
+  const profileMap = {};
+  (profiles || []).forEach((profile) => {
+    profileMap[profile.id] = {
+      name: profile.full_name,
+      avatarUrl: profile.avatar_url,
+    };
+  });
+
+  // Map comments to posts
+  const commentsMap = {};
+  (comments || []).forEach((comment) => {
+    if (!commentsMap[comment.post_id]) {
+      commentsMap[comment.post_id] = [];
+    }
+    commentsMap[comment.post_id].push({
+      ...comment,
+      author: comment.user_id ? profileMap[comment.user_id] : null,
+    });
+  });
+
+  // Attach author and comments to posts
+  const postsWithData = posts.map((post) => ({
+    ...post,
+    author: profileMap[post.user_id] || null,
+    comments: commentsMap[post.id] || [],
+  }));
+
+  console.log('getUserPosts success:', postsWithData.length, 'posts with comments');
+  return postsWithData;
 }
 
 /**
  * Create user post
  */
 export async function createUserPost(userId, postData) {
-  const { data, error } = await supabase
-    .from('user_posts')
-    .insert({
-      user_id: userId,
-      ...postData,
-    })
-    .select()
-    .single();
+  console.log('createUserPost called with:', { userId, postData });
+
+  const insertData = {
+    user_id: userId,
+    message: postData.message,
+  };
+
+  // Only add media_urls if it exists in postData and is not empty
+  if (postData.media_urls && postData.media_urls.length > 0) {
+    insertData.media_urls = postData.media_urls;
+  }
+
+  console.log('Inserting data:', insertData);
+
+  const { data, error } = await supabase.from('user_posts').insert(insertData).select().single();
 
   if (error) {
     console.error('createUserPost error:', error);
-    throw new Error(error.message || 'Failed to create post');
+    console.error('Error details:', JSON.stringify(error, null, 2));
+    throw new Error(error.message || error.hint || error.details || 'Failed to create post');
   }
 
+  console.log('createUserPost success:', data);
   return data;
 }
 
@@ -593,28 +775,34 @@ export async function getPostLikesCount(postId) {
 
 /**
  * Add comment to post
+ * Supports both logged-in users and guest users
  */
-export async function addPostComment(postId, userId, message) {
+export async function addPostComment(postId, userId, message, guestName = null, guestEmail = null) {
+  console.log('addPostComment called with:', { postId, userId, message, guestName, guestEmail });
+
+  const commentData = {
+    post_id: postId,
+    user_id: userId,
+    message,
+  };
+
+  // Add guest info if provided
+  if (guestName) commentData.guest_name = guestName;
+  if (guestEmail) commentData.guest_email = guestEmail;
+
   const { data, error } = await supabase
     .from('post_comments')
-    .insert({
-      post_id: postId,
-      user_id: userId,
-      message,
-    })
-    .select(
-      `
-      *,
-      user:profiles!post_comments_user_id_fkey(id, full_name, avatar_url)
-    `
-    )
+    .insert(commentData)
+    .select()
     .single();
 
   if (error) {
     console.error('addPostComment error:', error);
-    throw new Error(error.message || 'Failed to add comment');
+    console.error('Error details:', JSON.stringify(error, null, 2));
+    throw new Error(error.message || error.hint || error.details || 'Failed to add comment');
   }
 
+  console.log('addPostComment success:', data);
   return data;
 }
 
@@ -630,6 +818,44 @@ export async function deletePostComment(commentId) {
   }
 
   return true;
+}
+
+/**
+ * Approve comment (make it visible to public)
+ */
+export async function approveComment(commentId) {
+  const { data, error } = await supabase
+    .from('post_comments')
+    .update({ status: 'approved' })
+    .eq('id', commentId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('approveComment error:', error);
+    throw new Error(error.message || 'Failed to approve comment');
+  }
+
+  return data;
+}
+
+/**
+ * Reject comment (hide from public)
+ */
+export async function rejectComment(commentId) {
+  const { data, error } = await supabase
+    .from('post_comments')
+    .update({ status: 'rejected' })
+    .eq('id', commentId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('rejectComment error:', error);
+    throw new Error(error.message || 'Failed to reject comment');
+  }
+
+  return data;
 }
 
 // ============================================
@@ -935,6 +1161,86 @@ export async function deleteCareerTimelineEvent(eventId) {
   if (error) {
     console.error('deleteCareerTimelineEvent error:', error);
     throw new Error(error.message || 'Failed to delete career timeline event');
+  }
+
+  return true;
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+/**
+ * Get user notifications
+ */
+export async function getUserNotifications(userId) {
+  console.log('[getUserNotifications] Called with userId:', userId);
+
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  console.log('[getUserNotifications] Query result - data:', data);
+  console.log('[getUserNotifications] Query result - error:', error);
+
+  if (error) {
+    console.error('[getUserNotifications] Error details:', JSON.stringify(error, null, 2));
+    throw new Error(error.message || 'Failed to fetch notifications');
+  }
+
+  console.log('[getUserNotifications] Returning', data?.length || 0, 'notifications');
+  return data || [];
+}
+
+/**
+ * Mark notification as read
+ */
+export async function markNotificationAsRead(notificationId) {
+  const { data, error } = await supabase
+    .from('notifications')
+    .update({ is_read: true })
+    .eq('id', notificationId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('markNotificationAsRead error:', error);
+    throw new Error(error.message || 'Failed to mark notification as read');
+  }
+
+  return data;
+}
+
+/**
+ * Mark all notifications as read
+ */
+export async function markAllNotificationsAsRead(userId) {
+  const { error } = await supabase
+    .from('notifications')
+    .update({ is_read: true })
+    .eq('user_id', userId)
+    .eq('is_read', false);
+
+  if (error) {
+    console.error('markAllNotificationsAsRead error:', error);
+    throw new Error(error.message || 'Failed to mark all notifications as read');
+  }
+
+  return true;
+}
+
+/**
+ * Delete notification
+ */
+export async function deleteNotification(notificationId) {
+  const { error } = await supabase.from('notifications').delete().eq('id', notificationId);
+
+  if (error) {
+    console.error('deleteNotification error:', error);
+    throw new Error(error.message || 'Failed to delete notification');
   }
 
   return true;

@@ -514,36 +514,50 @@ vercel --prod
 - [x] **Account Settings - Social Links tab** (Facebook, Instagram, Threads, YouTube)
 - [x] **Account Settings - Notifications tab** (email preferences dalam Bahasa Indonesia)
 - [x] **Account Settings - Security tab** (change password)
-- [x] Setup Supabase Storage buckets (avatars, post-images)
+- [x] Setup Supabase Storage buckets (avatars, post-images, portfolio-images)
 - [x] Helper functions untuk profile, social, notifications, storage, password
 - [x] Custom social media icons dari `public/assets/icons/socialmedia/`
 - [x] Cleanup dashboard layout (hapus workspace dropdown, upgrade to pro)
 - [x] Cleanup account drawer menu (hapus Projects & Subscription)
+- [x] **Portfolio System - Database & UI** ⭐ NEW
+  - [x] Buat tabel portfolios di Supabase
+  - [x] Buat tabel user_posts, achievements, certifications, teaching_experiences, career_timeline
+  - [x] Helper functions untuk portfolio & profile extensions
+  - [x] Komponen ProfilePortfolio dengan category filter
+  - [x] Update tab "Gallery" → "Portfolio" di About page
 
 ### 🔲 Belum Selesai
 
-1. [ ] **Content:**
+1. [ ] **Portfolio Management:**
+
+   - [ ] Buat dashboard routes (/dashboard/portfolio)
+   - [ ] Form create/edit portfolio
+   - [ ] Image upload untuk portfolio
+   - [ ] Integrasi portfolio dengan user profile
+
+2. [ ] **Content:**
 
    - [ ] Buat konten blog pertama
    - [ ] Upload foto profil & avatar
    - [ ] Sesuaikan FAQs dengan konten relevan
    - [ ] Tambah bio & informasi di About page
+   - [ ] Tambah portfolio items pertama
 
-2. [ ] **Integration:**
+3. [ ] **Integration:**
 
    - [ ] Connect blog posts dengan Supabase (saat ini masih mock data)
    - [ ] Implementasi comment system
-   - [x] ~~Setup Storage untuk upload gambar~~ ✅ Sudah selesai (avatars, post-images)
+   - [x] ~~Setup Storage untuk upload gambar~~ ✅ Sudah selesai (avatars, post-images, portfolio-images)
    - [ ] Implementasi search functionality
 
-3. [ ] **SEO & Analytics:**
+4. [ ] **SEO & Analytics:**
 
    - [ ] Kustomisasi SEO metadata per halaman
    - [ ] Setup Google Analytics
    - [ ] Implementasi sitemap.xml
    - [ ] Setup robots.txt
 
-4. [ ] **Production:**
+5. [ ] **Production:**
    - [ ] Deploy ke Vercel/Netlify
    - [ ] Setup custom domain
    - [ ] Configure CDN untuk assets
@@ -588,6 +602,243 @@ _Dokumentasi ini dibuat sebagai panduan untuk memahami dan mengembangkan aplikas
 ---
 
 ## 📝 Changelog
+
+### Version 1.5.5 (2025-12-05)
+
+**✅ Update: Profile & Social Links - Real Data**
+
+- ✅ Fetch profile data from database
+  - Full name from `profiles.full_name`
+  - Avatar from `profiles.avatar_url`
+  - Role from `profiles.role`
+  - Bio from `profiles.bio`
+- ✅ Update social links display
+  - Facebook, Instagram, Threads, YouTube
+  - Fetch from database (social_facebook, social_instagram, etc.)
+  - Only show if has value
+  - Clickable links (open in new tab)
+  - Hide card if no social links
+- ✅ Fallback handling
+  - Use email if full_name null
+  - Use default avatar if avatar_url null
+  - Use "User" if role null
+
+**Files Modified:**
+
+- `src/sections/user/view/user-profile-view.jsx` (fetch profile data)
+- `src/sections/user/profile-home.jsx` (update social links)
+
+### Version 1.5.4 (2025-12-05)
+
+**✅ Update: User Profile Portfolio Tab - Real Data**
+
+- ✅ Fetch portfolios from database
+  - Auto-fetch when tab opens
+  - Display real portfolio data
+  - Loading state
+  - Error handling
+- ✅ Enable edit functionality
+  - Click edit → Navigate to edit page
+  - Pre-filled form
+- ✅ Enable delete functionality
+  - Click delete → Confirm → Delete
+  - Auto-refresh list
+  - Success toast
+- ✅ Changed to useAuthContext
+  - Use real authenticated user
+  - Consistent with other pages
+
+**Files Modified:**
+
+- `src/sections/user/view/user-profile-view.jsx` (fetch & display real data)
+
+**Documentation:**
+
+- `UPDATE_USER_PROFILE_PORTFOLIO.md`
+
+### Version 1.5.3 (2025-12-05)
+
+**✅ Bugfix: Invalid UUID Error**
+
+- ✅ Fixed "invalid input syntax for type uuid" error
+  - Changed from `useMockedUser()` to `useAuthContext()`
+  - Now uses real authenticated user from Supabase
+  - Valid UUID format for user_id
+- ✅ Enhanced error logging
+  - Detailed console logs for debugging
+  - Better error messages
+
+**Files Modified:**
+
+- `src/sections/portfolio/portfolio-new-edit-form.jsx` (use real auth)
+- `src/sections/portfolio/portfolio-list-view.jsx` (use real auth)
+- `src/lib/supabase-client.js` (enhanced logging)
+
+**Documentation:**
+
+- `FIX_UUID_ERROR.md`
+- `FIX_CREATE_ERROR_STEPS.md`
+- `TROUBLESHOOT_CREATE_ERROR.md`
+
+### Version 1.5.2 (2025-12-05)
+
+**✅ Image Upload Feature - Portfolio Cover Images**
+
+- ✅ Changed from URL input to file upload
+  - Drag & drop upload
+  - Click to browse
+  - Live preview
+  - Delete/Replace image
+- ✅ Supabase Storage Integration
+  - Upload to `portfolio-images` bucket
+  - Auto-generate public URL
+  - Organized by user_id
+  - Unique filenames with timestamp
+- ✅ Helper Functions
+  - `uploadPortfolioCoverImage()` - Upload cover image
+  - `deletePortfolioImages()` - Delete portfolio images
+- ✅ Form Updates
+  - Upload component integration
+  - File state management
+  - Preview handling
+  - Error handling
+
+**Files Modified:**
+
+- `src/sections/portfolio/portfolio-new-edit-form.jsx` (added upload)
+- `src/lib/supabase-client.js` (added upload functions)
+
+**Documentation:**
+
+- `IMAGE_UPLOAD_GUIDE.md`
+
+### Version 1.5.1 (2025-12-05)
+
+**✅ Navigation Update - Easy Portfolio Access**
+
+- ✅ Added "New Portfolio" button di `/dashboard/user?tab=portfolio`
+  - Visible only for owner
+  - Positioned next to category filters
+  - Links to create page
+- ✅ Added Portfolio menu di sidebar navigation
+  - Expandable menu dengan "New" badge
+  - Sub-items: All Portfolio, Create New
+  - Positioned under Content section
+
+**Files Modified:**
+
+- `src/sections/user/profile-portfolio.jsx` (added button)
+- `src/layouts/nav-config-dashboard.jsx` (added menu)
+
+**Documentation:**
+
+- `NAVIGATION_UPDATE.md`
+
+### Version 1.5.0 (2025-12-05)
+
+**✅ Phase 3: Portfolio Management Dashboard - COMPLETE!**
+
+- ✅ Portfolio CRUD System
+  - Form create/edit portfolio dengan validation
+  - List view dengan filter & actions
+  - Delete dengan confirmation
+- ✅ Form Features
+  - Title, description, category (required)
+  - Cover image URL dengan live preview
+  - External link
+  - Tags (chip input)
+  - Featured & Published toggles
+  - Display order
+- ✅ Routes & Pages
+  - `/dashboard/portfolio` - List page
+  - `/dashboard/portfolio/new` - Create page
+  - `/dashboard/portfolio/[id]/edit` - Edit page
+- ✅ Integration
+  - Supabase CRUD operations
+  - Real-time validation (Zod)
+  - Toast notifications
+  - Loading states
+  - Error handling
+
+**Files Created:**
+
+- `src/sections/portfolio/portfolio-new-edit-form.jsx`
+- `src/sections/portfolio/portfolio-list-view.jsx`
+- `src/sections/portfolio/view/portfolio-create-view.jsx`
+- `src/sections/portfolio/view/portfolio-edit-view.jsx`
+- `src/app/dashboard/portfolio/page.jsx`
+- `src/app/dashboard/portfolio/new/page.jsx`
+- `src/app/dashboard/portfolio/[id]/edit/page.jsx`
+- `PHASE_3_PORTFOLIO_MANAGEMENT.md`
+
+**Files Modified:**
+
+- `src/routes/paths.js` (added portfolio routes)
+
+### Version 1.4.1 (2025-12-05)
+
+**✅ Dashboard User Page Update + Bugfix**
+
+- ✅ Update `/dashboard/user` page
+  - Tab "Gallery" → "Portfolio"
+  - Icon changed to `solar:case-round-bold`
+  - Integrated ProfilePortfolio component with `isOwner={true}`
+  - Edit/Delete menu available for owner
+- ✅ Bugfix: Fixed `usePopover` import error
+  - Changed from `src/components/custom-popover` to `minimal-shared/hooks`
+
+**Files Modified:**
+
+- `src/sections/user/view/user-profile-view.jsx`
+- `src/sections/user/profile-portfolio.jsx` (bugfix)
+
+**Documentation:**
+
+- `UPDATE_DASHBOARD_USER.md`
+- `TESTING_GUIDE.md`
+- `BUGFIX_USEPOPOVER.md`
+
+### Version 1.4.0 (2025-12-05)
+
+**✅ Portfolio System - Phase 1 & 2 Complete**
+
+- ✅ Database schema untuk portfolio system
+  - Tabel `portfolios` dengan 4 kategori (project, presentation, achievement, publication)
+  - Tabel `user_posts` untuk social media style feeds
+  - Tabel `post_likes` & `post_comments` untuk interaksi
+  - Tabel `achievements`, `certifications`, `teaching_experiences`, `career_timeline`
+  - Storage bucket `portfolio-images` dengan RLS policies
+- ✅ Helper functions di `supabase-client.js`
+  - Portfolio CRUD: getUserPortfolios, createPortfolio, updatePortfolio, deletePortfolio
+  - User Posts: getUserPosts, createUserPost, togglePostLike, addPostComment
+  - Profile Extensions: achievements, certifications, teaching experiences, career timeline
+- ✅ Komponen UI `ProfilePortfolio`
+  - Category filter (All, Projects, Presentations, Achievements, Publications)
+  - Featured section untuk highlight items
+  - Grid layout responsive (1/2/3 columns)
+  - Portfolio cards dengan cover image, badges, tags, external link
+  - Edit/Delete menu untuk owner
+  - Empty state dengan icon & message
+- ✅ Update About page
+  - Tab "Gallery" → "Portfolio"
+  - Icon changed to `solar:case-round-bold`
+  - Integrated ProfilePortfolio component
+
+**Files Created:**
+
+- `supabase_migrations/create_portfolios_table.sql`
+- `supabase_migrations/create_profile_extensions_complete.sql`
+- `src/sections/user/profile-portfolio.jsx`
+- `PORTFOLIO_IMPLEMENTATION.md`
+
+**Files Modified:**
+
+- `src/lib/supabase-client.js` (added portfolio & profile extension functions)
+- `src/sections/about/view/about-view.jsx` (Gallery → Portfolio)
+
+**Documentation:**
+
+- Lihat `PORTFOLIO_IMPLEMENTATION.md` untuk panduan lengkap
 
 ### Version 1.3.0 (2025-12-03)
 
@@ -644,3 +895,218 @@ _Dokumentasi ini dibuat sebagai panduan untuk memahami dan mengembangkan aplikas
 - ✅ Integrasi Supabase dengan aplikasi
 - ✅ Buat user admin pertama
 - ✅ Kustomisasi home page hero
+
+### Version 1.6.0 (2025-12-05) - SESI TERAKHIR
+
+**✅ Complete Social Media System dengan Moderasi & Notifikasi**
+
+#### 🎯 Fitur Utama yang Diselesaikan:
+
+1. **Post System dengan Image Upload**
+
+   - ✅ Create post dengan text dan multiple images
+   - ✅ Drag & drop image upload
+   - ✅ Upload ke Supabase Storage (bucket: post-images)
+   - ✅ Display images dengan full size (no crop)
+   - ✅ Lightbox untuk view full screen
+   - ✅ Edit dan delete post (owner only)
+   - ✅ Timestamp dengan jam (fDateTime)
+
+2. **Comment System dengan Moderasi**
+
+   - ✅ User bisa komentar di post
+   - ✅ Comment status: pending, approved, rejected
+   - ✅ Admin bisa approve/reject comment
+   - ✅ Badge visual (PENDING/REJECTED)
+   - ✅ Tombol moderasi untuk post owner
+   - ✅ RLS policy untuk security
+   - ✅ Hanya approved comments tampil di public
+
+3. **Notification System**
+
+   - ✅ Auto-create notification saat ada comment baru
+   - ✅ Database trigger untuk auto-notify
+   - ✅ Notification badge di header dengan angka unread
+   - ✅ Auto-refresh setiap 30 detik
+   - ✅ Drawer dengan list notifications
+   - ✅ Tabs: All, Unread, Read
+   - ✅ Mark as read functionality
+   - ✅ Real data dari database
+
+4. **Public Profile Page**
+   - ✅ Halaman `/tentang-saya` untuk public view
+   - ✅ Read-only mode (no edit/delete)
+   - ✅ No input post untuk public
+   - ✅ User harus login untuk komentar
+   - ✅ Public user ID configured
+
+#### 📊 Database Changes:
+
+**New Tables:**
+
+- `user_posts` - Social media posts dengan media_urls
+- `post_comments` - Comments dengan status (pending/approved/rejected)
+- `post_likes` - Likes system
+- `notifications` - Notification system
+
+**New Storage Buckets:**
+
+- `post-images` - Public bucket untuk post media
+
+**Triggers:**
+
+- `trigger_notify_post_owner` - Auto-create notification saat comment baru
+
+#### 🔧 Technical Fixes:
+
+1. **Fixed Mock Data Issues**
+
+   - Changed `useMockedUser` → `useAuthContext` di layout
+   - Removed `_userAbout` fallback yang menampilkan dummy text
+   - Conditional rendering untuk empty data
+
+2. **Fixed Notification System**
+
+   - Added extensive logging untuk debugging
+   - Fixed RLS policies untuk allow trigger insert
+   - Auto-fetch notifications setiap 30 detik
+   - Badge update real-time
+
+3. **Fixed Image Upload**
+   - Added `media_urls` column ke `user_posts`
+   - Upload multiple images ke Supabase Storage
+   - Display images dengan full size (no crop ratio)
+   - Lightbox integration untuk full screen view
+
+#### 📁 Files Created/Modified:
+
+**New Files:**
+
+- `src/sections/user/view/public-profile-view.jsx`
+- `supabase_migrations/create_user_posts_table.sql`
+- `supabase_migrations/create_notifications_table.sql`
+- `supabase_migrations/add_comment_moderation.sql`
+- `supabase_migrations/create_post_images_bucket.sql`
+- `supabase_migrations/fix_notifications_trigger.sql`
+- `supabase_migrations/complete_notification_setup.sql`
+- `COMMENT_MODERATION_GUIDE.md`
+- `NOTIFICATION_SETUP_GUIDE.md`
+- `FIX_NOTIFICATION_BADGE.md`
+- `TROUBLESHOOT_NOTIFICATIONS.md`
+
+**Modified Files:**
+
+- `src/sections/user/profile-home.jsx` (post input, drag & drop)
+- `src/sections/user/profile-post-item.jsx` (comments, moderation, lightbox)
+- `src/sections/user/view/user-profile-view.jsx` (fetch posts, handlers)
+- `src/layouts/components/notifications-drawer/index.jsx` (real data, auto-fetch)
+- `src/layouts/dashboard/layout.jsx` (useAuthContext, remove mock data)
+- `src/lib/supabase-client.js` (posts, comments, notifications functions)
+- `src/app/tentang-saya/page.jsx` (public profile)
+
+#### 🎨 UI/UX Improvements:
+
+- ✅ Drag & drop area dengan visual feedback
+- ✅ Image preview dengan remove button
+- ✅ Loading states untuk all actions
+- ✅ Toast notifications untuk feedback
+- ✅ Badge dengan status colors (warning/error)
+- ✅ Lightbox untuk full screen images
+- ✅ Notification badge dengan unread count
+- ✅ Auto-refresh notifications (30s interval)
+
+#### 🔒 Security Features:
+
+- ✅ RLS policies untuk all tables
+- ✅ Comment moderation system
+- ✅ Owner-only edit/delete
+- ✅ Authentication required untuk actions
+- ✅ Trigger dengan error handling
+- ✅ Input validation
+
+#### 📝 Key Functions Added:
+
+**Posts:**
+
+- `getUserPosts(userId)` - Fetch posts dengan author data
+- `createUserPost(userId, postData)` - Create post
+- `updateUserPost(postId, postData)` - Update post
+- `deleteUserPost(postId)` - Delete post
+- `uploadPostImages(userId, files)` - Upload multiple images
+
+**Comments:**
+
+- `addPostComment(postId, userId, message)` - Add comment
+- `approveComment(commentId)` - Approve comment
+- `rejectComment(commentId)` - Reject comment
+- `deletePostComment(commentId)` - Delete comment
+
+**Notifications:**
+
+- `getUserNotifications(userId)` - Fetch notifications
+- `markNotificationAsRead(notificationId)` - Mark as read
+- `markAllNotificationsAsRead(userId)` - Mark all as read
+- `deleteNotification(notificationId)` - Delete notification
+
+#### 🐛 Known Issues Fixed:
+
+1. ✅ Notification tidak ter-create → Fixed trigger & RLS
+2. ✅ Badge tidak muncul → Added auto-fetch
+3. ✅ Mock data di About → Removed fallback
+4. ✅ Foto profil tidak muncul → Added author join
+5. ✅ Layout menggunakan mock user → Changed to real auth
+
+#### 🚀 Next Steps (Opsional):
+
+1. **Like System** - Implement like functionality (backend sudah ada)
+2. **Real-time Updates** - Gunakan Supabase Realtime
+3. **Email Notifications** - Kirim email saat ada comment
+4. **Pagination** - Untuk posts dan comments
+5. **Rich Text Editor** - Untuk post content
+6. **Image Compression** - Optimize upload size
+7. **Comment Replies** - Nested comments
+8. **Search & Filter** - Search posts
+
+#### 📚 Documentation:
+
+Dokumentasi lengkap tersedia di:
+
+- `COMMENT_MODERATION_GUIDE.md` - Panduan moderasi comment
+- `NOTIFICATION_SETUP_GUIDE.md` - Setup notification system
+- `FIX_NOTIFICATION_BADGE.md` - Troubleshooting badge
+- `TROUBLESHOOT_NOTIFICATIONS.md` - Debug notifications
+- `GET_USER_ID.md` - Cara mendapatkan user ID
+
+#### ⚙️ Configuration:
+
+**User ID Admin:**
+
+```
+bb2e61da-8f0c-4f12-9fef-59f82db50d69
+```
+
+**Routes:**
+
+- Dashboard: `http://localhost:3032/dashboard/user/`
+- Public Profile: `http://localhost:3032/tentang-saya`
+- Get User ID: `http://localhost:3032/dashboard/get-user-id`
+
+**Auto-Refresh:**
+
+- Notifications: 30 seconds interval
+- Posts: On demand (refresh drawer)
+
+#### 🎯 Status: PRODUCTION READY ✅
+
+Semua fitur core sudah berfungsi dengan baik:
+
+- ✅ Post creation dengan images
+- ✅ Comment system dengan moderasi
+- ✅ Notification system dengan badge
+- ✅ Public profile page
+- ✅ Security dengan RLS
+- ✅ Real-time updates (polling)
+
+**Last Updated:** 2025-12-05 (Sesi Terakhir)
+**Status:** Complete & Production Ready
+**Next Priority:** Like system atau Real-time dengan Supabase Realtime

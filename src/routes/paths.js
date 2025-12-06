@@ -98,5 +98,11 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/post/${kebabCase(MOCK_TITLE)}/edit`,
       },
     },
+    // Portfolio management
+    portfolio: {
+      root: `${ROOTS.DASHBOARD}/portfolio`,
+      new: `${ROOTS.DASHBOARD}/portfolio/new`,
+      edit: (id) => `${ROOTS.DASHBOARD}/portfolio/${id}/edit`,
+    },
   },
 };

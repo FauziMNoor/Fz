@@ -1,7 +1,7 @@
 'use client';
 
 import { m } from 'framer-motion';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useBoolean } from 'minimal-shared/hooks';
 
 import Tab from '@mui/material/Tab';
@@ -19,33 +19,109 @@ import { Scrollbar } from 'src/components/scrollbar';
 import { CustomTabs } from 'src/components/custom-tabs';
 import { varTap, varHover, transitionTap } from 'src/components/animate';
 
+import { useAuthContext } from 'src/auth/hooks';
+import { getUserNotifications, markAllNotificationsAsRead } from 'src/lib/supabase-client';
+import { toast } from 'src/components/snackbar';
+
 import { NotificationItem } from './notification-item';
 
 // ----------------------------------------------------------------------
 
-const TABS = [
-  { value: 'all', label: 'All', count: 22 },
-  { value: 'unread', label: 'Unread', count: 12 },
-  { value: 'archived', label: 'Archived', count: 10 },
-];
+// TABS will be calculated dynamically based on notifications
 
 // ----------------------------------------------------------------------
 
 export function NotificationsDrawer({ data = [], sx, ...other }) {
+  const { user } = useAuthContext();
   const { value: open, onFalse: onClose, onTrue: onOpen } = useBoolean();
 
   const [currentTab, setCurrentTab] = useState('all');
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const handleChangeTab = useCallback((event, newValue) => {
     setCurrentTab(newValue);
   }, []);
 
-  const [notifications, setNotifications] = useState(data);
+  // Fetch notifications from database
+  const fetchNotifications = useCallback(async () => {
+    console.log('[NotificationsDrawer] fetchNotifications called');
+    console.log('[NotificationsDrawer] user?.id:', user?.id);
+
+    if (!user?.id) {
+      console.warn('[NotificationsDrawer] No user ID, skipping fetch');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      console.log('[NotificationsDrawer] Fetching notifications for user:', user.id);
+
+      const data = await getUserNotifications(user.id);
+      console.log('[NotificationsDrawer] Raw data from database:', data);
+
+      // Transform data to match expected format
+      const transformedData = data.map((notif) => ({
+        id: notif.id,
+        title: notif.title,
+        description: notif.message,
+        type: notif.type,
+        createdAt: notif.created_at,
+        isUnRead: !notif.is_read,
+        link: notif.link,
+      }));
+
+      console.log('[NotificationsDrawer] Transformed data:', transformedData);
+      console.log('[NotificationsDrawer] Total notifications:', transformedData.length);
+      console.log(
+        '[NotificationsDrawer] Unread count:',
+        transformedData.filter((n) => n.isUnRead).length
+      );
+
+      setNotifications(transformedData);
+    } catch (error) {
+      console.error('[NotificationsDrawer] Error fetching notifications:', error);
+      console.error('[NotificationsDrawer] Error details:', error.message);
+      toast.error('Failed to load notifications');
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id]);
+
+  // Fetch notifications when drawer opens
+  useEffect(() => {
+    if (open) {
+      fetchNotifications();
+    }
+  }, [open, fetchNotifications]);
+
+  // Auto-fetch notifications on mount and periodically
+  useEffect(() => {
+    if (user?.id) {
+      fetchNotifications();
+
+      // Refresh every 30 seconds
+      const interval = setInterval(() => {
+        fetchNotifications();
+      }, 30000);
+
+      return () => clearInterval(interval);
+    }
+  }, [user?.id, fetchNotifications]);
 
   const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
 
-  const handleMarkAllAsRead = () => {
-    setNotifications(notifications.map((notification) => ({ ...notification, isUnRead: false })));
+  const handleMarkAllAsRead = async () => {
+    if (!user?.id) return;
+
+    try {
+      await markAllNotificationsAsRead(user.id);
+      setNotifications(notifications.map((notification) => ({ ...notification, isUnRead: false })));
+      toast.success('All notifications marked as read');
+    } catch (error) {
+      console.error('Error marking all as read:', error);
+      toast.error('Failed to mark all as read');
+    }
   };
 
   const renderHead = () => (
@@ -81,42 +157,82 @@ export function NotificationsDrawer({ data = [], sx, ...other }) {
     </Box>
   );
 
-  const renderTabs = () => (
-    <CustomTabs variant="fullWidth" value={currentTab} onChange={handleChangeTab}>
-      {TABS.map((tab) => (
-        <Tab
-          key={tab.value}
-          iconPosition="end"
-          value={tab.value}
-          label={tab.label}
-          icon={
-            <Label
-              variant={((tab.value === 'all' || tab.value === currentTab) && 'filled') || 'soft'}
-              color={
-                (tab.value === 'unread' && 'info') ||
-                (tab.value === 'archived' && 'success') ||
-                'default'
-              }
-            >
-              {tab.count}
-            </Label>
-          }
-        />
-      ))}
-    </CustomTabs>
-  );
+  const renderTabs = () => {
+    const allCount = notifications.length;
+    const unreadCount = notifications.filter((n) => n.isUnRead).length;
+    const readCount = notifications.filter((n) => !n.isUnRead).length;
 
-  const renderList = () => (
-    <Scrollbar>
-      <Box component="ul">
-        {notifications?.map((notification) => (
-          <Box component="li" key={notification.id} sx={{ display: 'flex' }}>
-            <NotificationItem notification={notification} />
-          </Box>
+    const TABS = [
+      { value: 'all', label: 'All', count: allCount },
+      { value: 'unread', label: 'Unread', count: unreadCount },
+      { value: 'read', label: 'Read', count: readCount },
+    ];
+
+    return (
+      <CustomTabs variant="fullWidth" value={currentTab} onChange={handleChangeTab}>
+        {TABS.map((tab) => (
+          <Tab
+            key={tab.value}
+            iconPosition="end"
+            value={tab.value}
+            label={tab.label}
+            icon={
+              <Label
+                variant={((tab.value === 'all' || tab.value === currentTab) && 'filled') || 'soft'}
+                color={
+                  (tab.value === 'unread' && 'info') ||
+                  (tab.value === 'read' && 'success') ||
+                  'default'
+                }
+              >
+                {tab.count}
+              </Label>
+            }
+          />
         ))}
-      </Box>
-    </Scrollbar>
-  );
+      </CustomTabs>
+    );
+  };
+
+  const renderList = () => {
+    const filteredNotifications = notifications.filter((notif) => {
+      if (currentTab === 'unread') return notif.isUnRead;
+      if (currentTab === 'read') return !notif.isUnRead;
+      return true; // 'all'
+    });
+
+    if (loading) {
+      return (
+        <Box sx={{ p: 3, textAlign: 'center' }}>
+          <Typography variant="body2" color="text.secondary">
+            Loading notifications...
+          </Typography>
+        </Box>
+      );
+    }
+
+    if (filteredNotifications.length === 0) {
+      return (
+        <Box sx={{ p: 3, textAlign: 'center' }}>
+          <Typography variant="body2" color="text.secondary">
+            No notifications
+          </Typography>
+        </Box>
+      );
+    }
+
+    return (
+      <Scrollbar>
+        <Box component="ul">
+          {filteredNotifications.map((notification) => (
+            <Box component="li" key={notification.id} sx={{ display: 'flex' }}>
+              <NotificationItem notification={notification} onRefresh={fetchNotifications} />
+            </Box>
+          ))}
+        </Box>
+      </Scrollbar>
+    );
+  };
 
   return (
     <>

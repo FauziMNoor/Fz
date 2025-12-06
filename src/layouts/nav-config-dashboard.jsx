@@ -15,6 +15,7 @@ const ICONS = {
   folder: icon('ic-folder'),
   dashboard: icon('ic-dashboard'),
   lock: icon('ic-lock'),
+  portfolio: icon('ic-folder'), // Using folder icon for portfolio
 };
 
 // ----------------------------------------------------------------------
@@ -52,6 +53,16 @@ export const navData = [
         children: [
           { title: 'All Posts', path: paths.dashboard.post.root },
           { title: 'Create New', path: paths.dashboard.post.new },
+        ],
+      },
+      {
+        title: 'Portfolio',
+        path: paths.dashboard.portfolio.root,
+        icon: ICONS.portfolio,
+        info: <Label color="info">New</Label>,
+        children: [
+          { title: 'All Portfolio', path: paths.dashboard.portfolio.root },
+          { title: 'Create New', path: paths.dashboard.portfolio.new },
         ],
       },
       {

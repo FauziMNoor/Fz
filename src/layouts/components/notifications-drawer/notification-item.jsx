@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import Box from '@mui/material/Box';
 import { SvgIcon } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -9,7 +11,11 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { fToNow } from 'src/utils/format-time';
 
 import { Label } from 'src/components/label';
+import { Iconify } from 'src/components/iconify';
 import { FileThumbnail } from 'src/components/file-thumbnail';
+
+import { approveComment, rejectComment } from 'src/lib/supabase-client';
+import { toast } from 'src/components/snackbar';
 
 import { notificationIcons } from './icons';
 
@@ -34,7 +40,54 @@ const renderIcon = (type) =>
     delivery: notificationIcons.delivery,
   })[type];
 
-export function NotificationItem({ notification }) {
+export function NotificationItem({ notification, onRefresh }) {
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Extract comment_id from link if it's a comment notification
+  const getCommentId = () => {
+    if (notification.type !== 'comment' || !notification.link) return null;
+    const match = notification.link.match(/comment_id=([a-f0-9-]+)/);
+    return match ? match[1] : null;
+  };
+
+  const commentId = getCommentId();
+
+  const handleApprove = async () => {
+    if (!commentId) return;
+
+    try {
+      setIsProcessing(true);
+      await approveComment(commentId);
+      toast.success('Comment approved!');
+      if (onRefresh) onRefresh();
+    } catch (error) {
+      console.error('Error approving comment:', error);
+      toast.error('Failed to approve comment');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!commentId) return;
+
+    if (!window.confirm('Are you sure you want to reject this comment?')) {
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      await rejectComment(commentId);
+      toast.success('Comment rejected');
+      if (onRefresh) onRefresh();
+    } catch (error) {
+      console.error('Error rejecting comment:', error);
+      toast.error('Failed to reject comment');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const renderAvatar = () => (
     <ListItemAvatar>
       {notification.avatarUrl ? (
@@ -210,6 +263,31 @@ export function NotificationItem({ notification }) {
     </Box>
   );
 
+  const renderCommentAction = () => (
+    <Box sx={{ gap: 1, mt: 1.5, display: 'flex' }}>
+      <Button
+        size="small"
+        variant="contained"
+        color="success"
+        disabled={isProcessing}
+        startIcon={<Iconify icon="eva:checkmark-fill" />}
+        onClick={handleApprove}
+      >
+        Approve
+      </Button>
+      <Button
+        size="small"
+        variant="outlined"
+        color="error"
+        disabled={isProcessing}
+        startIcon={<Iconify icon="eva:close-fill" />}
+        onClick={handleReject}
+      >
+        Reject
+      </Button>
+    </Box>
+  );
+
   return (
     <ListItemButton
       disableRipple
@@ -231,6 +309,7 @@ export function NotificationItem({ notification }) {
         {notification.type === 'file' && renderFileAction()}
         {notification.type === 'tags' && renderTagsAction()}
         {notification.type === 'payment' && renderPaymentAction()}
+        {notification.type === 'comment' && commentId && renderCommentAction()}
       </Box>
     </ListItemButton>
   );

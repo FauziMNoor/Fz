@@ -20,7 +20,7 @@ import { useMockedUser } from 'src/auth/hooks';
 import { ProfileHome } from 'src/sections/user/profile-home';
 import { ProfileCover } from 'src/sections/user/profile-cover';
 import { ProfileFriends } from 'src/sections/user/profile-friends';
-import { ProfileGallery } from 'src/sections/user/profile-gallery';
+import { ProfilePortfolio } from 'src/sections/user/profile-portfolio';
 import { ProfileFollowers } from 'src/sections/user/profile-followers';
 
 // ----------------------------------------------------------------------
@@ -42,9 +42,9 @@ const NAV_ITEMS = [
     icon: <Iconify width={24} icon="solar:users-group-rounded-bold" />,
   },
   {
-    value: 'gallery',
-    label: 'Gallery',
-    icon: <Iconify width={24} icon="solar:gallery-wide-bold" />,
+    value: 'portfolio',
+    label: 'Portfolio',
+    icon: <Iconify width={24} icon="solar:case-round-bold" />,
   },
 ];
 
@@ -119,7 +119,7 @@ export function AboutView() {
         />
       )}
 
-      {selectedTab === 'gallery' && <ProfileGallery gallery={_userGallery} />}
+      {selectedTab === 'portfolio' && <ProfilePortfolio portfolios={[]} isOwner={false} />}
     </Container>
   );
 }

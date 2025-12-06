@@ -4,7 +4,7 @@
 
 Ini adalah **Personal Blog & Portfolio Website** untuk **Fauzi M. Noor** (Kepala Sekolah & Pendidik Agile). Aplikasi dibangun menggunakan template **Minimal UI v7.0.0** dengan **Next.js 15** dan **Material UI v7**.
 
-**Status Terkini:** ✅ Supabase Authentication & Database sudah terintegrasi penuh!
+**Status Terkini:** ✅ Blog System Fully Functional - CRUD, Categories, Draft/Published, Image Upload, Video Embed!
 
 ---
 
@@ -602,6 +602,41 @@ _Dokumentasi ini dibuat sebagai panduan untuk memahami dan mengembangkan aplikas
 ---
 
 ## 📝 Changelog
+
+### Version 2.0.0 (2025-12-07) 🎉 MAJOR RELEASE
+
+**✅ Complete Blog System - Production Ready!**
+
+Ini adalah MAJOR milestone! Blog system sekarang fully functional dengan semua fitur CRUD, categories, draft management, image upload, dan video embed.
+
+**🎯 Major Features:**
+
+- ✅ Full CRUD untuk blog posts (Create, Read, Update, Delete)
+- ✅ Draft/Published status management (FIXED!)
+- ✅ Categories system (6 default categories)
+- ✅ Image upload di editor (drag & drop)
+- ✅ Video embed (YouTube/Vimeo/Dailymotion)
+- ✅ Author profile integration
+- ✅ Public blog pages dengan real data
+- ✅ SEO meta fields
+
+**🐛 Critical Fixes:**
+
+- ✅ Draft posts sekarang bisa di-edit (changed to client component)
+- ✅ Author profile fetch dari database
+- ✅ Field mapping untuk database compatibility
+- ✅ RLS policies untuk draft access
+
+**📚 Documentation:**
+
+- `BLOG_DATABASE_INTEGRATION.md`
+- `EDITOR_IMAGE_VIDEO_GUIDE.md`
+- `CREATE_FIRST_POST_GUIDE.md`
+- `FIX_DRAFT_POSTS_GUIDE.md`
+
+**Files Modified:** 20+ files
+
+---
 
 ### Version 1.8.0 (2025-12-06)
 

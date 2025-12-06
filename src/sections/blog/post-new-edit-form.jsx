@@ -1,5 +1,5 @@
 import { z as zod } from 'zod';
-import { useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useBoolean } from 'minimal-shared/hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,7 +22,13 @@ import { useRouter } from 'src/routes/hooks';
 
 import { _tags } from 'src/_mock';
 import { useAuthContext } from 'src/auth/hooks';
-import { createPost, updatePost, uploadPostImage } from 'src/lib/supabase-client';
+import {
+  createPost,
+  updatePost,
+  uploadPostImage,
+  getCategories,
+  supabase,
+} from 'src/lib/supabase-client';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -37,6 +43,7 @@ export const NewPostSchema = zod.object({
   description: zod.string().min(1, { message: 'Description is required!' }),
   content: schemaHelper.editor().min(100, { message: 'Content must be at least 100 characters' }),
   coverUrl: schemaHelper.file({ message: 'Cover is required!' }),
+  categories: zod.string().array().min(1, { message: 'Must select at least 1 category!' }),
   tags: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
   metaKeywords: zod.string().array().min(1, { message: 'Meta keywords is required!' }),
   // Not required
@@ -56,11 +63,31 @@ export function PostNewEditForm({ currentPost }) {
   const openDetails = useBoolean(true);
   const openProperties = useBoolean(true);
 
+  const [categories, setCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  // Fetch categories from database
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const data = await getCategories();
+        setCategories(data || []);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        toast.error('Failed to load categories');
+      } finally {
+        setLoadingCategories(false);
+      }
+    }
+    fetchCategories();
+  }, []);
+
   const defaultValues = {
     title: currentPost?.title || '',
     description: currentPost?.description || '',
     content: currentPost?.content || '',
     coverUrl: currentPost?.cover_url || null,
+    categories: currentPost?.categories || [],
     tags: currentPost?.tags || [],
     metaKeywords: currentPost?.meta_keywords || [],
     metaTitle: currentPost?.meta_title || '',
@@ -126,6 +153,32 @@ export function PostNewEditForm({ currentPost }) {
 
       console.log('Post saved:', result);
 
+      // Save categories to junction table
+      if (data.categories && data.categories.length > 0) {
+        try {
+          // Get category IDs from names
+          const categoryIds = categories
+            .filter((cat) => data.categories.includes(cat.name))
+            .map((cat) => cat.id);
+
+          // Delete existing categories for this post
+          await supabase.from('post_categories').delete().eq('post_id', result.id);
+
+          // Insert new categories
+          const categoryData = categoryIds.map((catId) => ({
+            post_id: result.id,
+            category_id: catId,
+          }));
+
+          await supabase.from('post_categories').insert(categoryData);
+
+          console.log('Categories saved:', categoryData);
+        } catch (catError) {
+          console.error('Error saving categories:', catError);
+          // Don't fail the whole operation if categories fail
+        }
+      }
+
       // Reset form and redirect
       reset();
       showPreview.onFalse();
@@ -190,6 +243,34 @@ export function PostNewEditForm({ currentPost }) {
         <Divider />
 
         <Stack spacing={3} sx={{ p: 3 }}>
+          <Field.Autocomplete
+            name="categories"
+            label="Categories"
+            placeholder="+ Categories"
+            multiple
+            disableCloseOnSelect
+            loading={loadingCategories}
+            options={categories.map((cat) => cat.name)}
+            getOptionLabel={(option) => option}
+            renderOption={(props, option) => (
+              <li {...props} key={option}>
+                {option}
+              </li>
+            )}
+            renderTags={(selected, getTagProps) =>
+              selected.map((option, index) => (
+                <Chip
+                  {...getTagProps({ index })}
+                  key={option}
+                  label={option}
+                  size="small"
+                  color="primary"
+                  variant="soft"
+                />
+              ))
+            }
+          />
+
           <Field.Autocomplete
             name="tags"
             label="Tags"

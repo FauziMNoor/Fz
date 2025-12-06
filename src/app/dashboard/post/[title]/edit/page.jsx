@@ -1,61 +1,108 @@
-import { kebabCase } from 'es-toolkit';
+'use client';
 
-import { CONFIG } from 'src/global-config';
+import { useState, useEffect } from 'react';
+
+import { useParams, useRouter } from 'src/routes/hooks';
+import { paths } from 'src/routes/paths';
+
 import { supabase } from 'src/lib/supabase-client';
+import { DashboardContent } from 'src/layouts/dashboard';
 
 import { PostEditView } from 'src/sections/blog/view';
 
 // ----------------------------------------------------------------------
 
-export const metadata = { title: `Post edit | Dashboard - ${CONFIG.appName}` };
+export default function Page() {
+  const params = useParams();
+  const router = useRouter();
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-async function getPostBySlug(slug) {
-  const { data: post, error } = await supabase.from('posts').select('*').eq('slug', slug).single();
+  useEffect(() => {
+    async function fetchPost() {
+      try {
+        const slug = params.title;
 
-  if (error) {
-    console.error('Error fetching post:', error);
-    return null;
-  }
+        // Fetch post (RLS will work because this is client-side with auth)
+        const { data: postData, error: postError } = await supabase
+          .from('posts')
+          .select('*')
+          .eq('slug', slug)
+          .single();
 
-  if (!post) {
-    return null;
-  }
+        if (postError) {
+          console.error('Error fetching post:', postError);
+          setError('Post not found');
+          setLoading(false);
+          return;
+        }
 
-  // Fetch author profile
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('id, full_name, avatar_url')
-    .eq('id', post.author_id)
-    .single();
+        if (!postData) {
+          setError('Post not found');
+          setLoading(false);
+          return;
+        }
 
-  // Attach author to post
-  post.author = profile
-    ? {
-        name: profile.full_name || 'Admin',
-        avatarUrl: profile.avatar_url || '/assets/images/avatar/avatar-25.webp',
+        // Fetch author profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url')
+          .eq('id', postData.author_id)
+          .single();
+
+        // Attach author to post
+        postData.author = profile
+          ? {
+              name: profile.full_name || 'Admin',
+              avatarUrl: profile.avatar_url || '/assets/images/avatar/avatar-25.webp',
+            }
+          : {
+              name: 'Admin',
+              avatarUrl: '/assets/images/avatar/avatar-25.webp',
+            };
+
+        setPost(postData);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error:', err);
+        setError('Failed to load post');
+        setLoading(false);
       }
-    : {
-        name: 'Admin',
-        avatarUrl: '/assets/images/avatar/avatar-25.webp',
-      };
+    }
 
-  return post;
-}
+    fetchPost();
+  }, [params.title]);
 
-export default async function Page({ params }) {
-  const { title } = await params;
-
-  // Try to get post by slug (title is actually slug in URL)
-  const post = await getPostBySlug(title);
-
-  // If post not found, show not found page
-  if (!post) {
+  if (loading) {
     return (
-      <div style={{ padding: '40px', textAlign: 'center' }}>
-        <h1>Post Not Found</h1>
-        <p>The post with slug "{title}" does not exist.</p>
-        <a href="/dashboard/post">← Back to Posts</a>
-      </div>
+      <DashboardContent>
+        <div style={{ padding: '40px', textAlign: 'center' }}>
+          <p>Loading...</p>
+        </div>
+      </DashboardContent>
+    );
+  }
+
+  if (error || !post) {
+    return (
+      <DashboardContent>
+        <div style={{ padding: '40px', textAlign: 'center' }}>
+          <h1>Post Not Found</h1>
+          <p>The post with slug "{params.title}" does not exist.</p>
+          <button
+            type="button"
+            onClick={() => router.push(paths.dashboard.post.root)}
+            style={{
+              marginTop: '20px',
+              padding: '10px 20px',
+              cursor: 'pointer',
+            }}
+          >
+            ← Back to Posts
+          </button>
+        </div>
+      </DashboardContent>
     );
   }
 

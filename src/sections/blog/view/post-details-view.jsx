@@ -37,26 +37,45 @@ export function PostDetailsView({ post }) {
     setPublish(newValue);
   }, []);
 
+  // Map database fields to component fields
+  const mappedPost = post
+    ? {
+        ...post,
+        title: post.title,
+        description: post.description,
+        content: post.content,
+        coverUrl: post.cover_url || post.coverUrl || '/assets/images/cover/cover-1.webp',
+        publish: post.status || post.publish || 'draft',
+        tags: post.tags || [],
+        comments: post.comments || [],
+        favoritePerson: post.favoritePerson || [],
+        totalViews: post.view_count || post.totalViews || 0,
+        totalShares: post.share_count || post.totalShares || 0,
+        totalComments: post.comment_count || post.totalComments || 0,
+        totalFavorites: post.favorite_count || post.totalFavorites || 0,
+      }
+    : null;
+
   useEffect(() => {
-    if (post) {
-      setPublish(post?.publish);
+    if (mappedPost) {
+      setPublish(mappedPost.publish);
     }
-  }, [post]);
+  }, [mappedPost]);
 
   return (
     <DashboardContent maxWidth={false} disablePadding>
       <Container maxWidth={false} sx={{ px: { sm: 5 } }}>
         <PostDetailsToolbar
           backHref={paths.dashboard.post.root}
-          editHref={paths.dashboard.post.edit(`${post?.title}`)}
-          liveHref={paths.post.details(`${post?.title}`)}
+          editHref={paths.dashboard.post.edit(post?.slug || post?.title)}
+          liveHref={paths.post.details(post?.slug || post?.title)}
           publish={`${publish}`}
           onChangePublish={handleChangePublish}
           publishOptions={POST_PUBLISH_OPTIONS}
         />
       </Container>
 
-      <PostDetailsHero title={`${post?.title}`} coverUrl={`${post?.coverUrl}`} />
+      <PostDetailsHero title={mappedPost?.title} coverUrl={mappedPost?.coverUrl} />
 
       <Box
         sx={{
@@ -67,9 +86,9 @@ export function PostDetailsView({ post }) {
           px: { xs: 2, sm: 3 },
         }}
       >
-        <Typography variant="subtitle1">{post?.description}</Typography>
+        <Typography variant="subtitle1">{mappedPost?.description}</Typography>
 
-        <Markdown children={post?.content} />
+        <Markdown children={mappedPost?.content} />
 
         <Stack
           spacing={3}
@@ -82,9 +101,13 @@ export function PostDetailsView({ post }) {
           ]}
         >
           <Box sx={{ gap: 1, display: 'flex', flexWrap: 'wrap' }}>
-            {post?.tags.map((tag) => (
-              <Chip key={tag} label={tag} variant="soft" />
-            ))}
+            {mappedPost?.tags && mappedPost.tags.length > 0 ? (
+              mappedPost.tags.map((tag) => <Chip key={tag} label={tag} variant="soft" />)
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No tags
+              </Typography>
+            )}
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -108,11 +131,13 @@ export function PostDetailsView({ post }) {
               sx={{ mr: 1 }}
             />
 
-            <AvatarGroup sx={{ [`& .${avatarGroupClasses.avatar}`]: { width: 32, height: 32 } }}>
-              {post?.favoritePerson.map((person) => (
-                <Avatar key={person.name} alt={person.name} src={person.avatarUrl} />
-              ))}
-            </AvatarGroup>
+            {mappedPost?.favoritePerson && mappedPost.favoritePerson.length > 0 && (
+              <AvatarGroup sx={{ [`& .${avatarGroupClasses.avatar}`]: { width: 32, height: 32 } }}>
+                {mappedPost.favoritePerson.map((person) => (
+                  <Avatar key={person.name} alt={person.name} src={person.avatarUrl} />
+                ))}
+              </AvatarGroup>
+            )}
           </Box>
         </Stack>
 
@@ -120,7 +145,7 @@ export function PostDetailsView({ post }) {
           <Typography variant="h4">Comments</Typography>
 
           <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
-            ({post?.comments.length})
+            ({mappedPost?.comments?.length || 0})
           </Typography>
         </Box>
 
@@ -128,7 +153,7 @@ export function PostDetailsView({ post }) {
 
         <Divider sx={{ mt: 5, mb: 2 }} />
 
-        <PostCommentList comments={post?.comments ?? []} />
+        <PostCommentList comments={mappedPost?.comments || []} />
       </Box>
     </DashboardContent>
   );

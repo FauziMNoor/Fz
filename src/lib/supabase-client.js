@@ -29,14 +29,7 @@ export const supabase = createClient(CONFIG.supabase.url, CONFIG.supabase.key, {
 export async function getPublishedPosts() {
   const { data, error } = await supabase
     .from('posts')
-    .select(
-      `
-      *,
-      author:profiles(*),
-      categories:post_categories(category:categories(*)),
-      tags:post_tags(tag:tags(*))
-    `
-    )
+    .select('*')
     .eq('status', 'published')
     .order('published_at', { ascending: false });
 
@@ -48,37 +41,65 @@ export async function getPublishedPosts() {
  * Get post by slug
  */
 export async function getPostBySlug(slug) {
-  const { data, error } = await supabase
-    .from('posts')
-    .select(
-      `
-      *,
-      author:profiles(*),
-      categories:post_categories(category:categories(*)),
-      tags:post_tags(tag:tags(*))
-    `
-    )
-    .eq('slug', slug)
-    .single();
+  const { data, error } = await supabase.from('posts').select('*').eq('slug', slug).single();
 
   if (error) throw error;
   return data;
 }
 
 /**
- * Create new post
+ * Create new post with slug generation
  */
 export async function createPost(postData) {
+  console.log('Creating post with data:', postData);
+
+  // Generate slug from title if not provided
+  if (!postData.slug && postData.title) {
+    postData.slug = generateSlug(postData.title);
+  }
+
   const { data, error } = await supabase.from('posts').insert([postData]).select().single();
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error creating post:', error);
+    throw error;
+  }
+
+  console.log('Post created successfully:', data);
   return data;
+}
+
+/**
+ * Generate URL-friendly slug from title
+ */
+export function generateSlug(title) {
+  return (
+    title
+      .toLowerCase()
+      .trim()
+      // Replace spaces with hyphens
+      .replace(/\s+/g, '-')
+      // Remove special characters
+      .replace(/[^\w\-]+/g, '')
+      // Replace multiple hyphens with single hyphen
+      .replace(/\-\-+/g, '-')
+      // Remove leading/trailing hyphens
+      .replace(/^-+/, '')
+      .replace(/-+$/, '')
+  );
 }
 
 /**
  * Update post
  */
 export async function updatePost(id, postData) {
+  console.log('Updating post:', id, postData);
+
+  // Update slug if title changed
+  if (postData.title && !postData.slug) {
+    postData.slug = generateSlug(postData.title);
+  }
+
   const { data, error } = await supabase
     .from('posts')
     .update(postData)
@@ -86,7 +107,44 @@ export async function updatePost(id, postData) {
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error updating post:', error);
+    throw error;
+  }
+
+  console.log('Post updated successfully:', data);
+  return data;
+}
+
+/**
+ * Get user's posts (all statuses)
+ */
+export async function getUserPosts(userId) {
+  const { data, error } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('author_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching user posts:', error);
+    throw error;
+  }
+
+  return data;
+}
+
+/**
+ * Get post by ID
+ */
+export async function getPostById(id) {
+  const { data, error } = await supabase.from('posts').select('*').eq('id', id).single();
+
+  if (error) {
+    console.error('Error fetching post:', error);
+    throw error;
+  }
+
   return data;
 }
 
@@ -552,10 +610,10 @@ export async function deletePortfolio(portfolioId) {
 // ============================================
 
 /**
- * Get user's posts with author profile and comments
+ * Get user's social media posts with author profile and comments
  */
-export async function getUserPosts(userId) {
-  console.log('getUserPosts called with userId:', userId);
+export async function getUserSocialPosts(userId) {
+  console.log('getUserSocialPosts called with userId:', userId);
 
   // First get posts
   const { data: posts, error } = await supabase

@@ -46,7 +46,7 @@ export function PostListHomeView({ posts }) {
           },
         ]}
       >
-        <PostSearch redirectPath={(title) => paths.post.details(title)} />
+        <PostSearch redirectPath={(title) => paths.post.details(title)} posts={posts} />
 
         <PostSort
           sort={sortBy}
@@ -64,15 +64,15 @@ export function PostListHomeView({ posts }) {
 
 function applyFilter({ inputData, sortBy }) {
   if (sortBy === 'latest') {
-    return orderBy(inputData, ['createdAt'], ['desc']);
+    return orderBy(inputData, ['published_at', 'created_at'], ['desc']);
   }
 
   if (sortBy === 'oldest') {
-    return orderBy(inputData, ['createdAt'], ['asc']);
+    return orderBy(inputData, ['published_at', 'created_at'], ['asc']);
   }
 
   if (sortBy === 'popular') {
-    return orderBy(inputData, ['totalViews'], ['desc']);
+    return orderBy(inputData, ['view_count'], ['desc']);
   }
 
   return inputData;

@@ -16,7 +16,7 @@ import { _userAbout, _userFollowers, _userFriends } from 'src/_mock';
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 
-import { getUserProfile, getUserPosts } from 'src/lib/supabase-client';
+import { getUserProfile, getUserSocialPosts } from 'src/lib/supabase-client';
 
 import { ProfileHome } from '../profile-home';
 import { ProfileCover } from '../profile-cover';
@@ -78,7 +78,7 @@ export function PublicProfileView() {
 
     try {
       setPostsLoading(true);
-      const data = await getUserPosts(PUBLIC_USER_ID);
+      const data = await getUserSocialPosts(PUBLIC_USER_ID);
       setPosts(data || []);
     } catch (error) {
       console.error('Error fetching posts:', error);

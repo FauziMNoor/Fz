@@ -25,6 +25,22 @@ import { CustomPopover } from 'src/components/custom-popover';
 export function PostItemHorizontal({ sx, post, editHref, detailsHref, ...other }) {
   const menuActions = usePopover();
 
+  // Map database fields to component fields
+  const mappedPost = {
+    title: post.title,
+    description: post.description,
+    coverUrl: post.cover_url || post.coverUrl || '/assets/images/cover/cover-1.webp',
+    publish: post.status || post.publish || 'draft',
+    createdAt: post.created_at || post.createdAt,
+    totalComments: post.comment_count || post.totalComments || 0,
+    totalViews: post.view_count || post.totalViews || 0,
+    totalShares: post.share_count || post.totalShares || 0,
+    author: post.author || {
+      name: 'Unknown',
+      avatarUrl: '/assets/images/avatar/avatar-25.webp',
+    },
+  };
+
   const renderMenuActions = () => (
     <CustomPopover
       open={menuActions.open}
@@ -75,12 +91,15 @@ export function PostItemHorizontal({ sx, post, editHref, detailsHref, ...other }
               justifyContent: 'space-between',
             }}
           >
-            <Label variant="soft" color={(post.publish === 'published' && 'info') || 'default'}>
-              {post.publish}
+            <Label
+              variant="soft"
+              color={(mappedPost.publish === 'published' && 'info') || 'default'}
+            >
+              {mappedPost.publish}
             </Label>
 
             <Box component="span" sx={{ typography: 'caption', color: 'text.disabled' }}>
-              {fDate(post.createdAt)}
+              {fDate(mappedPost.createdAt)}
             </Box>
           </Box>
 
@@ -96,7 +115,7 @@ export function PostItemHorizontal({ sx, post, editHref, detailsHref, ...other }
                 }),
               ]}
             >
-              {post.title}
+              {mappedPost.title}
             </Link>
 
             <Typography
@@ -108,7 +127,7 @@ export function PostItemHorizontal({ sx, post, editHref, detailsHref, ...other }
                 }),
               ]}
             >
-              {post.description}
+              {mappedPost.description}
             </Typography>
           </Stack>
 
@@ -133,17 +152,17 @@ export function PostItemHorizontal({ sx, post, editHref, detailsHref, ...other }
             >
               <Box sx={{ gap: 0.5, display: 'flex', alignItems: 'center' }}>
                 <Iconify icon="solar:chat-round-dots-bold" width={16} />
-                {fShortenNumber(post.totalComments)}
+                {fShortenNumber(mappedPost.totalComments)}
               </Box>
 
               <Box sx={{ gap: 0.5, display: 'flex', alignItems: 'center' }}>
                 <Iconify icon="solar:eye-bold" width={16} />
-                {fShortenNumber(post.totalViews)}
+                {fShortenNumber(mappedPost.totalViews)}
               </Box>
 
               <Box sx={{ gap: 0.5, display: 'flex', alignItems: 'center' }}>
                 <Iconify icon="solar:share-bold" width={16} />
-                {fShortenNumber(post.totalShares)}
+                {fShortenNumber(mappedPost.totalShares)}
               </Box>
             </Box>
           </Box>
@@ -160,8 +179,8 @@ export function PostItemHorizontal({ sx, post, editHref, detailsHref, ...other }
           }}
         >
           <Avatar
-            alt={post.author.name}
-            src={post.author.avatarUrl}
+            alt={mappedPost.author.name}
+            src={mappedPost.author.avatarUrl}
             sx={{
               top: 16,
               right: 16,
@@ -169,7 +188,11 @@ export function PostItemHorizontal({ sx, post, editHref, detailsHref, ...other }
               position: 'absolute',
             }}
           />
-          <Image alt={post.title} src={post.coverUrl} sx={{ height: 1, borderRadius: 1.5 }} />
+          <Image
+            alt={mappedPost.title}
+            src={mappedPost.coverUrl}
+            sx={{ height: 1, borderRadius: 1.5 }}
+          />
         </Box>
       </Card>
 

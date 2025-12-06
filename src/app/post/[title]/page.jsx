@@ -1,8 +1,7 @@
 import { kebabCase } from 'es-toolkit';
 
 import { CONFIG } from 'src/global-config';
-import axios, { endpoints } from 'src/lib/axios';
-import { getPost, getLatestPosts } from 'src/actions/blog-ssr';
+import { supabase } from 'src/lib/supabase-client';
 
 import { PostDetailsHomeView } from 'src/sections/blog/view';
 
@@ -10,11 +9,102 @@ import { PostDetailsHomeView } from 'src/sections/blog/view';
 
 export const metadata = { title: `Post details - ${CONFIG.appName}` };
 
+async function getPostBySlug(slug) {
+  const { data: post, error } = await supabase.from('posts').select('*').eq('slug', slug).single();
+
+  if (error) {
+    console.error('Error fetching post:', error);
+    return null;
+  }
+
+  if (!post) {
+    return null;
+  }
+
+  // Fetch author profile
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('id, full_name, avatar_url')
+    .eq('id', post.author_id)
+    .single();
+
+  // Attach author to post
+  post.author = profile
+    ? {
+        name: profile.full_name || 'Admin',
+        avatarUrl: profile.avatar_url || '/assets/images/avatar/avatar-25.webp',
+      }
+    : {
+        name: 'Admin',
+        avatarUrl: '/assets/images/avatar/avatar-25.webp',
+      };
+
+  return post;
+}
+
+async function getLatestPublishedPosts(excludeSlug, limit = 4) {
+  const { data: posts, error } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('status', 'published')
+    .neq('slug', excludeSlug)
+    .order('published_at', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error('Error fetching latest posts:', error);
+    return [];
+  }
+
+  if (!posts || posts.length === 0) {
+    return [];
+  }
+
+  // Get unique author IDs
+  const authorIds = [...new Set(posts.map((p) => p.author_id))];
+
+  // Fetch author profiles
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, full_name, avatar_url')
+    .in('id', authorIds);
+
+  // Map profiles by ID
+  const profileMap = {};
+  (profiles || []).forEach((profile) => {
+    profileMap[profile.id] = {
+      name: profile.full_name || 'Admin',
+      avatarUrl: profile.avatar_url || '/assets/images/avatar/avatar-25.webp',
+    };
+  });
+
+  // Attach author to posts
+  const postsWithAuthor = posts.map((p) => ({
+    ...p,
+    author: profileMap[p.author_id] || {
+      name: 'Admin',
+      avatarUrl: '/assets/images/avatar/avatar-25.webp',
+    },
+  }));
+
+  return postsWithAuthor;
+}
+
 export default async function Page({ params }) {
   const { title } = await params;
 
-  const { post } = await getPost(title);
-  const { latestPosts } = await getLatestPosts(title);
+  const post = await getPostBySlug(title);
+  const latestPosts = await getLatestPublishedPosts(title);
+
+  if (!post) {
+    return (
+      <div style={{ padding: '40px', textAlign: 'center' }}>
+        <h1>Post Not Found</h1>
+        <p>The post with slug "{title}" does not exist or is not published.</p>
+        <a href="/post">← Back to Blog</a>
+      </div>
+    );
+  }
 
   return <PostDetailsHomeView post={post} latestPosts={latestPosts} />;
 }
@@ -24,19 +114,13 @@ export default async function Page({ params }) {
 /**
  * Static Exports in Next.js
  *
- * 1. Set `isStaticExport = true` in `next.config.{mjs|ts}`.
- * 2. This allows `generateStaticParams()` to pre-render dynamic routes at build time.
- *
- * For more details, see:
- * https://nextjs.org/docs/app/building-your-application/deploying/static-exports
- *
- * NOTE: Remove all "generateStaticParams()" functions if not using static exports.
+ * NOTE: Disabled for now since we're using Supabase dynamic data
  */
-export async function generateStaticParams() {
-  const res = await axios.get(endpoints.post.list);
-  const data = CONFIG.isStaticExport ? res.data.posts : res.data.posts.slice(0, 1);
-
-  return data.map((post) => ({
-    title: kebabCase(post.title),
-  }));
-}
+// export async function generateStaticParams() {
+//   const { data } = await supabase
+//     .from('posts')
+//     .select('slug')
+//     .eq('status', 'published')
+//     .limit(10);
+//   return data?.map((post) => ({ title: post.slug })) || [];
+// }

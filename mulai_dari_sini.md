@@ -603,6 +603,95 @@ _Dokumentasi ini dibuat sebagai panduan untuk memahami dan mengembangkan aplikas
 
 ## 📝 Changelog
 
+### Version 1.8.0 (2025-12-06)
+
+**✅ Blog Database Integration - Complete CRUD**
+
+- ✅ Database schema untuk blog posts
+  - Tabel `posts` dengan 17 kolom
+  - Tabel `categories` dengan 6 default categories
+  - Tabel `post_categories` untuk many-to-many
+  - Auto-update triggers (updated_at, published_at)
+  - RLS policies untuk security
+  - Performance indexes
+- ✅ Helper functions di supabase-client.js
+  - createPost() dengan auto slug generation
+  - updatePost() dengan slug update
+  - getUserPosts() untuk fetch user's posts
+  - getPostById() untuk single post
+  - generateSlug() helper function
+- ✅ Form integration dengan database
+  - Real submit handler (bukan mock lagi)
+  - Upload cover image ke Supabase Storage
+  - Save post data ke database
+  - Error handling & toast notifications
+  - Redirect after success
+- ✅ List page dengan real data
+  - Custom hook usePosts() dengan SWR
+  - Fetch dari database
+  - Filter by status (All, Published, Draft)
+  - Sort by date/popularity
+  - Real-time count badges
+- ✅ Edit page dengan pre-filled data
+  - Fetch existing post
+  - Update functionality
+  - Keep existing cover if not changed
+
+**Files Created:**
+
+- `supabase_migrations/create_posts_table.sql` (Migration)
+- `src/hooks/use-posts.js` (Custom hook)
+- `BLOG_DATABASE_INTEGRATION.md` (Technical guide)
+- `RUN_BLOG_MIGRATION.md` (Quick start guide)
+
+**Files Modified:**
+
+- `src/lib/supabase-client.js` (add post functions)
+- `src/sections/blog/post-new-edit-form.jsx` (database integration)
+- `src/sections/blog/view/post-list-view.jsx` (fetch from database)
+
+**Documentation:**
+
+- Lihat `RUN_BLOG_MIGRATION.md` untuk setup
+- Lihat `BLOG_DATABASE_INTEGRATION.md` untuk detail lengkap
+
+### Version 1.7.0 (2025-12-06)
+
+**✅ Editor Enhancement - Image Upload & Video Embed**
+
+- ✅ Image Upload dengan dual mode
+  - Upload file: Drag & drop atau browse
+  - URL: Paste image URL dari internet
+  - Upload ke Supabase Storage (bucket: post-images)
+  - Preview sebelum upload
+  - Validasi: image/\* only, max 5MB
+  - Loading state & error handling
+- ✅ Video Embed support
+  - YouTube (youtube.com, youtu.be, embed URL, video ID)
+  - Vimeo (vimeo.com)
+  - Dailymotion (dailymotion.com)
+  - Auto-detect platform & convert ke embed URL
+  - Responsive iframe (16:9 aspect ratio)
+- ✅ UI/UX improvements
+  - Popover dengan tabs untuk image
+  - Toast notifications untuk feedback
+  - Icon baru di toolbar (image & video)
+
+**Files Created:**
+
+- `src/components/editor/components/image-upload-block.jsx` (NEW)
+- `src/components/editor/components/video-block.jsx` (NEW)
+- `EDITOR_IMAGE_VIDEO_GUIDE.md` (Documentation)
+
+**Files Modified:**
+
+- `src/components/editor/toolbar.jsx` (import & use new components)
+- `src/components/editor/classes.js` (add video class)
+
+**Documentation:**
+
+- Lihat `EDITOR_IMAGE_VIDEO_GUIDE.md` untuk panduan lengkap
+
 ### Version 1.5.5 (2025-12-05)
 
 **✅ Update: Profile & Social Links - Real Data**
@@ -1047,6 +1136,44 @@ _Dokumentasi ini dibuat sebagai panduan untuk memahami dan mengembangkan aplikas
 - `markNotificationAsRead(notificationId)` - Mark as read
 - `markAllNotificationsAsRead(userId)` - Mark all as read
 - `deleteNotification(notificationId)` - Delete notification
+
+### Version 1.7.0 (2025-12-06)
+
+**✅ Public Profile Cleanup - Read-Only Mode**
+
+#### Changes:
+
+1. **Disabled All Interactions on Public Profile (/tentang-saya)**
+
+   - ❌ Removed Like button
+   - ❌ Removed Share button
+   - ❌ Removed Comment button
+   - ❌ Removed Comment input
+   - ❌ Removed Comment list
+   - ❌ Removed Add post input
+   - ✅ Kept posts display (text + images)
+   - ✅ Clean, professional appearance
+
+2. **Dashboard Profile (/dashboard/user) - Full Features**
+   - ✅ All social features available
+   - ✅ Like, Share, Comment
+   - ✅ Add, Edit, Delete posts
+   - ✅ Comment moderation via notifications
+
+#### Files Modified:
+
+- `src/sections/user/profile-post-item.jsx` - Hide interactions if isPublic
+- `src/sections/user/profile-home.jsx` - Hide post input if isPublic
+
+#### Result:
+
+**Public Profile** = Read-only blog/portfolio style
+**Dashboard Profile** = Full social media features
+
+**Documentation:**
+
+- `DISABLE_PUBLIC_INTERACTIONS.md`
+- `SUMMARY_PUBLIC_PROFILE_CHANGES.md`
 
 #### 🐛 Known Issues Fixed:
 

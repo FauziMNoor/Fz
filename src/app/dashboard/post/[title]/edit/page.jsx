@@ -1,8 +1,7 @@
 import { kebabCase } from 'es-toolkit';
 
 import { CONFIG } from 'src/global-config';
-import { getPost } from 'src/actions/blog-ssr';
-import axios, { endpoints } from 'src/lib/axios';
+import { supabase } from 'src/lib/supabase-client';
 
 import { PostEditView } from 'src/sections/blog/view';
 
@@ -10,10 +9,55 @@ import { PostEditView } from 'src/sections/blog/view';
 
 export const metadata = { title: `Post edit | Dashboard - ${CONFIG.appName}` };
 
+async function getPostBySlug(slug) {
+  const { data: post, error } = await supabase.from('posts').select('*').eq('slug', slug).single();
+
+  if (error) {
+    console.error('Error fetching post:', error);
+    return null;
+  }
+
+  if (!post) {
+    return null;
+  }
+
+  // Fetch author profile
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('id, full_name, avatar_url')
+    .eq('id', post.author_id)
+    .single();
+
+  // Attach author to post
+  post.author = profile
+    ? {
+        name: profile.full_name || 'Admin',
+        avatarUrl: profile.avatar_url || '/assets/images/avatar/avatar-25.webp',
+      }
+    : {
+        name: 'Admin',
+        avatarUrl: '/assets/images/avatar/avatar-25.webp',
+      };
+
+  return post;
+}
+
 export default async function Page({ params }) {
   const { title } = await params;
 
-  const { post } = await getPost(title);
+  // Try to get post by slug (title is actually slug in URL)
+  const post = await getPostBySlug(title);
+
+  // If post not found, show not found page
+  if (!post) {
+    return (
+      <div style={{ padding: '40px', textAlign: 'center' }}>
+        <h1>Post Not Found</h1>
+        <p>The post with slug "{title}" does not exist.</p>
+        <a href="/dashboard/post">← Back to Posts</a>
+      </div>
+    );
+  }
 
   return <PostEditView post={post} />;
 }
@@ -23,19 +67,9 @@ export default async function Page({ params }) {
 /**
  * Static Exports in Next.js
  *
- * 1. Set `isStaticExport = true` in `next.config.{mjs|ts}`.
- * 2. This allows `generateStaticParams()` to pre-render dynamic routes at build time.
- *
- * For more details, see:
- * https://nextjs.org/docs/app/building-your-application/deploying/static-exports
- *
- * NOTE: Remove all "generateStaticParams()" functions if not using static exports.
+ * NOTE: Disabled for now since we're using Supabase dynamic data
  */
-export async function generateStaticParams() {
-  const res = await axios.get(endpoints.post.list);
-  const data = CONFIG.isStaticExport ? res.data.posts : res.data.posts.slice(0, 1);
-
-  return data.map((post) => ({
-    title: kebabCase(post.title),
-  }));
-}
+// export async function generateStaticParams() {
+//   const { data } = await supabase.from('posts').select('slug').limit(10);
+//   return data?.map((post) => ({ title: post.slug })) || [];
+// }

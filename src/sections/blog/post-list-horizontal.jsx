@@ -8,18 +8,31 @@ import { PostItemHorizontal } from './post-item-horizontal';
 
 // ----------------------------------------------------------------------
 
-export function PostListHorizontal({ posts, loading }) {
+export function PostListHorizontal({ posts = [], loading }) {
   const renderLoading = () => <PostItemSkeleton variant="horizontal" />;
 
-  const renderList = () =>
-    posts.map((post) => (
+  const renderList = () => {
+    if (!posts || posts.length === 0) {
+      return (
+        <Box sx={{ py: 10, textAlign: 'center', gridColumn: '1 / -1' }}>
+          <Box sx={{ mb: 2, fontSize: 48 }}>📝</Box>
+          <Box sx={{ typography: 'h6', mb: 1 }}>Belum ada artikel</Box>
+          <Box sx={{ typography: 'body2', color: 'text.secondary' }}>
+            Klik tombol "New post" untuk membuat artikel pertama
+          </Box>
+        </Box>
+      );
+    }
+
+    return posts.map((post) => (
       <PostItemHorizontal
         key={post.id}
         post={post}
-        detailsHref={paths.dashboard.post.details(post.title)}
-        editHref={paths.dashboard.post.edit(post.title)}
+        detailsHref={paths.dashboard.post.details(post.slug || post.title)}
+        editHref={paths.dashboard.post.edit(post.slug || post.title)}
       />
     ));
+  };
 
   return (
     <>

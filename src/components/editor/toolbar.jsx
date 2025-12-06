@@ -6,9 +6,10 @@ import Divider from '@mui/material/Divider';
 
 import { editorClasses } from './classes';
 import { LinkBlock } from './components/link-block';
-import { ImageBlock } from './components/image-block';
+import { VideoBlock } from './components/video-block';
 import { ToolbarItem } from './components/toolbar-item';
 import { HeadingBlock } from './components/heading-block';
+import { ImageUploadBlock } from './components/image-upload-block';
 
 // ----------------------------------------------------------------------
 
@@ -186,10 +187,11 @@ export function Toolbar({ sx, editor, fullItem, fullScreen, onToggleFullScreen, 
         </Box>
       )}
 
-      {/* Link - Image */}
+      {/* Link - Image - Video */}
       <Box sx={{ ...boxStyles }}>
         <LinkBlock editor={editor} />
-        <ImageBlock editor={editor} />
+        <ImageUploadBlock editor={editor} />
+        <VideoBlock editor={editor} />
       </Box>
 
       {/* HardBreak - Clear */}

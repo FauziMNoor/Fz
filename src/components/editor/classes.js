@@ -14,6 +14,7 @@ export const editorClasses = {
     link: createClasses('editor__toolbar__link'),
     clear: createClasses('editor__toolbar__clear'),
     image: createClasses('editor__toolbar__image'),
+    video: createClasses('editor__toolbar__video'),
     italic: createClasses('editor__toolbar__italic'),
     strike: createClasses('editor__toolbar__strike'),
     underline: createClasses('editor__toolbar__underline'),

@@ -20,6 +20,20 @@ import { Iconify } from 'src/components/iconify';
 // ----------------------------------------------------------------------
 
 export function PostItem({ post, detailsHref, sx, ...other }) {
+  // Map database fields to component fields
+  const mappedPost = {
+    title: post.title,
+    coverUrl: post.cover_url || post.coverUrl || '/assets/images/cover/cover-1.webp',
+    createdAt: post.published_at || post.created_at || post.createdAt,
+    totalViews: post.view_count || post.totalViews || 0,
+    totalShares: post.share_count || post.totalShares || 0,
+    totalComments: post.comment_count || post.totalComments || 0,
+    author: post.author || {
+      name: 'Admin',
+      avatarUrl: '/assets/images/avatar/avatar-25.webp',
+    },
+  };
+
   return (
     <Card sx={sx} {...other}>
       <Box sx={{ position: 'relative' }}>
@@ -35,8 +49,8 @@ export function PostItem({ post, detailsHref, sx, ...other }) {
         />
 
         <Avatar
-          alt={post.author.name}
-          src={post.author.avatarUrl}
+          alt={mappedPost.author.name}
+          src={mappedPost.author.avatarUrl}
           sx={{
             left: 24,
             zIndex: 9,
@@ -45,12 +59,12 @@ export function PostItem({ post, detailsHref, sx, ...other }) {
           }}
         />
 
-        <Image alt={post.title} src={post.coverUrl} ratio="4/3" />
+        <Image alt={mappedPost.title} src={mappedPost.coverUrl} ratio="4/3" />
       </Box>
 
       <CardContent sx={{ pt: 6 }}>
         <Typography variant="caption" component="div" sx={{ mb: 1, color: 'text.disabled' }}>
-          {fDate(post.createdAt)}
+          {fDate(mappedPost.createdAt)}
         </Typography>
 
         <Link
@@ -62,13 +76,13 @@ export function PostItem({ post, detailsHref, sx, ...other }) {
             ...theme.mixins.maxLine({ line: 2, persistent: theme.typography.subtitle2 }),
           })}
         >
-          {post.title}
+          {mappedPost.title}
         </Link>
 
         <InfoBlock
-          totalViews={post.totalViews}
-          totalShares={post.totalShares}
-          totalComments={post.totalComments}
+          totalViews={mappedPost.totalViews}
+          totalShares={mappedPost.totalShares}
+          totalComments={mappedPost.totalComments}
         />
       </CardContent>
     </Card>
@@ -80,11 +94,25 @@ export function PostItem({ post, detailsHref, sx, ...other }) {
 export function PostItemLatest({ post, index, detailsHref }) {
   const postSmall = index === 1 || index === 2;
 
+  // Map database fields to component fields
+  const mappedPost = {
+    title: post.title,
+    coverUrl: post.cover_url || post.coverUrl || '/assets/images/cover/cover-1.webp',
+    createdAt: post.published_at || post.created_at || post.createdAt,
+    totalViews: post.view_count || post.totalViews || 0,
+    totalShares: post.share_count || post.totalShares || 0,
+    totalComments: post.comment_count || post.totalComments || 0,
+    author: post.author || {
+      name: 'Admin',
+      avatarUrl: '/assets/images/avatar/avatar-25.webp',
+    },
+  };
+
   return (
     <Card>
       <Avatar
-        alt={post.author.name}
-        src={post.author.avatarUrl}
+        alt={mappedPost.author.name}
+        src={mappedPost.author.avatarUrl}
         sx={{
           top: 24,
           left: 24,
@@ -94,8 +122,8 @@ export function PostItemLatest({ post, index, detailsHref }) {
       />
 
       <Image
-        alt={post.title}
-        src={post.coverUrl}
+        alt={mappedPost.title}
+        src={mappedPost.coverUrl}
         ratio="4/3"
         sx={{ height: 360 }}
         slotProps={{
@@ -117,7 +145,7 @@ export function PostItemLatest({ post, index, detailsHref }) {
         }}
       >
         <Typography variant="caption" component="div" sx={{ mb: 1, opacity: 0.64 }}>
-          {fDate(post.createdAt)}
+          {fDate(mappedPost.createdAt)}
         </Typography>
 
         <Link
@@ -132,7 +160,7 @@ export function PostItemLatest({ post, index, detailsHref }) {
             }),
           })}
         >
-          {post.title}
+          {mappedPost.title}
         </Link>
 
         <InfoBlock

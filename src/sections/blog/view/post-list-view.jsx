@@ -12,8 +12,8 @@ import Button from '@mui/material/Button';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { usePosts } from 'src/hooks/use-posts';
 import { POST_SORT_OPTIONS } from 'src/_mock';
-import { useGetPosts } from 'src/actions/blog';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Label } from 'src/components/label';
@@ -27,17 +27,17 @@ import { PostListHorizontal } from '../post-list-horizontal';
 // ----------------------------------------------------------------------
 
 export function PostListView() {
-  const { posts, postsLoading } = useGetPosts();
+  const { posts, postsLoading } = usePosts();
 
   const [sortBy, setSortBy] = useState('latest');
 
-  const { state, setState } = useSetState({ publish: 'all' });
+  const { state, setState } = useSetState({ status: 'all' });
 
   const dataFiltered = applyFilter({ inputData: posts, filters: state, sortBy });
 
-  const handleFilterPublish = useCallback(
+  const handleFilterStatus = useCallback(
     (event, newValue) => {
-      setState({ publish: newValue });
+      setState({ status: newValue });
     },
     [setState]
   );
@@ -83,7 +83,7 @@ export function PostListView() {
         />
       </Box>
 
-      <Tabs value={state.publish} onChange={handleFilterPublish} sx={{ mb: { xs: 3, md: 5 } }}>
+      <Tabs value={state.status} onChange={handleFilterStatus} sx={{ mb: { xs: 3, md: 5 } }}>
         {['all', 'published', 'draft'].map((tab) => (
           <Tab
             key={tab}
@@ -92,12 +92,12 @@ export function PostListView() {
             label={tab}
             icon={
               <Label
-                variant={((tab === 'all' || tab === state.publish) && 'filled') || 'soft'}
+                variant={((tab === 'all' || tab === state.status) && 'filled') || 'soft'}
                 color={(tab === 'published' && 'info') || 'default'}
               >
                 {tab === 'all' && posts.length}
-                {tab === 'published' && posts.filter((post) => post.publish === 'published').length}
-                {tab === 'draft' && posts.filter((post) => post.publish === 'draft').length}
+                {tab === 'published' && posts.filter((post) => post.status === 'published').length}
+                {tab === 'draft' && posts.filter((post) => post.status === 'draft').length}
               </Label>
             }
             sx={{ textTransform: 'capitalize' }}
@@ -113,22 +113,22 @@ export function PostListView() {
 // ----------------------------------------------------------------------
 
 function applyFilter({ inputData, filters, sortBy }) {
-  const { publish } = filters;
+  const { status } = filters;
 
   if (sortBy === 'latest') {
-    inputData = orderBy(inputData, ['createdAt'], ['desc']);
+    inputData = orderBy(inputData, ['created_at'], ['desc']);
   }
 
   if (sortBy === 'oldest') {
-    inputData = orderBy(inputData, ['createdAt'], ['asc']);
+    inputData = orderBy(inputData, ['created_at'], ['asc']);
   }
 
   if (sortBy === 'popular') {
-    inputData = orderBy(inputData, ['totalViews'], ['desc']);
+    inputData = orderBy(inputData, ['view_count'], ['desc']);
   }
 
-  if (publish !== 'all') {
-    inputData = inputData.filter((post) => post.publish === publish);
+  if (status !== 'all') {
+    inputData = inputData.filter((post) => post.status === status);
   }
 
   return inputData;

@@ -37,7 +37,11 @@ export function PostList({ posts, loading }) {
             lg: index === 0 ? 6 : 3,
           }}
         >
-          <PostItemLatest post={post} index={index} detailsHref={paths.post.details(post.title)} />
+          <PostItemLatest
+            post={post}
+            index={index}
+            detailsHref={paths.post.details(post.slug || post.title)}
+          />
         </Grid>
       ))}
 
@@ -52,7 +56,7 @@ export function PostList({ posts, loading }) {
             lg: 3,
           }}
         >
-          <PostItem post={post} detailsHref={paths.post.details(post.title)} />
+          <PostItem post={post} detailsHref={paths.post.details(post.slug || post.title)} />
         </Grid>
       ))}
 
@@ -66,7 +70,7 @@ export function PostList({ posts, loading }) {
             lg: 3,
           }}
         >
-          <PostItem post={post} detailsHref={paths.post.details(post.title)} />
+          <PostItem post={post} detailsHref={paths.post.details(post.slug || post.title)} />
         </Grid>
       ))}
     </Grid>

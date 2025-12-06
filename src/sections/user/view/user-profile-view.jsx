@@ -30,7 +30,7 @@ import {
   getUserPortfolios,
   deletePortfolio,
   getUserProfile,
-  getUserPosts,
+  getUserSocialPosts,
   deleteUserPost,
   updateUserPost,
 } from 'src/lib/supabase-client';
@@ -115,7 +115,7 @@ export function UserProfileView() {
 
     try {
       setPostsLoading(true);
-      const data = await getUserPosts(user.id);
+      const data = await getUserSocialPosts(user.id);
       setPosts(data || []);
     } catch (error) {
       console.error('Error fetching posts:', error);

@@ -1,19 +1,16 @@
-import Box from '@mui/material/Box';
+import { usePopover } from 'minimal-shared/hooks';
+
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
 import { fDate } from 'src/utils/format-time';
 import { fShortenNumber } from 'src/utils/format-number';
-
-import { usePopover } from 'minimal-shared/hooks';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';

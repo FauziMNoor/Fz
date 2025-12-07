@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
+import { useBoolean, usePopover } from 'minimal-shared/hooks';
 
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
@@ -9,8 +10,6 @@ import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-
-import { useBoolean, usePopover } from 'minimal-shared/hooks';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';

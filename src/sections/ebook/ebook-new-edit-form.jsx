@@ -27,9 +27,9 @@ import {
   getEbookCategories,
 } from 'src/lib/supabase-client';
 
+import { Upload } from 'src/components/upload';
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
-import { Upload } from 'src/components/upload';
 
 // ----------------------------------------------------------------------
 

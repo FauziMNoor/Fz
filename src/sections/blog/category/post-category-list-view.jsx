@@ -25,8 +25,8 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import { PostCategoryTableRow } from './post-category-table-row';
 import { PostCategoryDialog } from './post-category-dialog';
+import { PostCategoryTableRow } from './post-category-table-row';
 
 // ----------------------------------------------------------------------
 

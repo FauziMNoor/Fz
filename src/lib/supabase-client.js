@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-import { CONFIG } from 'src/global-config';
-
 import { logger } from 'src/utils/logger';
+
+import { CONFIG } from 'src/global-config';
 
 // ----------------------------------------------------------------------
 

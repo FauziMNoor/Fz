@@ -1,3 +1,5 @@
+import { usePopover } from 'minimal-shared/hooks';
+
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import MenuList from '@mui/material/MenuList';
@@ -6,8 +8,6 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-
-import { usePopover } from 'minimal-shared/hooks';
 
 import { Iconify } from 'src/components/iconify';
 import { CustomPopover } from 'src/components/custom-popover';

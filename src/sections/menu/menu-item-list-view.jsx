@@ -1,6 +1,8 @@
 'use client';
 
+import useSWR from 'swr';
 import { useState, useCallback } from 'react';
+import { useBoolean } from 'minimal-shared/hooks';
 import { useParams, useRouter } from 'next/navigation';
 
 import Box from '@mui/material/Box';
@@ -9,17 +11,15 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-import { useBoolean } from 'minimal-shared/hooks';
-
 import { paths } from 'src/routes/paths';
+
+import { getMenuById, deleteMenuItem, getAllMenuItems } from 'src/lib/supabase-client';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 
-import { MenuItemDialog } from './menu-item-dialog';
 import { MenuItemTree } from './menu-item-tree';
-import { getMenuById, getAllMenuItems, deleteMenuItem } from 'src/lib/supabase-client';
-import useSWR from 'swr';
+import { MenuItemDialog } from './menu-item-dialog';
 
 // ----------------------------------------------------------------------
 

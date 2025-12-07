@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import useSWR from 'swr';
 import { useRouter } from 'next/navigation';
+import { useState, useCallback } from 'react';
+import { useBoolean } from 'minimal-shared/hooks';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -10,9 +12,9 @@ import Button from '@mui/material/Button';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 
-import { useBoolean } from 'minimal-shared/hooks';
-
 import { paths } from 'src/routes/paths';
+
+import { getMenus, deleteMenu } from 'src/lib/supabase-client';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -26,10 +28,8 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import { MenuTableRow } from './menu-table-row';
 import { MenuDialog } from './menu-dialog';
-import { getMenus, deleteMenu } from 'src/lib/supabase-client';
-import useSWR from 'swr';
+import { MenuTableRow } from './menu-table-row';
 
 // ----------------------------------------------------------------------
 

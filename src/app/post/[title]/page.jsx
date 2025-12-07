@@ -1,5 +1,3 @@
-import { kebabCase } from 'es-toolkit';
-
 import { CONFIG } from 'src/global-config';
 import { supabase } from 'src/lib/supabase-client';
 
@@ -100,7 +98,7 @@ export default async function Page({ params }) {
     return (
       <div style={{ padding: '40px', textAlign: 'center' }}>
         <h1>Post Not Found</h1>
-        <p>The post with slug "{title}" does not exist or is not published.</p>
+        <p>The post with slug &quot;{title}&quot; does not exist or is not published.</p>
         <a href="/post">← Back to Blog</a>
       </div>
     );

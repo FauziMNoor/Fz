@@ -10,9 +10,10 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { uploadPostImage } from 'src/lib/supabase-client';
+
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
-import { uploadPostImage } from 'src/lib/supabase-client';
 
 import { editorClasses } from '../classes';
 import { ToolbarItem } from './toolbar-item';

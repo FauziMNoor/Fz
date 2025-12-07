@@ -80,9 +80,9 @@ export function generateSlug(title) {
       // Replace spaces with hyphens
       .replace(/\s+/g, '-')
       // Remove special characters
-      .replace(/[^\w\-]+/g, '')
+      .replace(/[^\w-]+/g, '')
       // Replace multiple hyphens with single hyphen
-      .replace(/\-\-+/g, '-')
+      .replace(/--+/g, '-')
       // Remove leading/trailing hyphens
       .replace(/^-+/, '')
       .replace(/-+$/, '')

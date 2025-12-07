@@ -1,8 +1,8 @@
 'use client';
 
 import { m } from 'framer-motion';
-import { useState, useCallback, useEffect } from 'react';
 import { useBoolean } from 'minimal-shared/hooks';
+import { useState, useEffect, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -13,15 +13,16 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
+import { getUserNotifications, markAllNotificationsAsRead } from 'src/lib/supabase-client';
+
 import { Label } from 'src/components/label';
+import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 import { CustomTabs } from 'src/components/custom-tabs';
 import { varTap, varHover, transitionTap } from 'src/components/animate';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { getUserNotifications, markAllNotificationsAsRead } from 'src/lib/supabase-client';
-import { toast } from 'src/components/snackbar';
 
 import { NotificationItem } from './notification-item';
 
@@ -57,11 +58,11 @@ export function NotificationsDrawer({ data = [], sx, ...other }) {
       setLoading(true);
       console.log('[NotificationsDrawer] Fetching notifications for user:', user.id);
 
-      const data = await getUserNotifications(user.id);
-      console.log('[NotificationsDrawer] Raw data from database:', data);
+      const notifData = await getUserNotifications(user.id);
+      console.log('[NotificationsDrawer] Raw data from database:', notifData);
 
       // Transform data to match expected format
-      const transformedData = data.map((notif) => ({
+      const transformedData = notifData.map((notif) => ({
         id: notif.id,
         title: notif.title,
         description: notif.message,
@@ -107,12 +108,13 @@ export function NotificationsDrawer({ data = [], sx, ...other }) {
 
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [user?.id, fetchNotifications]);
 
   const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
 
   const handleMarkAllAsRead = async () => {
-    if (!user?.id) return;
+    if (!user?.id) return undefined;
 
     try {
       await markAllNotificationsAsRead(user.id);
@@ -122,6 +124,7 @@ export function NotificationsDrawer({ data = [], sx, ...other }) {
       console.error('Error marking all as read:', error);
       toast.error('Failed to mark all as read');
     }
+    return undefined;
   };
 
   const renderHead = () => (

@@ -1,38 +1,37 @@
 import { z as zod } from 'zod';
-import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useBoolean } from 'minimal-shared/hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
 import Divider from '@mui/material/Divider';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { _tags } from 'src/_mock';
-import { useAuthContext } from 'src/auth/hooks';
 import {
+  supabase,
   createPost,
   updatePost,
-  uploadPostImage,
   getCategories,
-  supabase,
+  uploadPostImage,
 } from 'src/lib/supabase-client';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
+
+import { useAuthContext } from 'src/auth/hooks';
 
 import { PostDetailsPreview } from './post-details-preview';
 

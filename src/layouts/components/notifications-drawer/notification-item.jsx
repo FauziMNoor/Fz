@@ -10,12 +10,12 @@ import ListItemButton from '@mui/material/ListItemButton';
 
 import { fToNow } from 'src/utils/format-time';
 
+import { rejectComment, approveComment } from 'src/lib/supabase-client';
+
 import { Label } from 'src/components/label';
+import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { FileThumbnail } from 'src/components/file-thumbnail';
-
-import { approveComment, rejectComment } from 'src/lib/supabase-client';
-import { toast } from 'src/components/snackbar';
 
 import { notificationIcons } from './icons';
 

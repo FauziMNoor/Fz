@@ -6,18 +6,18 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import InputBase from '@mui/material/InputBase';
 import CardHeader from '@mui/material/CardHeader';
 import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { Iconify } from 'src/components/iconify';
+import { createUserPost, uploadPostImages } from 'src/lib/supabase-client';
+
 import { toast } from 'src/components/snackbar';
+import { Iconify } from 'src/components/iconify';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { createUserPost, uploadPostImages } from 'src/lib/supabase-client';
 
 import { ProfilePostItem } from './profile-post-item';
 

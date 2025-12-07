@@ -1,8 +1,9 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 
-import { useAuthContext } from 'src/auth/hooks';
 import { getUserPosts } from 'src/lib/supabase-client';
+
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 

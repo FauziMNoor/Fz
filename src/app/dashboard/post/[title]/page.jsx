@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 
-import { useParams, useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
+import { useParams, useRouter } from 'src/routes/hooks';
 
 import { supabase } from 'src/lib/supabase-client';
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -89,7 +89,7 @@ export default function Page() {
       <DashboardContent>
         <div style={{ padding: '40px', textAlign: 'center' }}>
           <h1>Post Not Found</h1>
-          <p>The post with slug "{params.title}" does not exist.</p>
+          <p>The post with slug &quot;{params.title}&quot; does not exist.</p>
           <button
             type="button"
             onClick={() => router.push(paths.dashboard.post.root)}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -81,9 +81,9 @@ export default function GetUserIdPage() {
                     <br />
                     2. Open: src/sections/user/view/public-profile-view.jsx
                     <br />
-                    3. Find line: const PUBLIC_USER_ID = 'YOUR_USER_ID_HERE';
+                    3. Find line: const PUBLIC_USER_ID = &apos;YOUR_USER_ID_HERE&apos;;
                     <br />
-                    4. Replace with: const PUBLIC_USER_ID = '{user.id}';
+                    4. Replace with: const PUBLIC_USER_ID = &apos;{user.id}&apos;;
                     <br />
                     5. Save and visit: /tentang-saya
                   </Typography>

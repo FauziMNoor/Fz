@@ -11,12 +11,11 @@ import Container from '@mui/material/Container';
 import { RouterLink } from 'src/routes/components';
 import { usePathname, useSearchParams } from 'src/routes/hooks';
 
-import { _userAbout, _userFollowers, _userFriends } from 'src/_mock';
+import { _userAbout, _userFriends, _userFollowers } from 'src/_mock';
+import { getUserProfile, getUserSocialPosts } from 'src/lib/supabase-client';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
-
-import { getUserProfile, getUserSocialPosts } from 'src/lib/supabase-client';
 
 import { ProfileHome } from '../profile-home';
 import { ProfileCover } from '../profile-cover';

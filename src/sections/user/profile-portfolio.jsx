@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { usePopover } from 'minimal-shared/hooks';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -9,8 +10,6 @@ import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
-
-import { usePopover } from 'minimal-shared/hooks';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';

@@ -11,17 +11,17 @@ import Container from '@mui/material/Container';
 import { RouterLink } from 'src/routes/components';
 import { usePathname, useSearchParams } from 'src/routes/hooks';
 
-import { _userAbout, _userFeeds, _userFriends, _userGallery, _userFollowers } from 'src/_mock';
+import { _userAbout, _userFeeds, _userFriends, _userFollowers } from 'src/_mock';
 
 import { Iconify } from 'src/components/iconify';
-
-import { useMockedUser } from 'src/auth/hooks';
 
 import { ProfileHome } from 'src/sections/user/profile-home';
 import { ProfileCover } from 'src/sections/user/profile-cover';
 import { ProfileFriends } from 'src/sections/user/profile-friends';
 import { ProfilePortfolio } from 'src/sections/user/profile-portfolio';
 import { ProfileFollowers } from 'src/sections/user/profile-followers';
+
+import { useMockedUser } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 

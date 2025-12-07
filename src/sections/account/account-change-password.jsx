@@ -9,11 +9,11 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
+import { changePassword } from 'src/lib/supabase-client';
+
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
-
-import { changePassword } from 'src/lib/supabase-client';
 
 // ----------------------------------------------------------------------
 

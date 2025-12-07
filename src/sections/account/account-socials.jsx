@@ -4,12 +4,13 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import InputAdornment from '@mui/material/InputAdornment';
 
+import { updateSocialLinks } from 'src/lib/supabase-client';
+
 import { toast } from 'src/components/snackbar';
-import { SocialIcon } from 'src/components/social-icon';
 import { Form, Field } from 'src/components/hook-form';
+import { SocialIcon } from 'src/components/social-icon';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { updateSocialLinks } from 'src/lib/supabase-client';
 
 // ----------------------------------------------------------------------
 

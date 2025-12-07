@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 
 import Typography from '@mui/material/Typography';
 
-import { useAuthContext } from 'src/auth/hooks';
 import { getUserProfile } from 'src/lib/supabase-client';
+
+import { useAuthContext } from 'src/auth/hooks';
 
 import { AccountNotifications } from '../account-notifications';
 

@@ -14,26 +14,25 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
-import { usePathname, useSearchParams } from 'src/routes/hooks';
+import { useRouter , usePathname, useSearchParams } from 'src/routes/hooks';
 
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _userAbout, _userFeeds, _userFriends, _userGallery, _userFollowers } from 'src/_mock';
+import { _userAbout, _userFriends, _userFollowers } from 'src/_mock';
+import {
+  getUserProfile,
+  deleteUserPost,
+  updateUserPost,
+  deletePortfolio,
+  getUserPortfolios,
+  getUserSocialPosts,
+} from 'src/lib/supabase-client';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { useAuthContext } from 'src/auth/hooks';
-import {
-  getUserPortfolios,
-  deletePortfolio,
-  getUserProfile,
-  getUserSocialPosts,
-  deleteUserPost,
-  updateUserPost,
-} from 'src/lib/supabase-client';
 
 import { ProfileHome } from '../profile-home';
 import { ProfileCover } from '../profile-cover';

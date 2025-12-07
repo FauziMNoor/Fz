@@ -11,7 +11,6 @@ import AvatarGroup from '@mui/material/AvatarGroup';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Avatar, { avatarClasses } from '@mui/material/Avatar';
 
-import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { _mock } from 'src/_mock';
@@ -176,7 +175,7 @@ export function HomeHero({ sx, ...other }) {
                     fontWeight: theme.typography.fontWeightMedium,
                   }),
                 ]}
-              ></Box>
+               />
             </span>
           </Button>
         </Stack>

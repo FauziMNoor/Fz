@@ -9,15 +9,15 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { DashboardContent } from 'src/layouts/dashboard';
+import { deletePortfolio, getUserPortfolios } from 'src/lib/supabase-client';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { useAuthContext } from 'src/auth/hooks';
-import { getUserPortfolios, deletePortfolio } from 'src/lib/supabase-client';
-
 import { ProfilePortfolio } from 'src/sections/user/profile-portfolio';
+
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 

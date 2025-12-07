@@ -6,12 +6,11 @@ import Box from '@mui/material/Box';
 
 import { paths } from 'src/routes/paths';
 
+import { supabase } from 'src/lib/supabase-client';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-
-import { supabase } from 'src/lib/supabase-client';
 
 import { PortfolioNewEditForm } from '../portfolio-new-edit-form';
 

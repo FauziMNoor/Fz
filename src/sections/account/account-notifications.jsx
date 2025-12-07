@@ -8,11 +8,12 @@ import Button from '@mui/material/Button';
 import ListItemText from '@mui/material/ListItemText';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
+import { updateNotificationPreferences } from 'src/lib/supabase-client';
+
 import { toast } from 'src/components/snackbar';
 import { Form } from 'src/components/hook-form';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { updateNotificationPreferences } from 'src/lib/supabase-client';
 
 // ----------------------------------------------------------------------
 

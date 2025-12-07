@@ -18,7 +18,7 @@ export function PostListHorizontal({ posts = [], loading }) {
           <Box sx={{ mb: 2, fontSize: 48 }}>📝</Box>
           <Box sx={{ typography: 'h6', mb: 1 }}>Belum ada artikel</Box>
           <Box sx={{ typography: 'body2', color: 'text.secondary' }}>
-            Klik tombol "New post" untuk membuat artikel pertama
+            Klik tombol &quot;New post&quot; untuk membuat artikel pertama
           </Box>
         </Box>
       );

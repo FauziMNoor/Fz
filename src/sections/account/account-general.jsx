@@ -1,6 +1,6 @@
 import { z as zod } from 'zod';
-import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
@@ -13,11 +13,12 @@ import Typography from '@mui/material/Typography';
 
 import { fData } from 'src/utils/format-number';
 
+import { uploadAvatar, getUserProfile, updateUserProfile } from 'src/lib/supabase-client';
+
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { getUserProfile, updateUserProfile, uploadAvatar } from 'src/lib/supabase-client';
 
 // ----------------------------------------------------------------------
 

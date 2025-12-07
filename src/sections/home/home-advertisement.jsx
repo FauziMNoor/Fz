@@ -109,7 +109,7 @@ const renderDescription = () => (
         typography: { xs: 'body2', md: 'body1' },
       }}
     >
-      "...tapi mencari sesuatu yang tersembunyi antara kita dan Rabb kita"
+      &quot;...tapi mencari sesuatu yang tersembunyi antara kita dan Rabb kita&quot;
     </Box>
 
     <Box

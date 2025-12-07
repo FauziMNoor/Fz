@@ -22,16 +22,17 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { toast } from 'src/components/snackbar';
-import { Form, Field } from 'src/components/hook-form';
-import { Upload } from 'src/components/upload';
-
-import { useAuthContext } from 'src/auth/hooks';
 import {
   createPortfolio,
   updatePortfolio,
   uploadPortfolioCoverImage,
 } from 'src/lib/supabase-client';
+
+import { Upload } from 'src/components/upload';
+import { toast } from 'src/components/snackbar';
+import { Form, Field } from 'src/components/hook-form';
+
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 

@@ -1,72 +1,96 @@
+import { getPublicMenu } from 'src/lib/supabase-client';
 import { paths } from 'src/routes/paths';
-
-import { CONFIG } from 'src/global-config';
-
 import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export const navData = [
-  { title: 'Home', path: '/', icon: <Iconify width={22} icon="solar:home-angle-bold-duotone" /> },
-  {
-    title: 'Blog',
-    path: paths.post.root,
-    icon: <Iconify width={22} icon="solar:document-text-bold-duotone" />,
-  },
-  {
-    title: 'E-Book',
-    path: paths.ebook.root,
-    icon: <Iconify width={22} icon="solar:book-bold-duotone" />,
-  },
-  {
-    title: 'Tentang Saya',
-    path: paths.about,
-    icon: <Iconify width={22} icon="solar:user-bold-duotone" />,
-  },
-  {
-    title: 'Pages',
-    path: '/pages',
-    icon: <Iconify width={22} icon="solar:file-bold-duotone" />,
-    children: [
-      {
-        subheader: 'Other',
-        items: [
-          { title: 'Tentang Saya', path: paths.about },
-          { title: 'Maintenance', path: paths.maintenance },
-          { title: 'Coming soon', path: paths.comingSoon },
-        ],
-      },
-      {
-        subheader: 'Concepts',
-        items: [
-          { title: 'Posts', path: paths.post.root },
-          { title: 'Post', path: paths.post.demo.details },
-        ],
-      },
-      {
-        subheader: 'Auth Demo',
-        items: [
-          { title: 'Sign in', path: paths.authDemo.split.signIn },
-          { title: 'Sign up', path: paths.authDemo.split.signUp },
-          { title: 'Reset password', path: paths.authDemo.split.resetPassword },
-          { title: 'Update password', path: paths.authDemo.split.updatePassword },
-          { title: 'Verify', path: paths.authDemo.split.verify },
-          { title: 'Sign in (centered)', path: paths.authDemo.centered.signIn },
-          { title: 'Sign up (centered)', path: paths.authDemo.centered.signUp },
-          { title: 'Reset password (centered)', path: paths.authDemo.centered.resetPassword },
-          { title: 'Update password (centered)', path: paths.authDemo.centered.updatePassword },
-          { title: 'Verify (centered)', path: paths.authDemo.centered.verify },
-        ],
-      },
-      {
-        subheader: 'Error',
-        items: [
-          { title: 'Page 403', path: paths.page403 },
-          { title: 'Page 404', path: paths.page404 },
-          { title: 'Page 500', path: paths.page500 },
-        ],
-      },
-      { subheader: 'Dashboard', items: [{ title: 'Dashboard', path: CONFIG.auth.redirectPath }] },
-    ],
-  },
-];
+/**
+ * Get dynamic navigation data from database
+ * Falls back to static menu if database fails
+ */
+export async function getNavData() {
+  try {
+    const menu = await getPublicMenu('header');
+
+    if (!menu || !menu.items || menu.items.length === 0) {
+      console.warn('No menu items found, using fallback');
+      return getFallbackNavData();
+    }
+
+    // Transform menu items to nav format
+    return menu.items.map((item) => ({
+      title: item.title,
+      path: item.url,
+      icon: item.icon ? <Iconify width={22} icon={item.icon} /> : null,
+      children:
+        item.children && item.children.length > 0
+          ? [
+              {
+                subheader: item.title,
+                items: item.children.map((child) => ({
+                  title: child.title,
+                  path: child.url,
+                })),
+              },
+            ]
+          : undefined,
+    }));
+  } catch (error) {
+    console.error('Error loading menu from database:', error);
+    return getFallbackNavData();
+  }
+}
+
+/**
+ * Fallback static navigation (used if database fails)
+ */
+function getFallbackNavData() {
+  return [
+    {
+      title: 'Home',
+      path: '/',
+      icon: <Iconify width={22} icon="solar:home-angle-bold-duotone" />,
+    },
+    {
+      title: 'Blog',
+      path: paths.post.root,
+      icon: <Iconify width={22} icon="solar:document-text-bold-duotone" />,
+    },
+    {
+      title: 'E-Book',
+      path: paths.ebook.root,
+      icon: <Iconify width={22} icon="solar:book-bold-duotone" />,
+    },
+    {
+      title: 'Tentang Saya',
+      path: paths.about,
+      icon: <Iconify width={22} icon="solar:user-bold-duotone" />,
+    },
+  ];
+}
+
+/**
+ * Get static fallback navigation (for backward compatibility)
+ * Note: This is static and won't reflect database changes
+ * Use getNavData() instead for dynamic menu
+ */
+export async function getStaticNavData() {
+  return [
+    { title: 'Home', path: '/', icon: <Iconify width={22} icon="solar:home-angle-bold-duotone" /> },
+    {
+      title: 'Blog',
+      path: paths.post.root,
+      icon: <Iconify width={22} icon="solar:document-text-bold-duotone" />,
+    },
+    {
+      title: 'E-Book',
+      path: paths.ebook.root,
+      icon: <Iconify width={22} icon="solar:book-bold-duotone" />,
+    },
+    {
+      title: 'Tentang Saya',
+      path: paths.about,
+      icon: <Iconify width={22} icon="solar:user-bold-duotone" />,
+    },
+  ];
+}

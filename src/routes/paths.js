@@ -116,5 +116,10 @@ export const paths = {
       edit: (id) => `${ROOTS.DASHBOARD}/ebook/${id}/edit`,
       categories: `${ROOTS.DASHBOARD}/ebook/categories`,
     },
+    // Menu builder
+    menu: {
+      root: `${ROOTS.DASHBOARD}/menu`,
+      items: (menuId) => `${ROOTS.DASHBOARD}/menu/${menuId}`,
+    },
   },
 };

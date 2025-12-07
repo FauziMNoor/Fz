@@ -1628,3 +1628,279 @@ export async function deleteEbookCover(coverUrl) {
     console.error('deleteEbookCover error:', err);
   }
 }
+
+// ============================================
+// MENU BUILDER
+// ============================================
+
+/**
+ * Get all menus
+ */
+export async function getMenus() {
+  const { data, error } = await supabase
+    .from('menus')
+    .select('*')
+    .order('location', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching menus:', error);
+    throw error;
+  }
+  return data;
+}
+
+/**
+ * Get menu by slug
+ */
+export async function getMenuBySlug(slug) {
+  const { data, error } = await supabase.from('menus').select('*').eq('slug', slug).single();
+
+  if (error) {
+    console.error('Error fetching menu:', error);
+    throw error;
+  }
+  return data;
+}
+
+/**
+ * Get menu by ID
+ */
+export async function getMenuById(id) {
+  const { data, error } = await supabase.from('menus').select('*').eq('id', id).single();
+
+  if (error) {
+    console.error('Error fetching menu:', error);
+    throw error;
+  }
+  return data;
+}
+
+/**
+ * Get menu by location
+ */
+export async function getMenuByLocation(location) {
+  const { data, error } = await supabase
+    .from('menus')
+    .select('*')
+    .eq('location', location)
+    .eq('is_active', true)
+    .single();
+
+  if (error) {
+    console.error('Error fetching menu by location:', error);
+    throw error;
+  }
+  return data;
+}
+
+/**
+ * Create new menu
+ */
+export async function createMenu(menuData) {
+  const { data, error } = await supabase.from('menus').insert([menuData]).select().single();
+
+  if (error) {
+    console.error('Error creating menu:', error);
+    throw error;
+  }
+  return data;
+}
+
+/**
+ * Update menu
+ */
+export async function updateMenu(menuId, menuData) {
+  const { data, error } = await supabase
+    .from('menus')
+    .update(menuData)
+    .eq('id', menuId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating menu:', error);
+    throw error;
+  }
+  return data;
+}
+
+/**
+ * Delete menu
+ */
+export async function deleteMenu(menuId) {
+  const { error } = await supabase.from('menus').delete().eq('id', menuId);
+
+  if (error) {
+    console.error('Error deleting menu:', error);
+    throw error;
+  }
+  return true;
+}
+
+/**
+ * Get menu items by menu ID (hierarchical)
+ */
+export async function getMenuItems(menuId) {
+  const { data, error } = await supabase
+    .from('menu_items')
+    .select('*')
+    .eq('menu_id', menuId)
+    .order('display_order', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching menu items:', error);
+    throw error;
+  }
+
+  // Build hierarchical structure
+  return buildMenuTree(data);
+}
+
+/**
+ * Get all menu items (flat)
+ */
+export async function getAllMenuItems(menuId) {
+  const { data, error } = await supabase
+    .from('menu_items')
+    .select('*')
+    .eq('menu_id', menuId)
+    .order('display_order', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching menu items:', error);
+    throw error;
+  }
+  return data;
+}
+
+/**
+ * Get menu item by ID
+ */
+export async function getMenuItemById(itemId) {
+  const { data, error } = await supabase.from('menu_items').select('*').eq('id', itemId).single();
+
+  if (error) {
+    console.error('Error fetching menu item:', error);
+    throw error;
+  }
+  return data;
+}
+
+/**
+ * Create menu item
+ */
+export async function createMenuItem(itemData) {
+  const { data, error } = await supabase.from('menu_items').insert([itemData]).select().single();
+
+  if (error) {
+    console.error('Error creating menu item:', error);
+    throw error;
+  }
+  return data;
+}
+
+/**
+ * Update menu item
+ */
+export async function updateMenuItem(itemId, itemData) {
+  const { data, error } = await supabase
+    .from('menu_items')
+    .update(itemData)
+    .eq('id', itemId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating menu item:', error);
+    throw error;
+  }
+  return data;
+}
+
+/**
+ * Delete menu item
+ */
+export async function deleteMenuItem(itemId) {
+  const { error } = await supabase.from('menu_items').delete().eq('id', itemId);
+
+  if (error) {
+    console.error('Error deleting menu item:', error);
+    throw error;
+  }
+  return true;
+}
+
+/**
+ * Reorder menu items
+ */
+export async function reorderMenuItems(items) {
+  const updates = items.map((item, index) => ({
+    id: item.id,
+    display_order: index + 1,
+  }));
+
+  const { error } = await supabase.from('menu_items').upsert(updates);
+
+  if (error) {
+    console.error('Error reordering menu items:', error);
+    throw error;
+  }
+  return true;
+}
+
+/**
+ * Build hierarchical menu tree from flat array
+ */
+function buildMenuTree(items) {
+  const itemMap = {};
+  const tree = [];
+
+  // Create a map of items by ID
+  items.forEach((item) => {
+    itemMap[item.id] = { ...item, children: [] };
+  });
+
+  // Build the tree
+  items.forEach((item) => {
+    if (item.parent_id === null) {
+      tree.push(itemMap[item.id]);
+    } else if (itemMap[item.parent_id]) {
+      itemMap[item.parent_id].children.push(itemMap[item.id]);
+    }
+  });
+
+  return tree;
+}
+
+/**
+ * Get active menu with items for public display
+ */
+export async function getPublicMenu(location) {
+  try {
+    // Get menu by location
+    const menu = await getMenuByLocation(location);
+
+    if (!menu) return null;
+
+    // Get menu items
+    const { data: items, error } = await supabase
+      .from('menu_items')
+      .select('*')
+      .eq('menu_id', menu.id)
+      .eq('is_active', true)
+      .order('display_order', { ascending: true });
+
+    if (error) throw error;
+
+    // Build tree
+    const tree = buildMenuTree(items);
+
+    return {
+      ...menu,
+      items: tree,
+    };
+  } catch (error) {
+    console.error('Error fetching public menu:', error);
+    return null;
+  }
+}

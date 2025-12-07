@@ -16,6 +16,7 @@ const ICONS = {
   dashboard: icon('ic-dashboard'),
   lock: icon('ic-lock'),
   portfolio: icon('ic-folder'), // Using folder icon for portfolio
+  menu: icon('ic-folder'), // Using folder icon for menu
 };
 
 // ----------------------------------------------------------------------
@@ -82,6 +83,21 @@ export const navData = [
         path: paths.dashboard.fileManager,
         icon: ICONS.folder,
         caption: 'Manage images & files',
+      },
+    ],
+  },
+  /**
+   * Site Settings
+   */
+  {
+    subheader: 'Settings',
+    items: [
+      {
+        title: 'Menu Builder',
+        path: paths.dashboard.menu.root,
+        icon: ICONS.menu,
+        info: <Label color="warning">New</Label>,
+        caption: 'Manage navigation menus',
       },
     ],
   },

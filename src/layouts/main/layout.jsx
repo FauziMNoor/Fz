@@ -10,6 +10,7 @@ import { paths } from 'src/routes/paths';
 import { usePathname } from 'src/routes/hooks';
 
 import { Logo } from 'src/components/logo';
+import { Iconify } from 'src/components/iconify';
 
 import { NavMobile } from './nav/mobile';
 import { NavDesktop } from './nav/desktop';
@@ -18,11 +19,18 @@ import { MainSection } from '../core/main-section';
 import { MenuButton } from '../components/menu-button';
 import { LayoutSection } from '../core/layout-section';
 import { HeaderSection } from '../core/header-section';
-import { navData as mainNavData } from '../nav-config-main';
 import { SignInButton } from '../components/sign-in-button';
 import { SettingsButton } from '../components/settings-button';
 
 // ----------------------------------------------------------------------
+
+// Default fallback nav data (if not provided via slotProps)
+const defaultNavData = [
+  { title: 'Home', path: '/' },
+  { title: 'Blog', path: '/post' },
+  { title: 'E-Book', path: '/ebook' },
+  { title: 'Tentang Saya', path: '/tentang-saya' },
+];
 
 export function MainLayout({ sx, cssVars, children, slotProps, layoutQuery = 'md' }) {
   const pathname = usePathname();
@@ -31,7 +39,7 @@ export function MainLayout({ sx, cssVars, children, slotProps, layoutQuery = 'md
 
   const isHomePage = pathname === '/';
 
-  const navData = slotProps?.nav?.data ?? mainNavData;
+  const navData = slotProps?.nav?.data ?? defaultNavData;
 
   const renderHeader = () => {
     const headerSlots = {
@@ -75,18 +83,19 @@ export function MainLayout({ sx, cssVars, children, slotProps, layoutQuery = 'md
             {/** @slot Sign in button */}
             <SignInButton />
 
-            {/** @slot Purchase button */}
+            {/** @slot Contact button */}
             <Button
               variant="contained"
               rel="noopener"
               target="_blank"
-              href={paths.minimalStore}
+              href="https://wa.me/6289623039600"
+              startIcon={<Iconify icon="logos:whatsapp-icon" width={20} />}
               sx={(theme) => ({
                 display: 'none',
                 [theme.breakpoints.up(layoutQuery)]: { display: 'inline-flex' },
               })}
             >
-              Purchase
+              Hubungi Saya
             </Button>
           </Box>
         </>

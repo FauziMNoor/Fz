@@ -4,7 +4,7 @@
 
 Ini adalah **Personal Blog & Portfolio Website** untuk **Fauzi M. Noor** (Kepala Sekolah & Pendidik Agile). Aplikasi dibangun menggunakan template **Minimal UI v7.0.0** dengan **Next.js 15** dan **Material UI v7**.
 
-**Status Terkini:** ✅ Blog System Fully Functional - CRUD, Categories, Draft/Published, Image Upload, Video Embed!
+**Status Terkini:** ✅ Blog System + E-Book Library Fully Functional! 📚
 
 ---
 
@@ -602,6 +602,49 @@ _Dokumentasi ini dibuat sebagai panduan untuk memahami dan mengembangkan aplikas
 ---
 
 ## 📝 Changelog
+
+### Version 2.1.0 (2025-12-07) 📚 E-BOOK SYSTEM
+
+**✅ E-Book Library System - Database Complete!**
+
+Sistem e-book library untuk menampilkan dan mengelola koleksi e-book dengan integrasi Google Drive.
+
+**🎯 Features:**
+
+- ✅ Database schema lengkap (ebooks, ebook_categories, ebook_downloads)
+- ✅ 6 default categories (Tauhid, Fiqh, Sirah, Pendidikan, Kepemimpinan, Pengembangan Diri)
+- ✅ Google Drive integration untuk file hosting
+- ✅ Support karya sendiri vs koleksi (is_own_work flag)
+- ✅ Download tracking & statistics
+- ✅ Helper functions di supabase-client.js
+- ✅ Routes untuk public & dashboard pages
+- ✅ Storage bucket untuk cover images
+
+**📚 Documentation:**
+
+- `EBOOK_SYSTEM_GUIDE.md` - Full implementation guide
+- `RUN_EBOOK_MIGRATION.md` - Quick start guide
+- `supabase_migrations/create_ebooks_table.sql` - Database migration
+
+**Files Created:**
+
+- `supabase_migrations/create_ebooks_table.sql`
+- `EBOOK_SYSTEM_GUIDE.md`
+- `RUN_EBOOK_MIGRATION.md`
+
+**Files Modified:**
+
+- `src/lib/supabase-client.js` (added 20+ ebook functions)
+- `src/routes/paths.js` (added ebook routes)
+
+**Next Steps:**
+
+- [ ] Create UI components (card, list, detail, form)
+- [ ] Create public pages (/ebook, /ebook/[slug])
+- [ ] Create dashboard pages (/dashboard/ebook)
+- [ ] Update navigation menu
+
+---
 
 ### Version 2.0.0 (2025-12-07) 🎉 MAJOR RELEASE
 

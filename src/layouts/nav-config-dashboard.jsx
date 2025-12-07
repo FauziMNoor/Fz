@@ -53,6 +53,7 @@ export const navData = [
         children: [
           { title: 'All Posts', path: paths.dashboard.post.root },
           { title: 'Create New', path: paths.dashboard.post.new },
+          { title: 'Categories', path: paths.dashboard.post.categories },
         ],
       },
       {
@@ -63,6 +64,17 @@ export const navData = [
         children: [
           { title: 'All Portfolio', path: paths.dashboard.portfolio.root },
           { title: 'Create New', path: paths.dashboard.portfolio.new },
+        ],
+      },
+      {
+        title: 'E-Books',
+        path: paths.dashboard.ebook.root,
+        icon: icon('ic-blog'),
+        info: <Label color="success">New</Label>,
+        children: [
+          { title: 'All E-Books', path: paths.dashboard.ebook.root },
+          { title: 'Create New', path: paths.dashboard.ebook.new },
+          { title: 'Categories', path: paths.dashboard.ebook.categories },
         ],
       },
       {

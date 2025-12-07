@@ -34,6 +34,10 @@ export const paths = {
     details: (title) => `/post/${kebabCase(title)}`,
     demo: { details: `/post/${kebabCase(MOCK_TITLE)}` },
   },
+  ebook: {
+    root: `/ebook`,
+    details: (slug) => `/ebook/${kebabCase(slug)}`,
+  },
   // AUTH
   auth: {
     amplify: {
@@ -93,6 +97,7 @@ export const paths = {
       new: `${ROOTS.DASHBOARD}/post/new`,
       details: (title) => `${ROOTS.DASHBOARD}/post/${kebabCase(title)}`,
       edit: (title) => `${ROOTS.DASHBOARD}/post/${kebabCase(title)}/edit`,
+      categories: `${ROOTS.DASHBOARD}/post/categories`,
       demo: {
         details: `${ROOTS.DASHBOARD}/post/${kebabCase(MOCK_TITLE)}`,
         edit: `${ROOTS.DASHBOARD}/post/${kebabCase(MOCK_TITLE)}/edit`,
@@ -103,6 +108,13 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/portfolio`,
       new: `${ROOTS.DASHBOARD}/portfolio/new`,
       edit: (id) => `${ROOTS.DASHBOARD}/portfolio/${id}/edit`,
+    },
+    // E-book management
+    ebook: {
+      root: `${ROOTS.DASHBOARD}/ebook`,
+      new: `${ROOTS.DASHBOARD}/ebook/new`,
+      edit: (id) => `${ROOTS.DASHBOARD}/ebook/${id}/edit`,
+      categories: `${ROOTS.DASHBOARD}/ebook/categories`,
     },
   },
 };

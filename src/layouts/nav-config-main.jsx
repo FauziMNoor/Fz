@@ -9,6 +9,21 @@ import { Iconify } from 'src/components/iconify';
 export const navData = [
   { title: 'Home', path: '/', icon: <Iconify width={22} icon="solar:home-angle-bold-duotone" /> },
   {
+    title: 'Blog',
+    path: paths.post.root,
+    icon: <Iconify width={22} icon="solar:document-text-bold-duotone" />,
+  },
+  {
+    title: 'E-Book',
+    path: paths.ebook.root,
+    icon: <Iconify width={22} icon="solar:book-bold-duotone" />,
+  },
+  {
+    title: 'Tentang Saya',
+    path: paths.about,
+    icon: <Iconify width={22} icon="solar:user-bold-duotone" />,
+  },
+  {
     title: 'Pages',
     path: '/pages',
     icon: <Iconify width={22} icon="solar:file-bold-duotone" />,

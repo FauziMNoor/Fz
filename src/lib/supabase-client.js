@@ -1303,3 +1303,328 @@ export async function deleteNotification(notificationId) {
 
   return true;
 }
+
+// ============================================
+// E-BOOKS
+// ============================================
+
+/**
+ * Get all published e-books
+ */
+export async function getPublishedEbooks() {
+  const { data, error } = await supabase
+    .from('ebooks')
+    .select('*')
+    .eq('status', 'published')
+    .order('published_at', { ascending: false });
+
+  if (error) {
+    console.error('getPublishedEbooks error:', error);
+    throw new Error(error.message || 'Failed to fetch e-books');
+  }
+
+  return data;
+}
+
+/**
+ * Get e-book by slug
+ */
+export async function getEbookBySlug(slug) {
+  const { data, error } = await supabase.from('ebooks').select('*').eq('slug', slug).single();
+
+  if (error) {
+    console.error('getEbookBySlug error:', error);
+    throw new Error(error.message || 'Failed to fetch e-book');
+  }
+
+  return data;
+}
+
+/**
+ * Get all e-books (for dashboard)
+ */
+export async function getAllEbooks() {
+  const { data, error } = await supabase
+    .from('ebooks')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('getAllEbooks error:', error);
+    throw new Error(error.message || 'Failed to fetch e-books');
+  }
+
+  return data;
+}
+
+/**
+ * Get e-books by category
+ */
+export async function getEbooksByCategory(category) {
+  const { data, error } = await supabase
+    .from('ebooks')
+    .select('*')
+    .eq('category', category)
+    .eq('status', 'published')
+    .order('published_at', { ascending: false });
+
+  if (error) {
+    console.error('getEbooksByCategory error:', error);
+    throw new Error(error.message || 'Failed to fetch e-books');
+  }
+
+  return data;
+}
+
+/**
+ * Get own work e-books (written by Fauzi M. Noor)
+ */
+export async function getOwnWorkEbooks() {
+  const { data, error } = await supabase
+    .from('ebooks')
+    .select('*')
+    .eq('is_own_work', true)
+    .eq('status', 'published')
+    .order('published_at', { ascending: false });
+
+  if (error) {
+    console.error('getOwnWorkEbooks error:', error);
+    throw new Error(error.message || 'Failed to fetch own work e-books');
+  }
+
+  return data;
+}
+
+/**
+ * Get featured e-books
+ */
+export async function getFeaturedEbooks() {
+  const { data, error } = await supabase
+    .from('ebooks')
+    .select('*')
+    .eq('is_featured', true)
+    .eq('status', 'published')
+    .order('display_order', { ascending: true })
+    .limit(6);
+
+  if (error) {
+    console.error('getFeaturedEbooks error:', error);
+    throw new Error(error.message || 'Failed to fetch featured e-books');
+  }
+
+  return data;
+}
+
+/**
+ * Create e-book
+ */
+export async function createEbook(ebookData) {
+  console.log('createEbook called with:', ebookData);
+
+  // Generate slug from title if not provided
+  if (!ebookData.slug && ebookData.title) {
+    ebookData.slug = generateSlug(ebookData.title);
+  }
+
+  const { data, error } = await supabase.from('ebooks').insert([ebookData]).select().single();
+
+  if (error) {
+    console.error('createEbook error:', error);
+    throw new Error(error.message || 'Failed to create e-book');
+  }
+
+  console.log('createEbook success:', data);
+  return data;
+}
+
+/**
+ * Update e-book
+ */
+export async function updateEbook(id, ebookData) {
+  console.log('updateEbook called with:', { id, ebookData });
+
+  // Update slug if title changed
+  if (ebookData.title && !ebookData.slug) {
+    ebookData.slug = generateSlug(ebookData.title);
+  }
+
+  const { data, error } = await supabase
+    .from('ebooks')
+    .update(ebookData)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('updateEbook error:', error);
+    throw new Error(error.message || 'Failed to update e-book');
+  }
+
+  console.log('updateEbook success:', data);
+  return data;
+}
+
+/**
+ * Delete e-book
+ */
+export async function deleteEbook(id) {
+  const { error } = await supabase.from('ebooks').delete().eq('id', id);
+
+  if (error) {
+    console.error('deleteEbook error:', error);
+    throw new Error(error.message || 'Failed to delete e-book');
+  }
+
+  return true;
+}
+
+/**
+ * Increment e-book view count
+ */
+export async function incrementEbookViewCount(id) {
+  const { error } = await supabase.rpc('increment_ebook_view_count', { ebook_id: id });
+
+  if (error) {
+    console.error('incrementEbookViewCount error:', error);
+    // Don't throw error, just log it
+  }
+}
+
+/**
+ * Track e-book download
+ */
+export async function trackEbookDownload(
+  ebookId,
+  userId = null,
+  ipAddress = null,
+  userAgent = null
+) {
+  console.log('trackEbookDownload called with:', { ebookId, userId });
+
+  const downloadData = {
+    ebook_id: ebookId,
+    user_id: userId,
+    ip_address: ipAddress,
+    user_agent: userAgent,
+  };
+
+  const { data, error } = await supabase
+    .from('ebook_downloads')
+    .insert([downloadData])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('trackEbookDownload error:', error);
+    // Don't throw error, just log it (download tracking is not critical)
+  }
+
+  return data;
+}
+
+/**
+ * Get e-book categories
+ */
+export async function getEbookCategories() {
+  const { data, error } = await supabase
+    .from('ebook_categories')
+    .select('*')
+    .order('display_order', { ascending: true });
+
+  if (error) {
+    console.error('getEbookCategories error:', error);
+    throw new Error(error.message || 'Failed to fetch e-book categories');
+  }
+
+  return data;
+}
+
+/**
+ * Get e-book statistics
+ */
+export async function getEbookStats() {
+  // Get total e-books
+  const { count: totalEbooks, error: ebooksError } = await supabase
+    .from('ebooks')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'published');
+
+  // Get total downloads
+  const { count: totalDownloads, error: downloadsError } = await supabase
+    .from('ebook_downloads')
+    .select('*', { count: 'exact', head: true });
+
+  // Get own work count
+  const { count: ownWorkCount, error: ownWorkError } = await supabase
+    .from('ebooks')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_own_work', true)
+    .eq('status', 'published');
+
+  if (ebooksError || downloadsError || ownWorkError) {
+    console.error('getEbookStats error:', { ebooksError, downloadsError, ownWorkError });
+    throw new Error('Failed to fetch e-book statistics');
+  }
+
+  return {
+    totalEbooks: totalEbooks || 0,
+    totalDownloads: totalDownloads || 0,
+    ownWorkCount: ownWorkCount || 0,
+  };
+}
+
+/**
+ * Upload e-book cover image to Supabase Storage
+ * @param {string} ebookId - E-book ID (or temp ID)
+ * @param {File} file - File object to upload
+ * @returns {Promise<string>} - Public URL of uploaded cover
+ */
+export async function uploadEbookCover(ebookId, file) {
+  console.log('uploadEbookCover called with:', { ebookId, fileName: file.name });
+
+  const fileExt = file.name.split('.').pop();
+  const timestamp = Date.now();
+  const fileName = `${ebookId}_cover_${timestamp}.${fileExt}`;
+
+  // Upload file to storage
+  const { data, error } = await supabase.storage.from('ebook-covers').upload(fileName, file, {
+    cacheControl: '3600',
+    upsert: true, // Replace if exists
+  });
+
+  if (error) {
+    console.error('uploadEbookCover error:', error);
+    throw new Error(error.message || 'Failed to upload e-book cover');
+  }
+
+  console.log('Upload successful:', data);
+
+  // Get public URL
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from('ebook-covers').getPublicUrl(fileName);
+
+  console.log('Public URL:', publicUrl);
+  return publicUrl;
+}
+
+/**
+ * Delete e-book cover from Supabase Storage
+ * @param {string} coverUrl - Cover image URL
+ */
+export async function deleteEbookCover(coverUrl) {
+  if (!coverUrl) return;
+
+  try {
+    // Extract filename from URL
+    const fileName = coverUrl.split('/').pop();
+
+    const { error } = await supabase.storage.from('ebook-covers').remove([fileName]);
+
+    if (error) {
+      console.error('deleteEbookCover error:', error);
+    }
+  } catch (err) {
+    console.error('deleteEbookCover error:', err);
+  }
+}

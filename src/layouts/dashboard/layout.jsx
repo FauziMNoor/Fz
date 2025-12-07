@@ -9,7 +9,6 @@ import { useTheme } from '@mui/material/styles';
 import { iconButtonClasses } from '@mui/material/IconButton';
 
 import { _contacts } from 'src/_mock';
-import { allLangs } from 'src/locales';
 
 import { Logo } from 'src/components/logo';
 import { useSettingsContext } from 'src/components/settings';
@@ -29,7 +28,6 @@ import { HeaderSection } from '../core/header-section';
 import { LayoutSection } from '../core/layout-section';
 import { AccountDrawer } from '../components/account-drawer';
 import { SettingsButton } from '../components/settings-button';
-import { LanguagePopover } from '../components/language-popover';
 import { ContactsPopover } from '../components/contacts-popover';
 import { navData as dashboardNavData } from '../nav-config-dashboard';
 import { dashboardLayoutVars, dashboardNavColorVars } from './css-vars';
@@ -122,9 +120,6 @@ export function DashboardLayout({ sx, cssVars, children, slotProps, layoutQuery 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0, sm: 0.75 } }}>
           {/** @slot Searchbar */}
           <Searchbar data={navData} />
-
-          {/** @slot Language popover */}
-          <LanguagePopover data={allLangs} />
 
           {/** @slot Notifications popover */}
           <NotificationsDrawer />

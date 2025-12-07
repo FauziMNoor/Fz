@@ -1,5 +1,7 @@
-import { getPublicMenu } from 'src/lib/supabase-client';
 import { paths } from 'src/routes/paths';
+
+import { getPublicMenu } from 'src/lib/supabase-client';
+
 import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------

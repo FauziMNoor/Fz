@@ -157,7 +157,7 @@ export function MenuItemDialog({ open, onClose, menuId, item, parentItem, onSucc
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
             {parentItem && (
               <Alert severity="info">
-                This item will be added as a child of "{parentItem.title}"
+                This item will be added as a child of &ldquo;{parentItem.title}&rdquo;
               </Alert>
             )}
 

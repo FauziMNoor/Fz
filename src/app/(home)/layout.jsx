@@ -1,5 +1,5 @@
-import { getNavData } from 'src/layouts/nav-config-main';
 import { MainLayout } from 'src/layouts/main';
+import { getNavData } from 'src/layouts/nav-config-main';
 
 // ----------------------------------------------------------------------
 

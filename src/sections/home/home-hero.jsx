@@ -112,7 +112,7 @@ export function HomeHero({ sx, ...other }) {
           }),
         ]}
       >
-        {`"Saya Fauzi M. Noor, Kepala Sekolah & pembelajar sepanjang hayat. Saya menulis tentang\npendidikan, Agile, dan pengalaman membangun perubahan di dunia pesantren."`}
+        {`"Saya Fauzi M. Noor, S.Sy Kepala Sekolah & pembelajar sepanjang hayat. Saya menulis tentang\npendidikan, Agile, dan pengalaman membangun perubahan di dunia pesantren."`}
       </Typography>
     </m.div>
   );

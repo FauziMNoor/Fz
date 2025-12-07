@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -14,10 +14,9 @@ import Typography from '@mui/material/Typography';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { Logo } from 'src/components/logo';
-import { Iconify } from 'src/components/iconify';
-
 import { supabase } from 'src/lib/supabase-client';
+
+import { Logo } from 'src/components/logo';
 
 // ----------------------------------------------------------------------
 

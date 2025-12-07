@@ -35,4 +35,3 @@ export function SocialIcon({ name, sx, ...other }) {
     />
   );
 }
-

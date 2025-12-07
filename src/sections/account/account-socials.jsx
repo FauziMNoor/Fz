@@ -41,8 +41,6 @@ export function AccountSocials({ socialLinks }) {
         return;
       }
 
-      console.log('Updating social links:', data);
-
       // Update social links in Supabase
       await updateSocialLinks(user.id, data);
 

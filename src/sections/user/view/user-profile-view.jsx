@@ -15,7 +15,7 @@ import DialogContent from '@mui/material/DialogContent';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
-import { useRouter , usePathname, useSearchParams } from 'src/routes/hooks';
+import { useRouter, usePathname, useSearchParams } from 'src/routes/hooks';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { _userAbout, _userFriends, _userFollowers } from 'src/_mock';

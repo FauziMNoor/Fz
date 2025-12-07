@@ -137,8 +137,8 @@ auth: {
 File `.env`:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=https://nvppnowugnjfvquvibqc.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
 
 **Dokumentasi lengkap:** Lihat `SUPABASE_SETUP.md`
@@ -475,8 +475,8 @@ Pastikan semua environment variables sudah diset:
 
 ```bash
 # Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://nvppnowugnjfvquvibqc.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 
 # Server URL (optional)
 NEXT_PUBLIC_SERVER_URL=https://api-dev-minimal-v700.pages.dev
@@ -580,10 +580,10 @@ vercel --prod
 
 ### Supabase Dashboard
 
-- **Project:** https://supabase.com/dashboard/project/nvppnowugnjfvquvibqc
-- **Database:** https://supabase.com/dashboard/project/nvppnowugnjfvquvibqc/editor
-- **Auth Users:** https://supabase.com/dashboard/project/nvppnowugnjfvquvibqc/auth/users
-- **Storage:** https://supabase.com/dashboard/project/nvppnowugnjfvquvibqc/storage/buckets
+- **Project:** https://supabase.com/dashboard/project/YOUR_PROJECT_ID
+- **Database:** https://supabase.com/dashboard/project/YOUR_PROJECT_ID/editor
+- **Auth Users:** https://supabase.com/dashboard/project/YOUR_PROJECT_ID/auth/users
+- **Storage:** https://supabase.com/dashboard/project/YOUR_PROJECT_ID/storage/buckets
 
 ### Development
 

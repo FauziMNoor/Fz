@@ -90,19 +90,12 @@ export function PortfolioNewEditForm({ currentPortfolio }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      console.log('=== FORM SUBMIT START ===');
-      console.log('Form data:', data);
-      console.log('User ID:', user?.id);
-      console.log('Cover image file:', coverImageFile);
-
       let coverImageUrl = data.cover_image;
 
       // Upload cover image if file is selected
       if (coverImageFile) {
-        console.log('Uploading cover image...');
         const tempId = currentPortfolio?.id || `temp_${Date.now()}`;
         coverImageUrl = await uploadPortfolioCoverImage(user?.id, tempId, coverImageFile);
-        console.log('Cover image uploaded:', coverImageUrl);
       }
 
       const portfolioData = {
@@ -110,17 +103,12 @@ export function PortfolioNewEditForm({ currentPortfolio }) {
         cover_image: coverImageUrl,
       };
 
-      console.log('Portfolio data to save:', portfolioData);
-
       if (currentPortfolio) {
         // Update existing portfolio
-        console.log('Updating portfolio...');
         await updatePortfolio(currentPortfolio.id, portfolioData);
         toast.success('Portfolio updated successfully!');
       } else {
         // Create new portfolio
-        console.log('Creating portfolio...');
-        console.log('Calling createPortfolio with userId:', user?.id);
         await createPortfolio(user?.id, portfolioData);
         toast.success('Portfolio created successfully!');
       }
@@ -128,10 +116,6 @@ export function PortfolioNewEditForm({ currentPortfolio }) {
       reset();
       router.push(paths.dashboard.portfolio.root);
     } catch (error) {
-      console.error('=== FORM SUBMIT ERROR ===');
-      console.error('Error saving portfolio:', error);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
       toast.error(error.message || 'Failed to save portfolio');
     }
   });

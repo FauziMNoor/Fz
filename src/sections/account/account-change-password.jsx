@@ -60,8 +60,6 @@ export function AccountChangePassword() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      console.log('Changing password...');
-
       // Change password using Supabase Auth
       await changePassword(data.newPassword);
 

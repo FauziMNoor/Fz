@@ -2,6 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 
 import { CONFIG } from 'src/global-config';
 
+import { logger } from 'src/utils/logger';
+
 // ----------------------------------------------------------------------
 
 /**
@@ -51,7 +53,7 @@ export async function getPostBySlug(slug) {
  * Create new post with slug generation
  */
 export async function createPost(postData) {
-  console.log('Creating post with data:', postData);
+  logger.log('Creating post with data:', postData);
 
   // Generate slug from title if not provided
   if (!postData.slug && postData.title) {
@@ -61,11 +63,11 @@ export async function createPost(postData) {
   const { data, error } = await supabase.from('posts').insert([postData]).select().single();
 
   if (error) {
-    console.error('Error creating post:', error);
+    logger.error('Error creating post:', error);
     throw error;
   }
 
-  console.log('Post created successfully:', data);
+  logger.log('Post created successfully:', data);
   return data;
 }
 
@@ -93,7 +95,7 @@ export function generateSlug(title) {
  * Update post
  */
 export async function updatePost(id, postData) {
-  console.log('Updating post:', id, postData);
+  logger.log('Updating post:', id, postData);
 
   // Update slug if title changed
   if (postData.title && !postData.slug) {
@@ -108,11 +110,11 @@ export async function updatePost(id, postData) {
     .single();
 
   if (error) {
-    console.error('Error updating post:', error);
+    logger.error('Error updating post:', error);
     throw error;
   }
 
-  console.log('Post updated successfully:', data);
+  logger.log('Post updated successfully:', data);
   return data;
 }
 
@@ -127,7 +129,7 @@ export async function getUserPosts(userId) {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching user posts:', error);
+    logger.error('Error fetching user posts:', error);
     throw error;
   }
 
@@ -141,7 +143,7 @@ export async function getPostById(id) {
   const { data, error } = await supabase.from('posts').select('*').eq('id', id).single();
 
   if (error) {
-    console.error('Error fetching post:', error);
+    logger.error('Error fetching post:', error);
     throw error;
   }
 
@@ -225,7 +227,7 @@ export async function getUserProfile(userId) {
   const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
 
   if (error) {
-    console.error('getUserProfile error:', error);
+    logger.error('getUserProfile error:', error);
     throw new Error(error.message || 'Failed to get user profile');
   }
   return data;
@@ -235,7 +237,7 @@ export async function getUserProfile(userId) {
  * Update user profile
  */
 export async function updateUserProfile(userId, profileData) {
-  console.log('updateUserProfile called with:', { userId, profileData });
+  logger.log('updateUserProfile called with:', { userId, profileData });
 
   const { data, error } = await supabase
     .from('profiles')
@@ -245,11 +247,11 @@ export async function updateUserProfile(userId, profileData) {
     .single();
 
   if (error) {
-    console.error('updateUserProfile error:', error);
+    logger.error('updateUserProfile error:', error);
     throw new Error(error.message || error.code || 'Failed to update user profile');
   }
 
-  console.log('updateUserProfile success:', data);
+  logger.log('updateUserProfile success:', data);
   return data;
 }
 
@@ -264,7 +266,7 @@ export async function updateUserProfile(userId, profileData) {
  * @returns {Promise<string>} - Public URL of uploaded avatar
  */
 export async function uploadAvatar(userId, file) {
-  console.log('uploadAvatar called with:', { userId, fileName: file.name, fileSize: file.size });
+  logger.log('uploadAvatar called with:', { userId, fileName: file.name, fileSize: file.size });
 
   const fileExt = file.name.split('.').pop();
   const fileName = `${userId}/avatar.${fileExt}`;
@@ -277,18 +279,18 @@ export async function uploadAvatar(userId, file) {
   });
 
   if (error) {
-    console.error('uploadAvatar error:', error);
+    logger.error('uploadAvatar error:', error);
     throw new Error(error.message || error.code || 'Failed to upload avatar');
   }
 
-  console.log('Upload successful:', data);
+  logger.log('Upload successful:', data);
 
   // Get public URL
   const {
     data: { publicUrl },
   } = supabase.storage.from('avatars').getPublicUrl(filePath);
 
-  console.log('Public URL:', publicUrl);
+  logger.log('Public URL:', publicUrl);
   return publicUrl;
 }
 
@@ -343,7 +345,7 @@ export async function uploadPostImage(postId, file) {
  * @returns {Promise<string[]>} - Array of public URLs of uploaded images
  */
 export async function uploadPostImages(userId, files) {
-  console.log('uploadPostImages called with:', { userId, fileCount: files.length });
+  logger.log('uploadPostImages called with:', { userId, fileCount: files.length });
 
   const uploadPromises = files.map(async (file) => {
     const fileExt = file.name.split('.').pop();
@@ -358,7 +360,7 @@ export async function uploadPostImages(userId, files) {
     });
 
     if (error) {
-      console.error('uploadPostImages error:', error);
+      logger.error('uploadPostImages error:', error);
       throw new Error(error.message || 'Failed to upload post image');
     }
 
@@ -371,7 +373,7 @@ export async function uploadPostImages(userId, files) {
   });
 
   const urls = await Promise.all(uploadPromises);
-  console.log('All images uploaded:', urls);
+  logger.log('All images uploaded:', urls);
   return urls;
 }
 
@@ -383,7 +385,7 @@ export async function uploadPostImages(userId, files) {
  * @returns {Promise<string>} - Public URL of uploaded image
  */
 export async function uploadPortfolioCoverImage(userId, portfolioId, file) {
-  console.log('uploadPortfolioCoverImage called with:', {
+  logger.log('uploadPortfolioCoverImage called with:', {
     userId,
     portfolioId,
     fileName: file.name,
@@ -400,18 +402,18 @@ export async function uploadPortfolioCoverImage(userId, portfolioId, file) {
   });
 
   if (error) {
-    console.error('uploadPortfolioCoverImage error:', error);
+    logger.error('uploadPortfolioCoverImage error:', error);
     throw new Error(error.message || 'Failed to upload portfolio cover image');
   }
 
-  console.log('Upload successful:', data);
+  logger.log('Upload successful:', data);
 
   // Get public URL
   const {
     data: { publicUrl },
   } = supabase.storage.from('portfolio-images').getPublicUrl(fileName);
 
-  console.log('Public URL:', publicUrl);
+  logger.log('Public URL:', publicUrl);
   return publicUrl;
 }
 
@@ -450,7 +452,7 @@ export async function deletePortfolioImages(userId, portfolioId) {
  * Update user social links
  */
 export async function updateSocialLinks(userId, socialLinks) {
-  console.log('updateSocialLinks called with:', { userId, socialLinks });
+  logger.log('updateSocialLinks called with:', { userId, socialLinks });
 
   const { data, error } = await supabase
     .from('profiles')
@@ -465,11 +467,11 @@ export async function updateSocialLinks(userId, socialLinks) {
     .single();
 
   if (error) {
-    console.error('updateSocialLinks error:', error);
+    logger.error('updateSocialLinks error:', error);
     throw new Error(error.message || 'Failed to update social links');
   }
 
-  console.log('updateSocialLinks success:', data);
+  logger.log('updateSocialLinks success:', data);
   return data;
 }
 
@@ -481,7 +483,7 @@ export async function updateSocialLinks(userId, socialLinks) {
  * Update user notification preferences
  */
 export async function updateNotificationPreferences(userId, preferences) {
-  console.log('updateNotificationPreferences called with:', { userId, preferences });
+  logger.log('updateNotificationPreferences called with:', { userId, preferences });
 
   const { data, error } = await supabase
     .from('profiles')
@@ -493,11 +495,11 @@ export async function updateNotificationPreferences(userId, preferences) {
     .single();
 
   if (error) {
-    console.error('updateNotificationPreferences error:', error);
+    logger.error('updateNotificationPreferences error:', error);
     throw new Error(error.message || 'Failed to update notification preferences');
   }
 
-  console.log('updateNotificationPreferences success:', data);
+  logger.log('updateNotificationPreferences success:', data);
   return data;
 }
 
@@ -509,18 +511,18 @@ export async function updateNotificationPreferences(userId, preferences) {
  * Change user password using Supabase Auth
  */
 export async function changePassword(newPassword) {
-  console.log('changePassword called');
+  logger.log('changePassword called');
 
   const { data, error } = await supabase.auth.updateUser({
     password: newPassword,
   });
 
   if (error) {
-    console.error('changePassword error:', error);
+    logger.error('changePassword error:', error);
     throw new Error(error.message || 'Failed to change password');
   }
 
-  console.log('changePassword success');
+  logger.log('changePassword success');
   return data;
 }
 
@@ -540,7 +542,7 @@ export async function getUserPortfolios(userId) {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('getUserPortfolios error:', error);
+    logger.error('getUserPortfolios error:', error);
     throw new Error(error.message || 'Failed to fetch portfolios');
   }
 
@@ -551,24 +553,24 @@ export async function getUserPortfolios(userId) {
  * Create portfolio
  */
 export async function createPortfolio(userId, portfolioData) {
-  console.log('createPortfolio called with:', { userId, portfolioData });
+  logger.log('createPortfolio called with:', { userId, portfolioData });
 
   const insertData = {
     user_id: userId,
     ...portfolioData,
   };
 
-  console.log('Inserting data:', insertData);
+  logger.log('Inserting data:', insertData);
 
   const { data, error } = await supabase.from('portfolios').insert(insertData).select().single();
 
   if (error) {
-    console.error('createPortfolio error:', error);
-    console.error('Error details:', JSON.stringify(error, null, 2));
+    logger.error('createPortfolio error:', error);
+    logger.error('Error details:', JSON.stringify(error, null, 2));
     throw new Error(error.message || error.hint || 'Failed to create portfolio');
   }
 
-  console.log('createPortfolio success:', data);
+  logger.log('createPortfolio success:', data);
   return data;
 }
 
@@ -584,7 +586,7 @@ export async function updatePortfolio(portfolioId, portfolioData) {
     .single();
 
   if (error) {
-    console.error('updatePortfolio error:', error);
+    logger.error('updatePortfolio error:', error);
     throw new Error(error.message || 'Failed to update portfolio');
   }
 
@@ -598,7 +600,7 @@ export async function deletePortfolio(portfolioId) {
   const { error } = await supabase.from('portfolios').delete().eq('id', portfolioId);
 
   if (error) {
-    console.error('deletePortfolio error:', error);
+    logger.error('deletePortfolio error:', error);
     throw new Error(error.message || 'Failed to delete portfolio');
   }
 
@@ -613,7 +615,7 @@ export async function deletePortfolio(portfolioId) {
  * Get user's social media posts with author profile and comments
  */
 export async function getUserSocialPosts(userId) {
-  console.log('getUserSocialPosts called with userId:', userId);
+  logger.log('getUserSocialPosts called with userId:', userId);
 
   // First get posts
   const { data: posts, error } = await supabase
@@ -623,16 +625,16 @@ export async function getUserSocialPosts(userId) {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('getUserPosts error:', error);
+    logger.error('getUserPosts error:', error);
     throw new Error(error.message || 'Failed to fetch posts');
   }
 
   if (!posts || posts.length === 0) {
-    console.log('No posts found for user:', userId);
+    logger.log('No posts found for user:', userId);
     return [];
   }
 
-  console.log(`Found ${posts.length} posts`);
+  logger.log(`Found ${posts.length} posts`);
 
   // Get post IDs for fetching comments
   const postIds = posts.map((post) => post.id);
@@ -645,11 +647,11 @@ export async function getUserSocialPosts(userId) {
     .order('created_at', { ascending: true });
 
   if (commentsError) {
-    console.error('Error fetching comments:', commentsError);
+    logger.error('Error fetching comments:', commentsError);
     // Continue without comments if fetch fails
   }
 
-  console.log(`Found ${comments?.length || 0} comments`);
+  logger.log(`Found ${comments?.length || 0} comments`);
 
   // Get unique user IDs from posts and comments (excluding nulls for guests)
   const postUserIds = posts.map((post) => post.user_id);
@@ -658,7 +660,7 @@ export async function getUserSocialPosts(userId) {
     .map((comment) => comment.user_id);
   const userIds = [...new Set([...postUserIds, ...commentUserIds])];
 
-  console.log(`Fetching profiles for ${userIds.length} users`);
+  logger.log(`Fetching profiles for ${userIds.length} users`);
 
   // Fetch profiles for all users
   const { data: profiles, error: profileError } = await supabase
@@ -667,7 +669,7 @@ export async function getUserSocialPosts(userId) {
     .in('id', userIds);
 
   if (profileError) {
-    console.error('Error fetching profiles:', profileError);
+    logger.error('Error fetching profiles:', profileError);
   }
 
   // Map profiles by ID
@@ -698,7 +700,7 @@ export async function getUserSocialPosts(userId) {
     comments: commentsMap[post.id] || [],
   }));
 
-  console.log('getUserPosts success:', postsWithData.length, 'posts with comments');
+  logger.log('getUserPosts success:', postsWithData.length, 'posts with comments');
   return postsWithData;
 }
 
@@ -706,7 +708,7 @@ export async function getUserSocialPosts(userId) {
  * Create user post
  */
 export async function createUserPost(userId, postData) {
-  console.log('createUserPost called with:', { userId, postData });
+  logger.log('createUserPost called with:', { userId, postData });
 
   const insertData = {
     user_id: userId,
@@ -718,17 +720,17 @@ export async function createUserPost(userId, postData) {
     insertData.media_urls = postData.media_urls;
   }
 
-  console.log('Inserting data:', insertData);
+  logger.log('Inserting data:', insertData);
 
   const { data, error } = await supabase.from('user_posts').insert(insertData).select().single();
 
   if (error) {
-    console.error('createUserPost error:', error);
-    console.error('Error details:', JSON.stringify(error, null, 2));
+    logger.error('createUserPost error:', error);
+    logger.error('Error details:', JSON.stringify(error, null, 2));
     throw new Error(error.message || error.hint || error.details || 'Failed to create post');
   }
 
-  console.log('createUserPost success:', data);
+  logger.log('createUserPost success:', data);
   return data;
 }
 
@@ -744,7 +746,7 @@ export async function updateUserPost(postId, postData) {
     .single();
 
   if (error) {
-    console.error('updateUserPost error:', error);
+    logger.error('updateUserPost error:', error);
     throw new Error(error.message || 'Failed to update post');
   }
 
@@ -758,7 +760,7 @@ export async function deleteUserPost(postId) {
   const { error } = await supabase.from('user_posts').delete().eq('id', postId);
 
   if (error) {
-    console.error('deleteUserPost error:', error);
+    logger.error('deleteUserPost error:', error);
     throw new Error(error.message || 'Failed to delete post');
   }
 
@@ -790,7 +792,7 @@ export async function togglePostLike(postId, userId) {
       .eq('user_id', userId);
 
     if (error) {
-      console.error('togglePostLike (unlike) error:', error);
+      logger.error('togglePostLike (unlike) error:', error);
       throw new Error(error.message || 'Failed to unlike post');
     }
 
@@ -803,7 +805,7 @@ export async function togglePostLike(postId, userId) {
   });
 
   if (error) {
-    console.error('togglePostLike (like) error:', error);
+    logger.error('togglePostLike (like) error:', error);
     throw new Error(error.message || 'Failed to like post');
   }
 
@@ -820,7 +822,7 @@ export async function getPostLikesCount(postId) {
     .eq('post_id', postId);
 
   if (error) {
-    console.error('getPostLikesCount error:', error);
+    logger.error('getPostLikesCount error:', error);
     throw new Error(error.message || 'Failed to get likes count');
   }
 
@@ -836,7 +838,7 @@ export async function getPostLikesCount(postId) {
  * Supports both logged-in users and guest users
  */
 export async function addPostComment(postId, userId, message, guestName = null, guestEmail = null) {
-  console.log('addPostComment called with:', { postId, userId, message, guestName, guestEmail });
+  logger.log('addPostComment called with:', { postId, userId, message, guestName, guestEmail });
 
   const commentData = {
     post_id: postId,
@@ -855,12 +857,12 @@ export async function addPostComment(postId, userId, message, guestName = null, 
     .single();
 
   if (error) {
-    console.error('addPostComment error:', error);
-    console.error('Error details:', JSON.stringify(error, null, 2));
+    logger.error('addPostComment error:', error);
+    logger.error('Error details:', JSON.stringify(error, null, 2));
     throw new Error(error.message || error.hint || error.details || 'Failed to add comment');
   }
 
-  console.log('addPostComment success:', data);
+  logger.log('addPostComment success:', data);
   return data;
 }
 
@@ -871,7 +873,7 @@ export async function deletePostComment(commentId) {
   const { error } = await supabase.from('post_comments').delete().eq('id', commentId);
 
   if (error) {
-    console.error('deletePostComment error:', error);
+    logger.error('deletePostComment error:', error);
     throw new Error(error.message || 'Failed to delete comment');
   }
 
@@ -890,7 +892,7 @@ export async function approveComment(commentId) {
     .single();
 
   if (error) {
-    console.error('approveComment error:', error);
+    logger.error('approveComment error:', error);
     throw new Error(error.message || 'Failed to approve comment');
   }
 
@@ -909,7 +911,7 @@ export async function rejectComment(commentId) {
     .single();
 
   if (error) {
-    console.error('rejectComment error:', error);
+    logger.error('rejectComment error:', error);
     throw new Error(error.message || 'Failed to reject comment');
   }
 
@@ -932,7 +934,7 @@ export async function getUserAchievements(userId) {
     .order('date_received', { ascending: false });
 
   if (error) {
-    console.error('getUserAchievements error:', error);
+    logger.error('getUserAchievements error:', error);
     throw new Error(error.message || 'Failed to fetch achievements');
   }
 
@@ -953,7 +955,7 @@ export async function createAchievement(userId, achievementData) {
     .single();
 
   if (error) {
-    console.error('createAchievement error:', error);
+    logger.error('createAchievement error:', error);
     throw new Error(error.message || 'Failed to create achievement');
   }
 
@@ -972,7 +974,7 @@ export async function updateAchievement(achievementId, achievementData) {
     .single();
 
   if (error) {
-    console.error('updateAchievement error:', error);
+    logger.error('updateAchievement error:', error);
     throw new Error(error.message || 'Failed to update achievement');
   }
 
@@ -986,7 +988,7 @@ export async function deleteAchievement(achievementId) {
   const { error } = await supabase.from('achievements').delete().eq('id', achievementId);
 
   if (error) {
-    console.error('deleteAchievement error:', error);
+    logger.error('deleteAchievement error:', error);
     throw new Error(error.message || 'Failed to delete achievement');
   }
 
@@ -1009,7 +1011,7 @@ export async function getUserCertifications(userId) {
     .order('issue_date', { ascending: false });
 
   if (error) {
-    console.error('getUserCertifications error:', error);
+    logger.error('getUserCertifications error:', error);
     throw new Error(error.message || 'Failed to fetch certifications');
   }
 
@@ -1030,7 +1032,7 @@ export async function createCertification(userId, certificationData) {
     .single();
 
   if (error) {
-    console.error('createCertification error:', error);
+    logger.error('createCertification error:', error);
     throw new Error(error.message || 'Failed to create certification');
   }
 
@@ -1049,7 +1051,7 @@ export async function updateCertification(certificationId, certificationData) {
     .single();
 
   if (error) {
-    console.error('updateCertification error:', error);
+    logger.error('updateCertification error:', error);
     throw new Error(error.message || 'Failed to update certification');
   }
 
@@ -1063,7 +1065,7 @@ export async function deleteCertification(certificationId) {
   const { error } = await supabase.from('certifications').delete().eq('id', certificationId);
 
   if (error) {
-    console.error('deleteCertification error:', error);
+    logger.error('deleteCertification error:', error);
     throw new Error(error.message || 'Failed to delete certification');
   }
 
@@ -1086,7 +1088,7 @@ export async function getUserTeachingExperiences(userId) {
     .order('start_date', { ascending: false });
 
   if (error) {
-    console.error('getUserTeachingExperiences error:', error);
+    logger.error('getUserTeachingExperiences error:', error);
     throw new Error(error.message || 'Failed to fetch teaching experiences');
   }
 
@@ -1107,7 +1109,7 @@ export async function createTeachingExperience(userId, experienceData) {
     .single();
 
   if (error) {
-    console.error('createTeachingExperience error:', error);
+    logger.error('createTeachingExperience error:', error);
     throw new Error(error.message || 'Failed to create teaching experience');
   }
 
@@ -1126,7 +1128,7 @@ export async function updateTeachingExperience(experienceId, experienceData) {
     .single();
 
   if (error) {
-    console.error('updateTeachingExperience error:', error);
+    logger.error('updateTeachingExperience error:', error);
     throw new Error(error.message || 'Failed to update teaching experience');
   }
 
@@ -1140,7 +1142,7 @@ export async function deleteTeachingExperience(experienceId) {
   const { error } = await supabase.from('teaching_experiences').delete().eq('id', experienceId);
 
   if (error) {
-    console.error('deleteTeachingExperience error:', error);
+    logger.error('deleteTeachingExperience error:', error);
     throw new Error(error.message || 'Failed to delete teaching experience');
   }
 
@@ -1163,7 +1165,7 @@ export async function getUserCareerTimeline(userId) {
     .order('event_date', { ascending: false });
 
   if (error) {
-    console.error('getUserCareerTimeline error:', error);
+    logger.error('getUserCareerTimeline error:', error);
     throw new Error(error.message || 'Failed to fetch career timeline');
   }
 
@@ -1184,7 +1186,7 @@ export async function createCareerTimelineEvent(userId, eventData) {
     .single();
 
   if (error) {
-    console.error('createCareerTimelineEvent error:', error);
+    logger.error('createCareerTimelineEvent error:', error);
     throw new Error(error.message || 'Failed to create career timeline event');
   }
 
@@ -1203,7 +1205,7 @@ export async function updateCareerTimelineEvent(eventId, eventData) {
     .single();
 
   if (error) {
-    console.error('updateCareerTimelineEvent error:', error);
+    logger.error('updateCareerTimelineEvent error:', error);
     throw new Error(error.message || 'Failed to update career timeline event');
   }
 
@@ -1217,7 +1219,7 @@ export async function deleteCareerTimelineEvent(eventId) {
   const { error } = await supabase.from('career_timeline').delete().eq('id', eventId);
 
   if (error) {
-    console.error('deleteCareerTimelineEvent error:', error);
+    logger.error('deleteCareerTimelineEvent error:', error);
     throw new Error(error.message || 'Failed to delete career timeline event');
   }
 
@@ -1232,7 +1234,7 @@ export async function deleteCareerTimelineEvent(eventId) {
  * Get user notifications
  */
 export async function getUserNotifications(userId) {
-  console.log('[getUserNotifications] Called with userId:', userId);
+  logger.log('[getUserNotifications] Called with userId:', userId);
 
   const { data, error } = await supabase
     .from('notifications')
@@ -1241,15 +1243,15 @@ export async function getUserNotifications(userId) {
     .order('created_at', { ascending: false })
     .limit(50);
 
-  console.log('[getUserNotifications] Query result - data:', data);
-  console.log('[getUserNotifications] Query result - error:', error);
+  logger.log('[getUserNotifications] Query result - data:', data);
+  logger.log('[getUserNotifications] Query result - error:', error);
 
   if (error) {
-    console.error('[getUserNotifications] Error details:', JSON.stringify(error, null, 2));
+    logger.error('[getUserNotifications] Error details:', JSON.stringify(error, null, 2));
     throw new Error(error.message || 'Failed to fetch notifications');
   }
 
-  console.log('[getUserNotifications] Returning', data?.length || 0, 'notifications');
+  logger.log('[getUserNotifications] Returning', data?.length || 0, 'notifications');
   return data || [];
 }
 
@@ -1265,7 +1267,7 @@ export async function markNotificationAsRead(notificationId) {
     .single();
 
   if (error) {
-    console.error('markNotificationAsRead error:', error);
+    logger.error('markNotificationAsRead error:', error);
     throw new Error(error.message || 'Failed to mark notification as read');
   }
 
@@ -1283,7 +1285,7 @@ export async function markAllNotificationsAsRead(userId) {
     .eq('is_read', false);
 
   if (error) {
-    console.error('markAllNotificationsAsRead error:', error);
+    logger.error('markAllNotificationsAsRead error:', error);
     throw new Error(error.message || 'Failed to mark all notifications as read');
   }
 
@@ -1297,7 +1299,7 @@ export async function deleteNotification(notificationId) {
   const { error } = await supabase.from('notifications').delete().eq('id', notificationId);
 
   if (error) {
-    console.error('deleteNotification error:', error);
+    logger.error('deleteNotification error:', error);
     throw new Error(error.message || 'Failed to delete notification');
   }
 
@@ -1319,7 +1321,7 @@ export async function getPublishedEbooks() {
     .order('published_at', { ascending: false });
 
   if (error) {
-    console.error('getPublishedEbooks error:', error);
+    logger.error('getPublishedEbooks error:', error);
     throw new Error(error.message || 'Failed to fetch e-books');
   }
 
@@ -1333,7 +1335,7 @@ export async function getEbookBySlug(slug) {
   const { data, error } = await supabase.from('ebooks').select('*').eq('slug', slug).single();
 
   if (error) {
-    console.error('getEbookBySlug error:', error);
+    logger.error('getEbookBySlug error:', error);
     throw new Error(error.message || 'Failed to fetch e-book');
   }
 
@@ -1350,7 +1352,7 @@ export async function getAllEbooks() {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('getAllEbooks error:', error);
+    logger.error('getAllEbooks error:', error);
     throw new Error(error.message || 'Failed to fetch e-books');
   }
 
@@ -1369,7 +1371,7 @@ export async function getEbooksByCategory(category) {
     .order('published_at', { ascending: false });
 
   if (error) {
-    console.error('getEbooksByCategory error:', error);
+    logger.error('getEbooksByCategory error:', error);
     throw new Error(error.message || 'Failed to fetch e-books');
   }
 
@@ -1388,7 +1390,7 @@ export async function getOwnWorkEbooks() {
     .order('published_at', { ascending: false });
 
   if (error) {
-    console.error('getOwnWorkEbooks error:', error);
+    logger.error('getOwnWorkEbooks error:', error);
     throw new Error(error.message || 'Failed to fetch own work e-books');
   }
 
@@ -1408,7 +1410,7 @@ export async function getFeaturedEbooks() {
     .limit(6);
 
   if (error) {
-    console.error('getFeaturedEbooks error:', error);
+    logger.error('getFeaturedEbooks error:', error);
     throw new Error(error.message || 'Failed to fetch featured e-books');
   }
 
@@ -1419,7 +1421,7 @@ export async function getFeaturedEbooks() {
  * Create e-book
  */
 export async function createEbook(ebookData) {
-  console.log('createEbook called with:', ebookData);
+  logger.log('createEbook called with:', ebookData);
 
   // Generate slug from title if not provided
   if (!ebookData.slug && ebookData.title) {
@@ -1429,11 +1431,11 @@ export async function createEbook(ebookData) {
   const { data, error } = await supabase.from('ebooks').insert([ebookData]).select().single();
 
   if (error) {
-    console.error('createEbook error:', error);
+    logger.error('createEbook error:', error);
     throw new Error(error.message || 'Failed to create e-book');
   }
 
-  console.log('createEbook success:', data);
+  logger.log('createEbook success:', data);
   return data;
 }
 
@@ -1441,7 +1443,7 @@ export async function createEbook(ebookData) {
  * Update e-book
  */
 export async function updateEbook(id, ebookData) {
-  console.log('updateEbook called with:', { id, ebookData });
+  logger.log('updateEbook called with:', { id, ebookData });
 
   // Update slug if title changed
   if (ebookData.title && !ebookData.slug) {
@@ -1456,11 +1458,11 @@ export async function updateEbook(id, ebookData) {
     .single();
 
   if (error) {
-    console.error('updateEbook error:', error);
+    logger.error('updateEbook error:', error);
     throw new Error(error.message || 'Failed to update e-book');
   }
 
-  console.log('updateEbook success:', data);
+  logger.log('updateEbook success:', data);
   return data;
 }
 
@@ -1471,7 +1473,7 @@ export async function deleteEbook(id) {
   const { error } = await supabase.from('ebooks').delete().eq('id', id);
 
   if (error) {
-    console.error('deleteEbook error:', error);
+    logger.error('deleteEbook error:', error);
     throw new Error(error.message || 'Failed to delete e-book');
   }
 
@@ -1485,7 +1487,7 @@ export async function incrementEbookViewCount(id) {
   const { error } = await supabase.rpc('increment_ebook_view_count', { ebook_id: id });
 
   if (error) {
-    console.error('incrementEbookViewCount error:', error);
+    logger.error('incrementEbookViewCount error:', error);
     // Don't throw error, just log it
   }
 }
@@ -1499,7 +1501,7 @@ export async function trackEbookDownload(
   ipAddress = null,
   userAgent = null
 ) {
-  console.log('trackEbookDownload called with:', { ebookId, userId });
+  logger.log('trackEbookDownload called with:', { ebookId, userId });
 
   const downloadData = {
     ebook_id: ebookId,
@@ -1515,7 +1517,7 @@ export async function trackEbookDownload(
     .single();
 
   if (error) {
-    console.error('trackEbookDownload error:', error);
+    logger.error('trackEbookDownload error:', error);
     // Don't throw error, just log it (download tracking is not critical)
   }
 
@@ -1532,7 +1534,7 @@ export async function getEbookCategories() {
     .order('display_order', { ascending: true });
 
   if (error) {
-    console.error('getEbookCategories error:', error);
+    logger.error('getEbookCategories error:', error);
     throw new Error(error.message || 'Failed to fetch e-book categories');
   }
 
@@ -1562,7 +1564,7 @@ export async function getEbookStats() {
     .eq('status', 'published');
 
   if (ebooksError || downloadsError || ownWorkError) {
-    console.error('getEbookStats error:', { ebooksError, downloadsError, ownWorkError });
+    logger.error('getEbookStats error:', { ebooksError, downloadsError, ownWorkError });
     throw new Error('Failed to fetch e-book statistics');
   }
 
@@ -1580,7 +1582,7 @@ export async function getEbookStats() {
  * @returns {Promise<string>} - Public URL of uploaded cover
  */
 export async function uploadEbookCover(ebookId, file) {
-  console.log('uploadEbookCover called with:', { ebookId, fileName: file.name });
+  logger.log('uploadEbookCover called with:', { ebookId, fileName: file.name });
 
   const fileExt = file.name.split('.').pop();
   const timestamp = Date.now();
@@ -1593,18 +1595,18 @@ export async function uploadEbookCover(ebookId, file) {
   });
 
   if (error) {
-    console.error('uploadEbookCover error:', error);
+    logger.error('uploadEbookCover error:', error);
     throw new Error(error.message || 'Failed to upload e-book cover');
   }
 
-  console.log('Upload successful:', data);
+  logger.log('Upload successful:', data);
 
   // Get public URL
   const {
     data: { publicUrl },
   } = supabase.storage.from('ebook-covers').getPublicUrl(fileName);
 
-  console.log('Public URL:', publicUrl);
+  logger.log('Public URL:', publicUrl);
   return publicUrl;
 }
 
@@ -1622,10 +1624,10 @@ export async function deleteEbookCover(coverUrl) {
     const { error } = await supabase.storage.from('ebook-covers').remove([fileName]);
 
     if (error) {
-      console.error('deleteEbookCover error:', error);
+      logger.error('deleteEbookCover error:', error);
     }
   } catch (err) {
-    console.error('deleteEbookCover error:', err);
+    logger.error('deleteEbookCover error:', err);
   }
 }
 
@@ -1643,7 +1645,7 @@ export async function getMenus() {
     .order('location', { ascending: true });
 
   if (error) {
-    console.error('Error fetching menus:', error);
+    logger.error('Error fetching menus:', error);
     throw error;
   }
   return data;
@@ -1656,7 +1658,7 @@ export async function getMenuBySlug(slug) {
   const { data, error } = await supabase.from('menus').select('*').eq('slug', slug).single();
 
   if (error) {
-    console.error('Error fetching menu:', error);
+    logger.error('Error fetching menu:', error);
     throw error;
   }
   return data;
@@ -1669,7 +1671,7 @@ export async function getMenuById(id) {
   const { data, error } = await supabase.from('menus').select('*').eq('id', id).single();
 
   if (error) {
-    console.error('Error fetching menu:', error);
+    logger.error('Error fetching menu:', error);
     throw error;
   }
   return data;
@@ -1687,7 +1689,7 @@ export async function getMenuByLocation(location) {
     .single();
 
   if (error) {
-    console.error('Error fetching menu by location:', error);
+    logger.error('Error fetching menu by location:', error);
     throw error;
   }
   return data;
@@ -1700,7 +1702,7 @@ export async function createMenu(menuData) {
   const { data, error } = await supabase.from('menus').insert([menuData]).select().single();
 
   if (error) {
-    console.error('Error creating menu:', error);
+    logger.error('Error creating menu:', error);
     throw error;
   }
   return data;
@@ -1718,7 +1720,7 @@ export async function updateMenu(menuId, menuData) {
     .single();
 
   if (error) {
-    console.error('Error updating menu:', error);
+    logger.error('Error updating menu:', error);
     throw error;
   }
   return data;
@@ -1731,7 +1733,7 @@ export async function deleteMenu(menuId) {
   const { error } = await supabase.from('menus').delete().eq('id', menuId);
 
   if (error) {
-    console.error('Error deleting menu:', error);
+    logger.error('Error deleting menu:', error);
     throw error;
   }
   return true;
@@ -1748,7 +1750,7 @@ export async function getMenuItems(menuId) {
     .order('display_order', { ascending: true });
 
   if (error) {
-    console.error('Error fetching menu items:', error);
+    logger.error('Error fetching menu items:', error);
     throw error;
   }
 
@@ -1767,7 +1769,7 @@ export async function getAllMenuItems(menuId) {
     .order('display_order', { ascending: true });
 
   if (error) {
-    console.error('Error fetching menu items:', error);
+    logger.error('Error fetching menu items:', error);
     throw error;
   }
   return data;
@@ -1780,7 +1782,7 @@ export async function getMenuItemById(itemId) {
   const { data, error } = await supabase.from('menu_items').select('*').eq('id', itemId).single();
 
   if (error) {
-    console.error('Error fetching menu item:', error);
+    logger.error('Error fetching menu item:', error);
     throw error;
   }
   return data;
@@ -1793,7 +1795,7 @@ export async function createMenuItem(itemData) {
   const { data, error } = await supabase.from('menu_items').insert([itemData]).select().single();
 
   if (error) {
-    console.error('Error creating menu item:', error);
+    logger.error('Error creating menu item:', error);
     throw error;
   }
   return data;
@@ -1811,7 +1813,7 @@ export async function updateMenuItem(itemId, itemData) {
     .single();
 
   if (error) {
-    console.error('Error updating menu item:', error);
+    logger.error('Error updating menu item:', error);
     throw error;
   }
   return data;
@@ -1824,7 +1826,7 @@ export async function deleteMenuItem(itemId) {
   const { error } = await supabase.from('menu_items').delete().eq('id', itemId);
 
   if (error) {
-    console.error('Error deleting menu item:', error);
+    logger.error('Error deleting menu item:', error);
     throw error;
   }
   return true;
@@ -1842,7 +1844,7 @@ export async function reorderMenuItems(items) {
   const { error } = await supabase.from('menu_items').upsert(updates);
 
   if (error) {
-    console.error('Error reordering menu items:', error);
+    logger.error('Error reordering menu items:', error);
     throw error;
   }
   return true;
@@ -1900,7 +1902,7 @@ export async function getPublicMenu(location) {
       items: tree,
     };
   } catch (error) {
-    console.error('Error fetching public menu:', error);
+    logger.error('Error fetching public menu:', error);
     return null;
   }
 }

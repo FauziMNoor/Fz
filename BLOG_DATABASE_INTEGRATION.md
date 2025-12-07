@@ -91,8 +91,8 @@ Junction table untuk many-to-many relationship antara posts dan categories.
 Tidak perlu konfigurasi tambahan! Environment variables sudah ada di `.env`:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=https://nvppnowugnjfvquvibqc.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
 
 ---

@@ -24,7 +24,10 @@ const FAQs = [
     question: 'Apa fokus utama yang saya kerjakan?',
     answer: (
       <Typography>
-        Saya fokus pada pengembangan sistem pendidikan digital dan penguatan karakter santri, termasuk cara belajar yang efektif, tazkiyatun nafs, dan mindset Islami. Selain itu, saya juga mengembangkan aplikasi pendidikan, workflow automation, serta sistem integrasi akademik berbasis teknologi.
+        Saya fokus pada pengembangan sistem pendidikan digital dan penguatan karakter santri,
+        termasuk cara belajar yang efektif, tazkiyatun nafs, dan mindset Islami. Selain itu, saya
+        juga mengembangkan aplikasi pendidikan, workflow automation, serta sistem integrasi akademik
+        berbasis teknologi.
       </Typography>
     ),
   },
@@ -32,7 +35,9 @@ const FAQs = [
     question: 'Apakah saya menerima kolaborasi atau project?',
     answer: (
       <Box component="ul" sx={{ pl: 3, listStyleType: 'disc' }}>
-        <li> Ya. Saya terbuka untuk kolaborasi dalam:
+        <li>
+          {' '}
+          Ya. Saya terbuka untuk kolaborasi dalam:
           <ul>
             <li>a. Pengembangan aplikasi & sistem pendidikan digital</li>
             <li>b. Strategi pembinaan karakter dan kurikulum pesantren</li>
@@ -46,7 +51,11 @@ const FAQs = [
     question: 'Apakah saya menerima undangan pelatihan/workshop?',
     answer: (
       <Box component="ul" sx={{ pl: 3, listStyleType: 'disc' }}>
-        <li> Ya, khusus bidang teknologi pendidikan, metode belajar, dan pembinaan karakter Islami. </li>
+        <li>
+          {' '}
+          Ya, khusus bidang teknologi pendidikan, metode belajar, dan pembinaan karakter
+          Islami.{' '}
+        </li>
       </Box>
     ),
   },

@@ -175,7 +175,7 @@ export function HomeHero({ sx, ...other }) {
                     fontWeight: theme.typography.fontWeightMedium,
                   }),
                 ]}
-               />
+              />
             </span>
           </Button>
         </Stack>

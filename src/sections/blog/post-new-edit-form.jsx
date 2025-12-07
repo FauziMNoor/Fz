@@ -113,8 +113,6 @@ export function PostNewEditForm({ currentPost }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      console.log('Form data:', data);
-
       // Upload cover image if it's a file
       let coverUrl = data.coverUrl;
       if (data.coverUrl && typeof data.coverUrl !== 'string') {
@@ -137,8 +135,6 @@ export function PostNewEditForm({ currentPost }) {
         author_id: user?.id,
       };
 
-      console.log('Saving post data:', postData);
-
       let result;
       if (currentPost?.id) {
         // Update existing post
@@ -149,8 +145,6 @@ export function PostNewEditForm({ currentPost }) {
         result = await createPost(postData);
         toast.success('Artikel berhasil dibuat!');
       }
-
-      console.log('Post saved:', result);
 
       // Save categories to junction table
       if (data.categories && data.categories.length > 0) {
@@ -170,11 +164,9 @@ export function PostNewEditForm({ currentPost }) {
           }));
 
           await supabase.from('post_categories').insert(categoryData);
-
-          console.log('Categories saved:', categoryData);
         } catch (catError) {
-          console.error('Error saving categories:', catError);
           // Don't fail the whole operation if categories fail
+          toast.warn('Categories may not be saved properly');
         }
       }
 
@@ -183,7 +175,6 @@ export function PostNewEditForm({ currentPost }) {
       showPreview.onFalse();
       router.push(paths.dashboard.post.root);
     } catch (error) {
-      console.error('Error saving post:', error);
       toast.error(error.message || 'Gagal menyimpan artikel');
     }
   });

@@ -63,8 +63,6 @@ export function AccountNotifications({ initialPreferences, sx, ...other }) {
         return;
       }
 
-      console.log('Updating notification preferences:', data);
-
       // Convert array to object for database storage
       const preferences = {};
       NOTIFICATIONS.forEach((notification) => {

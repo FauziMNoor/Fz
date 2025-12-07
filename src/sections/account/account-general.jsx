@@ -117,27 +117,15 @@ export function AccountGeneral() {
         return;
       }
 
-      console.log('Form data:', data);
-      console.log('User ID:', user.id);
-
       let avatarUrl = profile?.avatar_url;
 
       // Upload avatar if user selected a new file
       if (data.photoURL && typeof data.photoURL !== 'string') {
         try {
-          console.log('Uploading avatar...');
           toast.info('Uploading avatar...');
           avatarUrl = await uploadAvatar(user.id, data.photoURL);
-          console.log('Avatar uploaded:', avatarUrl);
           toast.success('Avatar uploaded successfully!');
         } catch (uploadError) {
-          console.error('Error uploading avatar:', uploadError);
-          console.error('Upload error details:', {
-            message: uploadError?.message,
-            code: uploadError?.code,
-            details: uploadError?.details,
-            hint: uploadError?.hint,
-          });
           toast.error(
             uploadError?.message || 'Failed to upload avatar. Continuing with profile update...'
           );
@@ -160,23 +148,12 @@ export function AccountGeneral() {
         is_public: data.isPublic,
       };
 
-      console.log('Updating profile with data:', profileData);
-
       // Update profile in Supabase
       const updatedProfile = await updateUserProfile(user.id, profileData);
       setProfile(updatedProfile);
 
       toast.success('Profile updated successfully!');
-      console.info('Updated profile:', updatedProfile);
     } catch (error) {
-      console.error('Error updating profile:', error);
-      console.error('Error details:', {
-        message: error?.message,
-        code: error?.code,
-        details: error?.details,
-        hint: error?.hint,
-        stack: error?.stack,
-      });
       toast.error(error?.message || error?.code || 'Failed to update profile');
     }
   });

@@ -79,8 +79,21 @@ const ItemRoot = styled(ButtonBase, { shouldForwardProp })(({ active, open, them
 
   const subItemStyles = {
     color: theme.vars.palette.text.secondary,
-    '&:hover': { color: theme.vars.palette.text.primary },
-    ...(active && { color: theme.vars.palette.text.primary }),
+    padding: theme.spacing(1, 1.5),
+    borderRadius: theme.shape.borderRadius,
+    transition: theme.transitions.create(['all'], {
+      duration: theme.transitions.duration.shorter,
+    }),
+    '&:hover': {
+      color: theme.vars.palette.primary.main,
+      backgroundColor: varAlpha(theme.vars.palette.primary.mainChannel, 0.08),
+      transform: 'translateX(4px)',
+    },
+    ...(active && {
+      color: theme.vars.palette.primary.main,
+      backgroundColor: varAlpha(theme.vars.palette.primary.mainChannel, 0.12),
+      fontWeight: theme.typography.fontWeightSemiBold,
+    }),
   };
 
   return {

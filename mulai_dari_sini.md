@@ -603,6 +603,52 @@ _Dokumentasi ini dibuat sebagai panduan untuk memahami dan mengembangkan aplikas
 
 ## 📝 Changelog
 
+### Version 4.2.0 (2025-12-07) � UIN/UX IMPROVEMENTS - COMPLETE!
+
+**✅ Major UI/UX Enhancements - Professional & Eye-Catching!**
+
+Perbaikan besar-besaran pada tampilan frontend untuk pengalaman user yang lebih baik!
+
+**🎯 What's New:**
+
+**1. Dynamic Footer with Real Data**
+
+- ✅ Profile data dari database (name, bio)
+- ✅ Social media icons dengan warna asli (Facebook, Instagram, Threads, YouTube)
+- ✅ Contact info (email & WhatsApp) dengan clickable links
+- ✅ Auto-hide social icons jika tidak ada URL
+
+**2. Header CTA Button**
+
+- ✅ Changed "Purchase" → "Hubungi Saya"
+- ✅ WhatsApp link dengan icon hijau
+- ✅ Direct chat ke: 0896-2303-9600
+
+**3. Improved Dropdown Menu**
+
+- ✅ Compact width (280-480px) - tidak terlalu lebar
+- ✅ Centered positioning - lebih rapi
+- ✅ Smooth hover effects dengan color transition
+- ✅ Slide animation (translateX) on hover
+- ✅ Better contrast untuk dark mode
+- ✅ Consistent theme colors
+
+**📚 Files Modified:**
+
+- `src/layouts/main/footer.jsx` (dynamic data + social icons)
+- `src/layouts/main/layout.jsx` (WhatsApp CTA button)
+- `src/layouts/main/nav/components/nav-dropdown.jsx` (compact dropdown)
+- `src/layouts/main/nav/desktop/nav-desktop-item.jsx` (hover effects)
+
+**🎨 Visual Improvements:**
+
+- Footer: Real profile data, colored social icons
+- Header: WhatsApp CTA button
+- Dropdown: Compact, smooth animations, better contrast
+- Overall: More professional & eye-catching
+
+---
+
 ### Version 4.1.0 (2025-12-07) 🎊 MENU BUILDER - FRONTEND INTEGRATED!
 
 **✅ Menu Builder Fully Integrated with Frontend!**

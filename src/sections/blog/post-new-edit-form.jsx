@@ -44,10 +44,11 @@ export const NewPostSchema = zod.object({
   coverUrl: schemaHelper.file({ message: 'Cover is required!' }),
   categories: zod.string().array().min(1, { message: 'Must select at least 1 category!' }),
   tags: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-  metaKeywords: zod.string().array().min(1, { message: 'Meta keywords is required!' }),
-  // Not required
-  metaTitle: zod.string(),
-  metaDescription: zod.string(),
+  // Optional - Advanced SEO Settings
+  metaTitle: zod.string().optional(),
+  metaDescription: zod.string().optional(),
+  metaKeywords: zod.string().array().optional(),
+  // Settings
   publish: zod.boolean().default(false),
   enableComments: zod.boolean().default(true),
 });
@@ -61,6 +62,7 @@ export function PostNewEditForm({ currentPost }) {
   const showPreview = useBoolean();
   const openDetails = useBoolean(true);
   const openProperties = useBoolean(true);
+  const openSeoSettings = useBoolean(false); // Collapsed by default
 
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
@@ -289,45 +291,93 @@ export function PostNewEditForm({ currentPost }) {
             }
           />
 
-          <Field.Text name="metaTitle" label="Meta title" />
-
-          <Field.Text
-            name="metaDescription"
-            label="Meta description"
-            fullWidth
-            multiline
-            rows={3}
-          />
-
-          <Field.Autocomplete
-            name="metaKeywords"
-            label="Meta keywords"
-            placeholder="+ Keywords"
-            multiple
-            freeSolo
-            disableCloseOnSelect
-            options={_tags.map((option) => option)}
-            getOptionLabel={(option) => option}
-            renderOption={(props, option) => (
-              <li {...props} key={option}>
-                {option}
-              </li>
-            )}
-            renderTags={(selected, getTagProps) =>
-              selected.map((option, index) => (
-                <Chip
-                  {...getTagProps({ index })}
-                  key={option}
-                  label={option}
-                  size="small"
-                  color="info"
-                  variant="soft"
-                />
-              ))
-            }
-          />
-
           <Field.Switch name="enableComments" label="Enable comments" />
+
+          {/* Advanced SEO Settings - Collapsible */}
+          <Box>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{
+                p: 2,
+                borderRadius: 1,
+                cursor: 'pointer',
+                bgcolor: 'background.neutral',
+                '&:hover': { bgcolor: 'action.hover' },
+              }}
+              onClick={openSeoSettings.onToggle}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Iconify icon="solar:settings-bold-duotone" width={24} />
+                <Box>
+                  <Typography variant="subtitle2">Advanced SEO Settings</Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    Optional: Customize meta tags for search engines
+                  </Typography>
+                </Box>
+              </Box>
+              <IconButton>
+                <Iconify
+                  icon={
+                    openSeoSettings.value
+                      ? 'eva:arrow-ios-upward-fill'
+                      : 'eva:arrow-ios-downward-fill'
+                  }
+                />
+              </IconButton>
+            </Stack>
+
+            <Collapse in={openSeoSettings.value}>
+              <Stack spacing={3} sx={{ pt: 3 }}>
+                <Field.Text
+                  name="metaTitle"
+                  label="Meta Title"
+                  placeholder="Leave empty to use post title"
+                  helperText="Title for search engines (50-60 characters recommended)"
+                />
+
+                <Field.Text
+                  name="metaDescription"
+                  label="Meta Description"
+                  placeholder="Leave empty to use post description"
+                  helperText="Description for search engines (150-160 characters recommended)"
+                  fullWidth
+                  multiline
+                  rows={3}
+                />
+
+                <Field.Autocomplete
+                  name="metaKeywords"
+                  label="Meta Keywords"
+                  placeholder="+ Add keywords"
+                  helperText="Keywords for internal tracking (e.g., agile, pendidikan, kepemimpinan)"
+                  multiple
+                  freeSolo
+                  disableCloseOnSelect
+                  options={_tags.map((option) => option)}
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
+                  renderTags={(selected, getTagProps) =>
+                    selected.map((option, index) => (
+                      <Chip
+                        {...getTagProps({ index })}
+                        key={option}
+                        label={option}
+                        size="small"
+                        color="info"
+                        variant="soft"
+                      />
+                    ))
+                  }
+                />
+              </Stack>
+            </Collapse>
+          </Box>
         </Stack>
       </Collapse>
     </Card>

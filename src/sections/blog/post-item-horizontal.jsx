@@ -22,8 +22,15 @@ import { CustomPopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export function PostItemHorizontal({ sx, post, editHref, detailsHref, ...other }) {
+export function PostItemHorizontal({ sx, post, editHref, detailsHref, onDelete, ...other }) {
   const menuActions = usePopover();
+
+  const handleDelete = () => {
+    menuActions.onClose();
+    if (onDelete) {
+      onDelete(post);
+    }
+  };
 
   // Map database fields to component fields
   const mappedPost = {
@@ -63,7 +70,7 @@ export function PostItemHorizontal({ sx, post, editHref, detailsHref, ...other }
           </MenuItem>
         </li>
 
-        <MenuItem onClick={() => menuActions.onClose()} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
           <Iconify icon="solar:trash-bin-trash-bold" />
           Delete
         </MenuItem>

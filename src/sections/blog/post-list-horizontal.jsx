@@ -8,7 +8,7 @@ import { PostItemHorizontal } from './post-item-horizontal';
 
 // ----------------------------------------------------------------------
 
-export function PostListHorizontal({ posts = [], loading }) {
+export function PostListHorizontal({ posts = [], loading, onDelete }) {
   const renderLoading = () => <PostItemSkeleton variant="horizontal" />;
 
   const renderList = () => {
@@ -30,6 +30,7 @@ export function PostListHorizontal({ posts = [], loading }) {
         post={post}
         detailsHref={paths.dashboard.post.details(post.slug || post.title)}
         editHref={paths.dashboard.post.edit(post.slug || post.title)}
+        onDelete={onDelete}
       />
     ));
   };

@@ -13,10 +13,12 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { usePosts } from 'src/hooks/use-posts';
+import { deletePost } from 'src/lib/supabase-client';
 
 import { POST_SORT_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 
+import { toast } from 'src/components/snackbar';
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
@@ -28,7 +30,7 @@ import { PostListHorizontal } from '../post-list-horizontal';
 // ----------------------------------------------------------------------
 
 export function PostListView() {
-  const { posts, postsLoading } = usePosts();
+  const { posts, postsLoading, mutate } = usePosts();
 
   const [sortBy, setSortBy] = useState('latest');
 
@@ -41,6 +43,24 @@ export function PostListView() {
       setState({ status: newValue });
     },
     [setState]
+  );
+
+  const handleDeletePost = useCallback(
+    async (post) => {
+      if (!window.confirm(`Are you sure you want to delete "${post.title}"?`)) {
+        return;
+      }
+
+      try {
+        await deletePost(post.id);
+        toast.success('Post deleted successfully!');
+        mutate(); // Refresh posts list
+      } catch (error) {
+        console.error('Error deleting post:', error);
+        toast.error(error.message || 'Failed to delete post');
+      }
+    },
+    [mutate]
   );
 
   return (
@@ -106,7 +126,7 @@ export function PostListView() {
         ))}
       </Tabs>
 
-      <PostListHorizontal posts={dataFiltered} loading={postsLoading} />
+      <PostListHorizontal posts={dataFiltered} loading={postsLoading} onDelete={handleDeletePost} />
     </DashboardContent>
   );
 }

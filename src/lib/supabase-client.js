@@ -154,9 +154,54 @@ export async function getPostById(id) {
  * Delete post
  */
 export async function deletePost(id) {
+  logger.log('deletePost called with id:', id);
+
+  // Get current user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    logger.error('deletePost: No authenticated user');
+    throw new Error('You must be logged in to delete posts');
+  }
+
+  logger.log('deletePost: Current user ID:', user.id);
+
+  // First check if post exists and belongs to user
+  const { data: post, error: fetchError } = await supabase
+    .from('posts')
+    .select('id, author_id')
+    .eq('id', id)
+    .single();
+
+  if (fetchError) {
+    logger.error('deletePost: Error fetching post:', fetchError);
+    throw new Error('Post not found');
+  }
+
+  if (!post) {
+    logger.error('deletePost: Post not found');
+    throw new Error('Post not found');
+  }
+
+  logger.log('deletePost: Post found, author:', post.author_id);
+
+  if (post.author_id !== user.id) {
+    logger.error('deletePost: User does not own this post');
+    throw new Error('You can only delete your own posts');
+  }
+
+  // Delete the post
   const { error } = await supabase.from('posts').delete().eq('id', id);
 
-  if (error) throw error;
+  if (error) {
+    logger.error('deletePost error:', error);
+    throw new Error(error.message || 'Failed to delete post');
+  }
+
+  logger.log('deletePost: Post deleted successfully');
+  return true;
 }
 
 // ============================================
@@ -741,10 +786,29 @@ export async function createUserPost(userId, postData) {
  * Update user post
  */
 export async function updateUserPost(postId, postData) {
+  logger.log('updateUserPost called with:', { postId, postData });
+
+  // Get current user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    logger.error('updateUserPost: No authenticated user');
+    throw new Error('You must be logged in to update posts');
+  }
+
+  logger.log('updateUserPost: Current user ID:', user.id);
+
+  // Update with user verification
   const { data, error } = await supabase
     .from('user_posts')
-    .update(postData)
+    .update({
+      ...postData,
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', postId)
+    .eq('user_id', user.id) // Ensure user owns the post
     .select()
     .single();
 
@@ -753,6 +817,12 @@ export async function updateUserPost(postId, postData) {
     throw new Error(error.message || 'Failed to update post');
   }
 
+  if (!data) {
+    logger.error('updateUserPost: Post not found or not owned by user');
+    throw new Error('Post not found or you do not have permission to update it');
+  }
+
+  logger.log('updateUserPost: Post updated successfully');
   return data;
 }
 
@@ -760,6 +830,45 @@ export async function updateUserPost(postId, postData) {
  * Delete user post
  */
 export async function deleteUserPost(postId) {
+  logger.log('deleteUserPost called with postId:', postId);
+
+  // Get current user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    logger.error('deleteUserPost: No authenticated user');
+    throw new Error('You must be logged in to delete posts');
+  }
+
+  logger.log('deleteUserPost: Current user ID:', user.id);
+
+  // First check if post exists and belongs to user
+  const { data: post, error: fetchError } = await supabase
+    .from('user_posts')
+    .select('id, user_id')
+    .eq('id', postId)
+    .single();
+
+  if (fetchError) {
+    logger.error('deleteUserPost: Error fetching post:', fetchError);
+    throw new Error('Post not found');
+  }
+
+  if (!post) {
+    logger.error('deleteUserPost: Post not found');
+    throw new Error('Post not found');
+  }
+
+  logger.log('deleteUserPost: Post found, owner:', post.user_id);
+
+  if (post.user_id !== user.id) {
+    logger.error('deleteUserPost: User does not own this post');
+    throw new Error('You can only delete your own posts');
+  }
+
+  // Delete the post
   const { error } = await supabase.from('user_posts').delete().eq('id', postId);
 
   if (error) {
@@ -767,6 +876,7 @@ export async function deleteUserPost(postId) {
     throw new Error(error.message || 'Failed to delete post');
   }
 
+  logger.log('deleteUserPost: Post deleted successfully');
   return true;
 }
 

@@ -1,8 +1,18 @@
-## Prerequisites
+# 🚀 Fauzi M. Noor - Personal Blog & Portfolio
+
+Personal blog and portfolio website for **Fauzi M. Noor** (Kepala Sekolah & Pendidik Agile).
+
+Built with **Next.js 15**, **Material UI v7**, and **Supabase**.
+
+---
+
+## 📋 Prerequisites
 
 - Node.js >=20 (Recommended)
+- Yarn or npm
+- Supabase account
 
-## Installation
+## 🛠️ Installation
 
 **Using Yarn (Recommended)**
 
@@ -18,7 +28,7 @@ npm i
 npm run dev
 ```
 
-## Build
+## 🏗️ Build
 
 ```sh
 yarn build
@@ -26,7 +36,11 @@ yarn build
 npm run build
 ```
 
-## Mock server
+## 📚 Documentation
+
+For complete documentation, see `mulai_dari_sini.md`
+
+## Mock server (Not used)
 
 By default we provide demo data from : `https://api-dev-minimal-[version].vercel.app`
 

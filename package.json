@@ -1,8 +1,8 @@
 {
-  "name": "@minimal-kit/next-js",
-  "author": "Minimals",
-  "version": "7.0.0",
-  "description": "Next & JavaScript",
+  "name": "fauzimnoor-blog",
+  "author": "Fauzi M. Noor",
+  "version": "1.0.0",
+  "description": "Personal Blog & Portfolio - Next.js & Supabase",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3032 --turbopack",

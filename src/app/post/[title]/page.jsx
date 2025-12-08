@@ -5,7 +5,40 @@ import { PostDetailsHomeView } from 'src/sections/blog/view';
 
 // ----------------------------------------------------------------------
 
-export const metadata = { title: `Post details - ${CONFIG.appName}` };
+// Dynamic metadata based on post
+export async function generateMetadata({ params }) {
+  const { title: slug } = await params;
+
+  const { data: post } = await supabase
+    .from('posts')
+    .select('title, description, meta_title, meta_description, cover_url')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .single();
+
+  if (!post) {
+    return {
+      title: `Post Not Found - ${CONFIG.appName}`,
+    };
+  }
+
+  return {
+    title: post.meta_title || `${post.title} - ${CONFIG.appName}`,
+    description: post.meta_description || post.description,
+    openGraph: {
+      title: post.meta_title || post.title,
+      description: post.meta_description || post.description,
+      images: post.cover_url ? [post.cover_url] : [],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.meta_title || post.title,
+      description: post.meta_description || post.description,
+      images: post.cover_url ? [post.cover_url] : [],
+    },
+  };
+}
 
 async function getPostBySlug(slug) {
   // Only fetch published posts for public page

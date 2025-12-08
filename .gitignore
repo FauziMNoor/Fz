@@ -28,6 +28,9 @@ build
 .env.test.local
 .env.production.local
 
+# package lock files (use yarn.lock only)
+package-lock.json
+
 # misc
 .DS_Store
 .vercel

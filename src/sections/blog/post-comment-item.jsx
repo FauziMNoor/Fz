@@ -46,7 +46,7 @@ export function PostCommentItem({ name, avatarUrl, message, tagUser, postedAt, h
           {fDate(postedAt)}
         </Typography>
 
-        <Typography variant="body2" sx={{ mt: 1 }}>
+        <Typography variant="body2" sx={{ mt: 1, whiteSpace: 'pre-wrap' }}>
           {tagUser && (
             <Box component="strong" sx={{ mr: 0.5 }}>
               @{tagUser}

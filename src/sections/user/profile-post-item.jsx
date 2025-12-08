@@ -288,7 +288,9 @@ export function ProfilePostItem({ post, onEdit, onDelete, isPublic = false, onCo
                   </Box>
                 </Box>
 
-                <Box sx={{ typography: 'body2', color: 'text.secondary' }}>{comment.message}</Box>
+                <Box sx={{ typography: 'body2', color: 'text.secondary', whiteSpace: 'pre-wrap' }}>
+                  {comment.message}
+                </Box>
               </Paper>
             </Box>
           );
@@ -476,7 +478,10 @@ export function ProfilePostItem({ post, onEdit, onDelete, isPublic = false, onCo
       <Card>
         {renderHead()}
 
-        <Typography variant="body2" sx={[(theme) => ({ p: theme.spacing(3, 3, 2, 3) })]}>
+        <Typography
+          variant="body2"
+          sx={[(theme) => ({ p: theme.spacing(3, 3, 2, 3), whiteSpace: 'pre-wrap' })]}
+        >
           {post.message}
         </Typography>
 

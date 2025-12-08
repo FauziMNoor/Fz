@@ -130,26 +130,30 @@ export function EbookListView() {
   };
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 } }}>
       {/* Header */}
-      <Box sx={{ mb: 5, textAlign: 'center' }}>
-        <Typography variant="h2" sx={{ mb: 2 }}>
+      <Box sx={{ mb: { xs: 4, md: 6 }, textAlign: 'center' }}>
+        <Typography variant="h2" sx={{ mb: 2, fontSize: { xs: '2rem', md: '3rem' } }}>
           📚 Koleksi E-Book
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
+        <Typography
+          variant="body1"
+          color="text.secondary"
+          sx={{ maxWidth: 600, mx: 'auto', px: 2 }}
+        >
           Kumpulan e-book pilihan tentang Islam, Pendidikan, dan Kepemimpinan
         </Typography>
       </Box>
 
       {/* Featured Section */}
       {featuredEbooks.length > 0 && (
-        <Box sx={{ mb: 5 }}>
-          <Typography variant="h5" sx={{ mb: 3 }}>
+        <Box sx={{ mb: { xs: 4, md: 6 } }}>
+          <Typography variant="h5" sx={{ mb: 3, px: { xs: 2, sm: 0 } }}>
             ⭐ Featured E-Books
           </Typography>
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
             {featuredEbooks.slice(0, 3).map((ebook) => (
-              <Grid item xs={12} sm={6} md={4} key={ebook.id}>
+              <Grid key={ebook.id} size={{ xs: 12, sm: 6, md: 4 }}>
                 <EbookCard ebook={ebook} />
               </Grid>
             ))}
@@ -233,15 +237,15 @@ export function EbookListView() {
 
       {/* E-Books Grid */}
       {loading ? (
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 2, sm: 3 }}>
           {[...Array(6)].map((_, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
+            <Grid key={index} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
               <EbookSkeleton />
             </Grid>
           ))}
         </Grid>
       ) : sortedEbooks.length === 0 ? (
-        <Box sx={{ py: 10, textAlign: 'center' }}>
+        <Box sx={{ py: 10, textAlign: 'center', px: 2 }}>
           <Iconify icon="solar:book-bold" width={64} sx={{ mb: 2, color: 'text.disabled' }} />
           <Typography variant="h6" color="text.secondary">
             Tidak ada e-book ditemukan
@@ -251,9 +255,9 @@ export function EbookListView() {
           </Typography>
         </Box>
       ) : (
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 2, sm: 3 }}>
           {sortedEbooks.map((ebook) => (
-            <Grid item xs={12} sm={6} md={4} key={ebook.id}>
+            <Grid key={ebook.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
               <EbookCard ebook={ebook} />
             </Grid>
           ))}

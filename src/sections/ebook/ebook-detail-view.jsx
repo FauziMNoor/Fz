@@ -82,7 +82,7 @@ export function EbookDetailView({ ebook }) {
   }
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 } }}>
       {/* Back Button */}
       <Button
         component={RouterLink}
@@ -95,7 +95,7 @@ export function EbookDetailView({ ebook }) {
 
       <Grid container spacing={5}>
         {/* Left Column - Cover & Download */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Stack spacing={3} sx={{ position: 'sticky', top: 100 }}>
             {/* Cover Image */}
             <Image
@@ -156,7 +156,7 @@ export function EbookDetailView({ ebook }) {
         </Grid>
 
         {/* Right Column - Details */}
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Stack spacing={3}>
             {/* Title */}
             <Typography variant="h3">{ebook.title}</Typography>
@@ -229,7 +229,7 @@ export function EbookDetailView({ ebook }) {
           </Typography>
           <Grid container spacing={3}>
             {relatedEbooks.map((relatedEbook) => (
-              <Grid item xs={12} sm={6} md={4} key={relatedEbook.id}>
+              <Grid key={relatedEbook.id} size={{ xs: 12, sm: 6, md: 4 }}>
                 <EbookCard ebook={relatedEbook} />
               </Grid>
             ))}

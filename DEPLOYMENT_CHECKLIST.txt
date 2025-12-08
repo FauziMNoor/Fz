@@ -1,0 +1,78 @@
+═══════════════════════════════════════════════════════════
+   🚀 DEPLOYMENT CHECKLIST - Follow Step by Step
+═══════════════════════════════════════════════════════════
+
+📋 PRE-DEPLOYMENT
+═══════════════════════════════════════════════════════════
+[ ] Application tested locally (npm run dev)
+[ ] No critical errors
+[ ] Environment variables ready (.env file)
+[ ] Supabase database configured
+
+🔐 STEP 1: PREPARE ENVIRONMENT VARIABLES (1 min)
+═══════════════════════════════════════════════════════════
+[ ] Open .env file
+[ ] Copy NEXT_PUBLIC_SUPABASE_URL
+[ ] Copy NEXT_PUBLIC_SUPABASE_ANON_KEY
+[ ] Keep these values safe (you'll need them!)
+
+📦 STEP 2: COMMIT & PUSH TO GITHUB (2 min)
+═══════════════════════════════════════════════════════════
+[ ] Run: git add .
+[ ] Run: git commit -m "Ready for deployment"
+[ ] Run: git push origin main
+[ ] Verify push successful on GitHub
+
+🌐 STEP 3: DEPLOY TO VERCEL (5 min)
+═══════════════════════════════════════════════════════════
+[ ] Go to: https://vercel.com/new
+[ ] Sign in with GitHub
+[ ] Click "Import Git Repository"
+[ ] Select your repository
+[ ] Click "Import"
+
+⚙️ STEP 4: CONFIGURE PROJECT
+═══════════════════════════════════════════════════════════
+[ ] Framework: Next.js (auto-detected)
+[ ] Root Directory: ./ (default)
+[ ] Build Command: npm run build (default)
+
+🔑 STEP 5: ADD ENVIRONMENT VARIABLES
+═══════════════════════════════════════════════════════════
+[ ] Click "Environment Variables"
+[ ] Add: NEXT_PUBLIC_SUPABASE_URL
+[ ] Add: NEXT_PUBLIC_SUPABASE_ANON_KEY
+[ ] Select: Production, Preview, Development (all)
+[ ] Click "Save"
+
+🚀 STEP 6: DEPLOY
+═══════════════════════════════════════════════════════════
+[ ] Click "Deploy" button
+[ ] Wait 3-5 minutes for build
+[ ] Watch build logs (optional)
+[ ] Wait for "Deployment Ready" message
+
+✅ STEP 7: VERIFY DEPLOYMENT
+═══════════════════════════════════════════════════════════
+[ ] Click "Visit" button
+[ ] Test homepage (/)
+[ ] Test about page (/tentang-saya)
+[ ] Test blog page (/post)
+[ ] Test sign-in (/auth/supabase/sign-in)
+[ ] Try to login
+[ ] Test dashboard (/dashboard)
+[ ] Check images load
+[ ] Check forms work
+
+🎉 DEPLOYMENT COMPLETE!
+═══════════════════════════════════════════════════════════
+[ ] Production URL works
+[ ] All features working
+[ ] No console errors
+[ ] Share your site!
+
+Your site: https://your-project.vercel.app
+
+═══════════════════════════════════════════════════════════
+   📚 Need Help? See: docs/VERCEL_DEPLOYMENT_GUIDE.md
+═══════════════════════════════════════════════════════════

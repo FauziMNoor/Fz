@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import Pagination from '@mui/material/Pagination';
 
 import { PostCommentItem } from './post-comment-item';
 
@@ -39,14 +38,7 @@ export function PostCommentList({ comments = [] }) {
         );
       })}
 
-      <Pagination
-        count={8}
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          my: { xs: 5, md: 8 },
-        }}
-      />
+      {/* Pagination removed - not functional */}
     </>
   );
 }

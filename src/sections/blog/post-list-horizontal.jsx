@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import Pagination, { paginationClasses } from '@mui/material/Pagination';
 
 import { paths } from 'src/routes/paths';
 
@@ -47,15 +46,7 @@ export function PostListHorizontal({ posts = [], loading, onDelete }) {
         {loading ? renderLoading() : renderList()}
       </Box>
 
-      {posts.length > 8 && (
-        <Pagination
-          count={8}
-          sx={{
-            mt: { xs: 5, md: 8 },
-            [`& .${paginationClasses.ul}`]: { justifyContent: 'center' },
-          }}
-        />
-      )}
+      {/* Pagination removed - not functional */}
     </>
   );
 }

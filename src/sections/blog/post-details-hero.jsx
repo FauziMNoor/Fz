@@ -11,14 +11,63 @@ import SpeedDialAction from '@mui/material/SpeedDialAction';
 
 import { fDate } from 'src/utils/format-time';
 
-import { _socials } from 'src/_mock';
-
+import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
 export function PostDetailsHero({ sx, title, author, coverUrl, createdAt, ...other }) {
   const smUp = useMediaQuery((theme) => theme.breakpoints.up('sm'));
+
+  const handleShare = (platform) => {
+    const postUrl = window.location.href;
+    const postText = title || 'Check out this post!';
+    const encodedUrl = encodeURIComponent(postUrl);
+    const encodedText = encodeURIComponent(postText);
+
+    let shareUrl = '';
+
+    switch (platform) {
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+        break;
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+        break;
+      case 'threads':
+        shareUrl = `https://threads.net/intent/post?text=${encodedText}%20${encodedUrl}`;
+        break;
+      case 'linkedin':
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+        break;
+      case 'whatsapp':
+        shareUrl = `https://wa.me/?text=${encodedText}%20${encodedUrl}`;
+        break;
+      case 'telegram':
+        shareUrl = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`;
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(postUrl);
+        toast.success('Link copied to clipboard!');
+        return;
+      default:
+        break;
+    }
+
+    if (shareUrl) {
+      window.open(shareUrl, '_blank', 'width=600,height=400');
+    }
+  };
+
+  const socialPlatforms = [
+    { value: 'facebook', label: 'Facebook', icon: 'logos:facebook' },
+    { value: 'twitter', label: 'X (Twitter)', icon: 'skill-icons:twitter' },
+    { value: 'threads', label: 'Threads', icon: 'ri:threads-fill' },
+    { value: 'linkedin', label: 'LinkedIn', icon: 'skill-icons:linkedin' },
+    { value: 'whatsapp', label: 'WhatsApp', icon: 'logos:whatsapp-icon' },
+    { value: 'telegram', label: 'Telegram', icon: 'logos:telegram' },
+    { value: 'copy', label: 'Copy Link', icon: 'solar:copy-bold' },
+  ];
 
   return (
     <Box
@@ -103,17 +152,11 @@ export function PostDetailsHero({ sx, title, author, coverUrl, createdAt, ...oth
               right: { xs: 16, md: 24 },
             }}
           >
-            {_socials.map((social) => (
+            {socialPlatforms.map((social) => (
               <SpeedDialAction
-                key={social.label}
-                icon={
-                  <>
-                    {social.value === 'twitter' && <Iconify icon="socials:twitter" />}
-                    {social.value === 'facebook' && <Iconify icon="socials:facebook" />}
-                    {social.value === 'instagram' && <Iconify icon="socials:instagram" />}
-                    {social.value === 'linkedin' && <Iconify icon="socials:linkedin" />}
-                  </>
-                }
+                key={social.value}
+                icon={<Iconify icon={social.icon} width={24} />}
+                onClick={() => handleShare(social.value)}
                 slotProps={{
                   fab: { color: 'default' },
                   tooltip: {

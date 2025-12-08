@@ -8,7 +8,13 @@ import { PostDetailsHomeView } from 'src/sections/blog/view';
 export const metadata = { title: `Post details - ${CONFIG.appName}` };
 
 async function getPostBySlug(slug) {
-  const { data: post, error } = await supabase.from('posts').select('*').eq('slug', slug).single();
+  // Only fetch published posts for public page
+  const { data: post, error } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('slug', slug)
+    .eq('status', 'published') // Only published posts
+    .single();
 
   if (error) {
     console.error('Error fetching post:', error);
@@ -97,9 +103,18 @@ export default async function Page({ params }) {
   if (!post) {
     return (
       <div style={{ padding: '40px', textAlign: 'center' }}>
-        <h1>Post Not Found</h1>
-        <p>The post with slug &quot;{title}&quot; does not exist or is not published.</p>
-        <a href="/post">← Back to Blog</a>
+        <h1>📝 Post Not Found</h1>
+        <p style={{ marginBottom: '20px' }}>
+          The post with slug &quot;{title}&quot; does not exist or is not published yet.
+        </p>
+        <p style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>
+          Note: Only published posts are visible on the public blog page.
+          <br />
+          Draft posts can only be viewed from the dashboard.
+        </p>
+        <a href="/post" style={{ color: '#6950E8', textDecoration: 'none' }}>
+          ← Back to Blog
+        </a>
       </div>
     );
   }

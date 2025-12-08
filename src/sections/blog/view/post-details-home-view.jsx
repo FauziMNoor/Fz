@@ -33,8 +33,8 @@ export function PostDetailsHomeView({ post, latestPosts }) {
       <PostDetailsHero
         title={post?.title ?? ''}
         author={post?.author}
-        coverUrl={post?.coverUrl ?? ''}
-        createdAt={post?.createdAt}
+        coverUrl={post?.cover_url || post?.coverUrl || ''}
+        createdAt={post?.created_at || post?.createdAt}
       />
 
       <Container
@@ -55,7 +55,25 @@ export function PostDetailsHomeView({ post, latestPosts }) {
 
       <Container maxWidth={false}>
         <Stack sx={{ maxWidth: 720, mx: 'auto' }}>
-          <Typography variant="subtitle1">{post?.description}</Typography>
+          {/* Description - Styled as lead paragraph */}
+          <Typography
+            variant="body1"
+            sx={{
+              mb: 4,
+              fontSize: { xs: '0.95rem', md: '1rem' },
+              fontWeight: 400,
+              lineHeight: 1.7,
+              color: 'text.secondary',
+              fontStyle: 'italic',
+              borderLeft: (theme) => `4px solid ${theme.palette.primary.main}`,
+              pl: 3,
+              py: 2,
+              bgcolor: (theme) => theme.palette.action.hover,
+              borderRadius: 1,
+            }}
+          >
+            {post?.description}
+          </Typography>
 
           <Markdown children={post?.content} />
 
@@ -70,45 +88,52 @@ export function PostDetailsHomeView({ post, latestPosts }) {
             ]}
           >
             <Box sx={{ gap: 1, display: 'flex', flexWrap: 'wrap' }}>
-              {post?.tags.map((tag) => (
-                <Chip key={tag} label={tag} variant="soft" />
-              ))}
+              {post?.tags && post.tags.length > 0 ? (
+                post.tags.map((tag) => <Chip key={tag} label={tag} variant="soft" />)
+              ) : (
+                <Chip label="No tags" variant="soft" color="default" />
+              )}
             </Box>
 
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <FormControlLabel
-                label={fShortenNumber(post?.totalFavorites)}
-                control={
-                  <Checkbox
-                    defaultChecked
-                    size="small"
-                    color="error"
-                    icon={<Iconify icon="solar:heart-bold" />}
-                    checkedIcon={<Iconify icon="solar:heart-bold" />}
-                    slotProps={{
-                      input: {
-                        id: 'favorite-checkbox',
-                        'aria-label': 'Favorite checkbox',
-                      },
-                    }}
-                  />
-                }
-                sx={{ mr: 1 }}
-              />
+            {/* Likes/Favorites - Hidden for now (not implemented in database) */}
+            {post?.totalFavorites > 0 && (
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <FormControlLabel
+                  label={fShortenNumber(post?.totalFavorites || 0)}
+                  control={
+                    <Checkbox
+                      defaultChecked
+                      size="small"
+                      color="error"
+                      icon={<Iconify icon="solar:heart-bold" />}
+                      checkedIcon={<Iconify icon="solar:heart-bold" />}
+                      slotProps={{
+                        input: {
+                          id: 'favorite-checkbox',
+                          'aria-label': 'Favorite checkbox',
+                        },
+                      }}
+                    />
+                  }
+                  sx={{ mr: 1 }}
+                />
 
-              <AvatarGroup>
-                {post?.favoritePerson.map((person) => (
-                  <Avatar key={person.name} alt={person.name} src={person.avatarUrl} />
-                ))}
-              </AvatarGroup>
-            </Box>
+                {post?.favoritePerson && post.favoritePerson.length > 0 && (
+                  <AvatarGroup>
+                    {post.favoritePerson.map((person) => (
+                      <Avatar key={person.name} alt={person.name} src={person.avatarUrl} />
+                    ))}
+                  </AvatarGroup>
+                )}
+              </Box>
+            )}
           </Stack>
 
           <Box sx={{ mb: 3, mt: 5, display: 'flex' }}>
             <Typography variant="h4">Comments</Typography>
 
             <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
-              ({post?.comments.length})
+              ({post?.comments?.length || 0})
             </Typography>
           </Box>
 
@@ -116,7 +141,7 @@ export function PostDetailsHomeView({ post, latestPosts }) {
 
           <Divider sx={{ mt: 5, mb: 2 }} />
 
-          <PostCommentList comments={post?.comments} />
+          <PostCommentList comments={post?.comments || []} />
         </Stack>
       </Container>
 

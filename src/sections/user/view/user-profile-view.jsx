@@ -18,7 +18,7 @@ import { RouterLink } from 'src/routes/components';
 import { useRouter, usePathname, useSearchParams } from 'src/routes/hooks';
 
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _userAbout, _userFriends, _userFollowers } from 'src/_mock';
+import { _userAbout } from 'src/_mock';
 import {
   getUserProfile,
   deleteUserPost,
@@ -36,9 +36,7 @@ import { useAuthContext } from 'src/auth/hooks';
 
 import { ProfileHome } from '../profile-home';
 import { ProfileCover } from '../profile-cover';
-import { ProfileFriends } from '../profile-friends';
 import { ProfilePortfolio } from '../profile-portfolio';
-import { ProfileFollowers } from '../profile-followers';
 
 // ----------------------------------------------------------------------
 
@@ -47,16 +45,6 @@ const NAV_ITEMS = [
     value: '',
     label: 'Profile',
     icon: <Iconify width={24} icon="solar:user-id-bold" />,
-  },
-  {
-    value: 'followers',
-    label: 'Followers',
-    icon: <Iconify width={24} icon="solar:heart-bold" />,
-  },
-  {
-    value: 'friends',
-    label: 'Friends',
-    icon: <Iconify width={24} icon="solar:users-group-rounded-bold" />,
   },
   {
     value: 'portfolio',
@@ -77,7 +65,6 @@ export function UserProfileView() {
 
   const { user } = useAuthContext();
 
-  const [searchFriends, setSearchFriends] = useState('');
   const [portfolios, setPortfolios] = useState([]);
   const [portfoliosLoading, setPortfoliosLoading] = useState(false);
   const [profile, setProfile] = useState(null);
@@ -89,10 +76,6 @@ export function UserProfileView() {
   const [editingPost, setEditingPost] = useState(null);
   const [editMessage, setEditMessage] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
-
-  const handleSearchFriends = useCallback((event) => {
-    setSearchFriends(event.target.value);
-  }, []);
 
   const fetchPortfolios = useCallback(async () => {
     if (!user?.id) return;
@@ -295,16 +278,6 @@ export function UserProfileView() {
           onPostCreated={fetchPosts}
           onEditPost={handleEditPost}
           onDeletePost={handleDeletePost}
-        />
-      )}
-
-      {selectedTab === 'followers' && <ProfileFollowers followers={_userFollowers} />}
-
-      {selectedTab === 'friends' && (
-        <ProfileFriends
-          friends={_userFriends}
-          searchFriends={searchFriends}
-          onSearchFriends={handleSearchFriends}
         />
       )}
 

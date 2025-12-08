@@ -11,7 +11,7 @@ import Container from '@mui/material/Container';
 import { RouterLink } from 'src/routes/components';
 import { usePathname, useSearchParams } from 'src/routes/hooks';
 
-import { _userAbout, _userFriends, _userFollowers } from 'src/_mock';
+import { _userAbout } from 'src/_mock';
 import { getUserProfile, getUserSocialPosts } from 'src/lib/supabase-client';
 
 import { toast } from 'src/components/snackbar';
@@ -19,9 +19,7 @@ import { Iconify } from 'src/components/iconify';
 
 import { ProfileHome } from '../profile-home';
 import { ProfileCover } from '../profile-cover';
-import { ProfileFriends } from '../profile-friends';
 import { ProfilePortfolio } from '../profile-portfolio';
-import { ProfileFollowers } from '../profile-followers';
 
 // ----------------------------------------------------------------------
 
@@ -30,16 +28,6 @@ const NAV_ITEMS = [
     value: '',
     label: 'Profile',
     icon: <Iconify width={24} icon="solar:user-id-bold" />,
-  },
-  {
-    value: 'followers',
-    label: 'Followers',
-    icon: <Iconify width={24} icon="solar:heart-bold" />,
-  },
-  {
-    value: 'friends',
-    label: 'Friends',
-    icon: <Iconify width={24} icon="solar:users-group-rounded-bold" />,
   },
   {
     value: 'portfolio',
@@ -60,14 +48,9 @@ export function PublicProfileView() {
   const searchParams = useSearchParams();
   const selectedTab = searchParams.get(TAB_PARAM) ?? '';
 
-  const [searchFriends, setSearchFriends] = useState('');
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [postsLoading, setPostsLoading] = useState(false);
-
-  const handleSearchFriends = useCallback((event) => {
-    setSearchFriends(event.target.value);
-  }, []);
 
   const fetchPosts = useCallback(async () => {
     if (!PUBLIC_USER_ID || PUBLIC_USER_ID === 'YOUR_USER_ID_HERE') {
@@ -170,16 +153,6 @@ export function PublicProfileView() {
           }}
           posts={posts}
           isPublic
-        />
-      )}
-
-      {selectedTab === 'followers' && <ProfileFollowers followers={_userFollowers} />}
-
-      {selectedTab === 'friends' && (
-        <ProfileFriends
-          friends={_userFriends}
-          searchFriends={searchFriends}
-          onSearchFriends={handleSearchFriends}
         />
       )}
 

@@ -629,11 +629,30 @@ Perbaikan UI/UX pada halaman profile post untuk pengalaman yang lebih baik dan m
 - ✅ Fallback ke auth context jika tidak ada
 - ✅ Consistent dengan design comment form
 
+**4. Line Breaks Fix**
+
+- ✅ Profile posts - Enter/newline sekarang dirender dengan benar
+- ✅ Profile comments - Line breaks berfungsi dengan benar
+- ✅ Blog comments - Line breaks berfungsi dengan benar
+- ✅ Menggunakan CSS `whiteSpace: 'pre-wrap'` untuk preserve formatting
+- ✅ Text tetap wrap jika terlalu panjang (tidak overflow)
+
+**5. Removed Unused Tabs** ⭐ NEW
+
+- ✅ Hapus tab "Followers" dari public profile (`/tentang-saya`)
+- ✅ Hapus tab "Friends" dari public profile (`/tentang-saya`)
+- ✅ Hapus tab "Followers" dari dashboard profile (`/dashboard/user`)
+- ✅ Hapus tab "Friends" dari dashboard profile (`/dashboard/user`)
+- ✅ Tabs sekarang: Profile & Portfolio saja
+- ✅ UI lebih clean dan fokus
+
 **📚 Files Modified:**
 
 - `src/sections/user/profile-home.jsx` (added avatar to post input)
-- `src/sections/user/profile-post-item.jsx` (removed like, enhanced share)
-- `src/sections/user/view/user-profile-view.jsx` (pass avatar data to ProfileHome)
+- `src/sections/user/profile-post-item.jsx` (removed like, enhanced share, fixed line breaks)
+- `src/sections/user/view/user-profile-view.jsx` (pass avatar data, removed followers/friends tabs)
+- `src/sections/user/view/public-profile-view.jsx` (removed followers/friends tabs)
+- `src/sections/blog/post-comment-item.jsx` (fixed line breaks in comments)
 - `src/lib/supabase-client.js` (fixed author profile mapping)
 
 **📖 Documentation:**

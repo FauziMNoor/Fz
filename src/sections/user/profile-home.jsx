@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
+import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import InputBase from '@mui/material/InputBase';
 import CardHeader from '@mui/material/CardHeader';
@@ -178,126 +179,134 @@ export function ProfileHome({
     </Card>
   );
 
-  const renderPostInput = () => (
-    <Card sx={{ p: 3 }}>
-      <Box
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        sx={[
-          (theme) => ({
-            p: 2,
-            mb: 2,
-            borderRadius: 1,
-            border: `dashed 2px ${isDragging ? theme.palette.primary.main : varAlpha(theme.vars.palette.grey['500Channel'], 0.2)}`,
-            bgcolor: isDragging
-              ? varAlpha(theme.vars.palette.primary.mainChannel, 0.08)
-              : 'transparent',
-            transition: 'all 0.2s',
-          }),
-        ]}
-      >
-        <InputBase
-          multiline
-          fullWidth
-          rows={4}
-          value={postMessage}
-          onChange={(e) => setPostMessage(e.target.value)}
-          placeholder="Share what you are thinking here... (You can drag & drop images here)"
-          disabled={isSubmitting}
-          inputProps={{ id: 'post-input' }}
-        />
-      </Box>
+  const renderPostInput = () => {
+    // Get avatar from info prop (from database) or fallback to user context
+    const avatarUrl = info?.avatar_url || user?.photoURL;
+    const displayName = info?.full_name || user?.displayName || user?.email;
 
-      {selectedFiles.length > 0 && (
-        <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-          {selectedFiles.map((file, index) => (
-            <Box
-              key={index}
-              sx={{
-                position: 'relative',
-                width: 100,
-                height: 100,
+    return (
+      <Card sx={{ p: 3 }}>
+        {/* Avatar and Input Box */}
+        <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+          <Avatar src={avatarUrl} alt={displayName} sx={{ width: 48, height: 48 }}>
+            {displayName?.charAt(0).toUpperCase()}
+          </Avatar>
+
+          <Box
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            sx={[
+              (theme) => ({
+                flex: 1,
+                p: 2,
                 borderRadius: 1,
-                overflow: 'hidden',
-                border: (theme) =>
-                  `solid 1px ${varAlpha(theme.vars.palette.grey['500Channel'], 0.2)}`,
-              }}
-            >
-              <img
-                src={URL.createObjectURL(file)}
-                alt={file.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-              <IconButton
-                size="small"
-                onClick={() => handleRemoveFile(index)}
+                border: `dashed 2px ${isDragging ? theme.palette.primary.main : varAlpha(theme.vars.palette.grey['500Channel'], 0.2)}`,
+                bgcolor: isDragging
+                  ? varAlpha(theme.vars.palette.primary.mainChannel, 0.08)
+                  : 'transparent',
+                transition: 'all 0.2s',
+              }),
+            ]}
+          >
+            <InputBase
+              multiline
+              fullWidth
+              rows={4}
+              value={postMessage}
+              onChange={(e) => setPostMessage(e.target.value)}
+              placeholder="Share what you are thinking here... (You can drag & drop images here)"
+              disabled={isSubmitting}
+              inputProps={{ id: 'post-input' }}
+            />
+          </Box>
+        </Box>
+
+        {selectedFiles.length > 0 && (
+          <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            {selectedFiles.map((file, index) => (
+              <Box
+                key={index}
                 sx={{
-                  position: 'absolute',
-                  top: 4,
-                  right: 4,
-                  bgcolor: 'background.paper',
-                  '&:hover': { bgcolor: 'error.main', color: 'error.contrastText' },
+                  position: 'relative',
+                  width: 100,
+                  height: 100,
+                  borderRadius: 1,
+                  overflow: 'hidden',
+                  border: (theme) =>
+                    `solid 1px ${varAlpha(theme.vars.palette.grey['500Channel'], 0.2)}`,
                 }}
               >
-                <Iconify icon="mingcute:close-line" width={16} />
-              </IconButton>
-            </Box>
-          ))}
-        </Box>
-      )}
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt={file.name}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                <IconButton
+                  size="small"
+                  onClick={() => handleRemoveFile(index)}
+                  sx={{
+                    position: 'absolute',
+                    top: 4,
+                    right: 4,
+                    bgcolor: 'background.paper',
+                    '&:hover': { bgcolor: 'error.main', color: 'error.contrastText' },
+                  }}
+                >
+                  <Iconify icon="mingcute:close-line" width={16} />
+                </IconButton>
+              </Box>
+            ))}
+          </Box>
+        )}
 
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
         <Box
           sx={{
-            gap: 1,
             display: 'flex',
             alignItems: 'center',
-            color: 'text.secondary',
+            justifyContent: 'space-between',
           }}
         >
-          <Fab
-            size="small"
-            color="inherit"
-            variant="softExtended"
-            onClick={handleAttach}
-            disabled={isSubmitting}
+          <Box
+            sx={{
+              gap: 1,
+              display: 'flex',
+              alignItems: 'center',
+              color: 'text.secondary',
+            }}
           >
-            <Iconify icon="solar:gallery-wide-bold" width={24} sx={{ color: 'success.main' }} />
-            Image/Video
-          </Fab>
+            <Fab
+              size="small"
+              color="inherit"
+              variant="softExtended"
+              onClick={handleAttach}
+              disabled={isSubmitting}
+            >
+              <Iconify icon="solar:gallery-wide-bold" width={24} sx={{ color: 'success.main' }} />
+              Image/Video
+            </Fab>
+          </Box>
 
-          <Fab size="small" color="inherit" variant="softExtended" disabled>
-            <Iconify icon="solar:videocamera-record-bold" width={24} sx={{ color: 'error.main' }} />
-            Streaming
-          </Fab>
+          <Button
+            variant="contained"
+            onClick={handlePostSubmit}
+            disabled={isSubmitting || !postMessage.trim()}
+          >
+            {isSubmitting ? <CircularProgress size={24} color="inherit" /> : 'Post'}
+          </Button>
         </Box>
 
-        <Button
-          variant="contained"
-          onClick={handlePostSubmit}
-          disabled={isSubmitting || !postMessage.trim()}
-        >
-          {isSubmitting ? <CircularProgress size={24} color="inherit" /> : 'Post'}
-        </Button>
-      </Box>
-
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/*,video/*"
-        multiple
-        onChange={handleFileChange}
-        style={{ display: 'none' }}
-      />
-    </Card>
-  );
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*,video/*"
+          multiple
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+        />
+      </Card>
+    );
+  };
 
   const renderSocials = () => {
     const socialLinks = [

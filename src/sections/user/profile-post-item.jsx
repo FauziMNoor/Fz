@@ -4,20 +4,20 @@ import { useRef, useState, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
+import Menu from '@mui/material/Menu';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-import Checkbox from '@mui/material/Checkbox';
+import MenuItem from '@mui/material/MenuItem';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import InputAdornment from '@mui/material/InputAdornment';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import AvatarGroup, { avatarGroupClasses } from '@mui/material/AvatarGroup';
+import ListItemText from '@mui/material/ListItemText';
 
 import { fDateTime } from 'src/utils/format-time';
-import { fShortenNumber } from 'src/utils/format-number';
 
 import { addPostComment } from 'src/lib/supabase-client';
 
@@ -43,6 +43,10 @@ export function ProfilePostItem({ post, onEdit, onDelete, isPublic = false, onCo
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
 
+  // Share menu state
+  const [shareAnchorEl, setShareAnchorEl] = useState(null);
+  const shareMenuOpen = Boolean(shareAnchorEl);
+
   // Lightbox for images
   const slides = (post.media_urls || []).map((url) => ({ src: url }));
   const lightbox = useLightBox(slides);
@@ -62,6 +66,59 @@ export function ProfilePostItem({ post, onEdit, onDelete, isPublic = false, onCo
       commentRef.current.focus();
     }
   }, []);
+
+  const handleOpenShareMenu = useCallback((event) => {
+    setShareAnchorEl(event.currentTarget);
+  }, []);
+
+  const handleCloseShareMenu = useCallback(() => {
+    setShareAnchorEl(null);
+  }, []);
+
+  const handleShare = useCallback(
+    (platform) => {
+      const postUrl = window.location.href;
+      const postText = post.message || 'Check out this post!';
+      const encodedUrl = encodeURIComponent(postUrl);
+      const encodedText = encodeURIComponent(postText);
+
+      let shareUrl = '';
+
+      switch (platform) {
+        case 'facebook':
+          shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+          break;
+        case 'twitter':
+          shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+          break;
+        case 'threads':
+          shareUrl = `https://threads.net/intent/post?text=${encodedText}%20${encodedUrl}`;
+          break;
+        case 'linkedin':
+          shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+          break;
+        case 'whatsapp':
+          shareUrl = `https://wa.me/?text=${encodedText}%20${encodedUrl}`;
+          break;
+        case 'telegram':
+          shareUrl = `https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`;
+          break;
+        case 'copy':
+          navigator.clipboard.writeText(postUrl);
+          toast.success('Link copied to clipboard!');
+          handleCloseShareMenu();
+          return;
+        default:
+          break;
+      }
+
+      if (shareUrl) {
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+        handleCloseShareMenu();
+      }
+    },
+    [post.message, handleCloseShareMenu]
+  );
 
   const handleEdit = useCallback(() => {
     if (onEdit) {
@@ -337,43 +394,81 @@ export function ProfilePostItem({ post, onEdit, onDelete, isPublic = false, onCo
     <Box
       sx={[(theme) => ({ display: 'flex', alignItems: 'center', p: theme.spacing(2, 3, 3, 3) })]}
     >
-      <FormControlLabel
-        control={
-          <Checkbox
-            defaultChecked
-            color="error"
-            icon={<Iconify icon="solar:heart-bold" />}
-            checkedIcon={<Iconify icon="solar:heart-bold" />}
-            slotProps={{
-              input: {
-                id: `favorite-${post.id}-checkbox`,
-                'aria-label': `Favorite ${post.id} checkbox`,
-              },
-            }}
-          />
-        }
-        label={fShortenNumber(post.personLikes?.length || 0)}
-        sx={{ mr: 1 }}
-      />
-
-      {!!post.personLikes?.length && (
-        <AvatarGroup sx={{ [`& .${avatarGroupClasses.avatar}`]: { width: 32, height: 32 } }}>
-          {post.personLikes.map((person) => (
-            <Avatar key={person.name} alt={person.name} src={person.avatarUrl} />
-          ))}
-        </AvatarGroup>
-      )}
-
       <Box sx={{ flexGrow: 1 }} />
 
       <IconButton onClick={handleClickComment}>
         <Iconify icon="solar:chat-round-dots-bold" />
       </IconButton>
 
-      <IconButton>
+      <IconButton onClick={handleOpenShareMenu}>
         <Iconify icon="solar:share-bold" />
       </IconButton>
     </Box>
+  );
+
+  const renderShareMenu = () => (
+    <Menu
+      anchorEl={shareAnchorEl}
+      open={shareMenuOpen}
+      onClose={handleCloseShareMenu}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'right',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+    >
+      <MenuItem onClick={() => handleShare('facebook')}>
+        <ListItemIcon>
+          <Iconify icon="logos:facebook" width={24} />
+        </ListItemIcon>
+        <ListItemText>Share to Facebook</ListItemText>
+      </MenuItem>
+
+      <MenuItem onClick={() => handleShare('twitter')}>
+        <ListItemIcon>
+          <Iconify icon="skill-icons:twitter" width={24} />
+        </ListItemIcon>
+        <ListItemText>Share to X (Twitter)</ListItemText>
+      </MenuItem>
+
+      <MenuItem onClick={() => handleShare('threads')}>
+        <ListItemIcon>
+          <Iconify icon="ri:threads-fill" width={24} />
+        </ListItemIcon>
+        <ListItemText>Share to Threads</ListItemText>
+      </MenuItem>
+
+      <MenuItem onClick={() => handleShare('linkedin')}>
+        <ListItemIcon>
+          <Iconify icon="skill-icons:linkedin" width={24} />
+        </ListItemIcon>
+        <ListItemText>Share to LinkedIn</ListItemText>
+      </MenuItem>
+
+      <MenuItem onClick={() => handleShare('whatsapp')}>
+        <ListItemIcon>
+          <Iconify icon="logos:whatsapp-icon" width={24} />
+        </ListItemIcon>
+        <ListItemText>Share to WhatsApp</ListItemText>
+      </MenuItem>
+
+      <MenuItem onClick={() => handleShare('telegram')}>
+        <ListItemIcon>
+          <Iconify icon="logos:telegram" width={24} />
+        </ListItemIcon>
+        <ListItemText>Share to Telegram</ListItemText>
+      </MenuItem>
+
+      <MenuItem onClick={() => handleShare('copy')}>
+        <ListItemIcon>
+          <Iconify icon="solar:copy-bold" width={24} />
+        </ListItemIcon>
+        <ListItemText>Copy Link</ListItemText>
+      </MenuItem>
+    </Menu>
   );
 
   return (
@@ -426,6 +521,8 @@ export function ProfilePostItem({ post, onEdit, onDelete, isPublic = false, onCo
         {!isPublic && !!(post.comments || []).length && renderCommentList()}
         {!isPublic && renderInput()}
       </Card>
+
+      {renderShareMenu()}
 
       <Lightbox
         index={lightbox.selected}

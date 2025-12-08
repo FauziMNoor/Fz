@@ -676,6 +676,9 @@ export async function getUserSocialPosts(userId) {
   const profileMap = {};
   (profiles || []).forEach((profile) => {
     profileMap[profile.id] = {
+      full_name: profile.full_name,
+      avatar_url: profile.avatar_url,
+      // Keep camelCase for backward compatibility
       name: profile.full_name,
       avatarUrl: profile.avatar_url,
     };

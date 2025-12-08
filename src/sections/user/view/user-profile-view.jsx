@@ -277,6 +277,8 @@ export function UserProfileView() {
       {selectedTab === '' && (
         <ProfileHome
           info={{
+            full_name: profile?.full_name || user?.displayName || '',
+            avatar_url: profile?.avatar_url || user?.photoURL || '',
             quote: profile?.bio || '',
             country: profile?.country || '',
             email: profile?.email || user?.email,

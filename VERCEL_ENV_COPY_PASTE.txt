@@ -1,0 +1,87 @@
+═══════════════════════════════════════════════════════════
+   🔑 ENVIRONMENT VARIABLES - COPY & PASTE
+═══════════════════════════════════════════════════════════
+
+⚠️ PENTING: Copy persis seperti di bawah ini ke Vercel!
+
+───────────────────────────────────────────────────────────
+   ✅ VARIABLE 1 (WAJIB)
+───────────────────────────────────────────────────────────
+
+Name (Key):
+NEXT_PUBLIC_SUPABASE_URL
+
+Value:
+https://nvppnowugnjfvquvibqc.supabase.co
+
+Environment:
+☑ Production
+☑ Preview
+☑ Development
+
+───────────────────────────────────────────────────────────
+   ✅ VARIABLE 2 (WAJIB)
+───────────────────────────────────────────────────────────
+
+Name (Key):
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+Value:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52cHBub3d1Z25qZnZxdXZpYnFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODcyMjUsImV4cCI6MjA4MDI2MzIyNX0.D5QiRVmTju-_1nAq7Y9J5eDAitLF5tgE0Bve-bcZW2M
+
+Environment:
+☑ Production
+☑ Preview
+☑ Development
+
+───────────────────────────────────────────────────────────
+   ⚪ VARIABLE 3 (OPSIONAL - Bisa diskip)
+───────────────────────────────────────────────────────────
+
+Name (Key):
+NEXT_PUBLIC_SERVER_URL
+
+Value:
+https://api-dev-minimal-v700.pages.dev
+
+Environment:
+☑ Production
+☑ Preview
+☑ Development
+
+═══════════════════════════════════════════════════════════
+   📝 CARA PAKAI
+═══════════════════════════════════════════════════════════
+
+1. Buka Vercel saat deploy
+2. Scroll ke "Environment Variables"
+3. Copy-paste Name dari file ini
+4. Copy-paste Value dari file ini
+5. Centang semua: Production, Preview, Development
+6. Klik "Add Another" untuk variable berikutnya
+7. Ulangi untuk variable 2
+8. Klik "Deploy"
+
+═══════════════════════════════════════════════════════════
+   ✅ CHECKLIST
+═══════════════════════════════════════════════════════════
+
+[ ] Variable 1: NEXT_PUBLIC_SUPABASE_URL ✅ WAJIB
+[ ] Variable 2: NEXT_PUBLIC_SUPABASE_ANON_KEY ✅ WAJIB
+[ ] Variable 3: NEXT_PUBLIC_SERVER_URL ⚪ OPSIONAL
+[ ] Semua centang Production, Preview, Development
+[ ] Klik Deploy
+
+═══════════════════════════════════════════════════════════
+   🎯 TIPS
+═══════════════════════════════════════════════════════════
+
+✅ Copy-paste langsung (jangan ketik manual!)
+✅ Pastikan tidak ada spasi di awal/akhir
+✅ Value ANON_KEY sangat panjang - copy semua!
+✅ Centang SEMUA environment (3 checkbox)
+
+❌ Jangan commit file ini ke GitHub!
+❌ Jangan share credentials di public!
+
+═══════════════════════════════════════════════════════════

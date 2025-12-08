@@ -28,8 +28,9 @@ build
 .env.test.local
 .env.production.local
 
-# package lock files (use yarn.lock only)
+# package lock files
 package-lock.json
+yarn.lock
 
 # misc
 .DS_Store

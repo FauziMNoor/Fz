@@ -144,14 +144,28 @@ export function EbookNewEditForm({ currentEbook }) {
   const handleDropCover = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
     if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please upload an image file');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Image size must be less than 5MB');
+        return;
+      }
+
       setCoverFile(file);
       setCoverPreview(URL.createObjectURL(file));
+      toast.success('Cover image selected successfully!');
     }
   }, []);
 
   const handleRemoveCover = useCallback(() => {
     setCoverFile(null);
     setCoverPreview(null);
+    toast.info('Cover image removed');
   }, []);
 
   const handleAddTag = () => {
@@ -209,7 +223,7 @@ export function EbookNewEditForm({ currentEbook }) {
           </Typography>
 
           <Upload
-            file={coverPreview}
+            value={coverPreview}
             onDrop={handleDropCover}
             onDelete={handleRemoveCover}
             accept={{ 'image/*': [] }}

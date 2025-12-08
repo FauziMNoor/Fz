@@ -171,7 +171,7 @@ export function EbookListDashboardView() {
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
+                  headCells={TABLE_HEAD}
                   rowCount={dataFiltered.length}
                   onSort={table.onSort}
                 />

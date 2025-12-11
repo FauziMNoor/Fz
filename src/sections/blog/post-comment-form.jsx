@@ -16,9 +16,9 @@ import { useAuthContext } from 'src/auth/hooks';
 // ----------------------------------------------------------------------
 
 export const CommentSchema = zod.object({
-  comment: zod.string().min(1, { message: 'Comment is required!' }),
+  comment: zod.string().min(1, { message: 'Komentar wajib diisi!' }),
   guestName: zod.string().optional(),
-  guestEmail: zod.string().email().optional().or(zod.literal('')),
+  guestEmail: zod.string().email({ message: 'Email tidak valid' }).optional().or(zod.literal('')),
 });
 
 // ----------------------------------------------------------------------
@@ -46,7 +46,7 @@ export function PostCommentForm({ postId, onCommentAdded }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (!postId) {
-        toast.error('Post ID is missing');
+        toast.error('ID Post tidak ditemukan');
         return;
       }
 
@@ -56,13 +56,13 @@ export function PostCommentForm({ postId, onCommentAdded }) {
       } else {
         // Guest comment - require name and email
         if (!data.guestName || !data.guestEmail) {
-          toast.error('Please provide your name and email');
+          toast.error('Mohon isi nama dan email Anda');
           return;
         }
         await addPostComment(postId, null, data.comment, data.guestName, data.guestEmail);
       }
 
-      toast.success('Comment submitted! It will be visible after approval.');
+      toast.success('Komentar berhasil dikirim! Akan ditampilkan setelah disetujui.');
       reset();
 
       // Refresh comments list
@@ -70,7 +70,7 @@ export function PostCommentForm({ postId, onCommentAdded }) {
         onCommentAdded();
       }
     } catch (error) {
-      toast.error('Failed to submit comment');
+      toast.error('Gagal mengirim komentar');
     }
   });
 
@@ -80,10 +80,10 @@ export function PostCommentForm({ postId, onCommentAdded }) {
         {/* Guest fields - only show if not logged in */}
         {!user && (
           <Box sx={{ gap: 2, display: 'flex', flexDirection: { xs: 'column', sm: 'row' } }}>
-            <Field.Text name="guestName" placeholder="Your name *" required sx={{ flex: 1 }} />
+            <Field.Text name="guestName" placeholder="Nama Anda *" required sx={{ flex: 1 }} />
             <Field.Text
               name="guestEmail"
-              placeholder="Your email *"
+              placeholder="Email Anda *"
               type="email"
               required
               sx={{ flex: 1 }}
@@ -91,11 +91,11 @@ export function PostCommentForm({ postId, onCommentAdded }) {
           </Box>
         )}
 
-        <Field.Text name="comment" placeholder="Write your comment..." multiline rows={4} />
+        <Field.Text name="comment" placeholder="Tulis komentar Anda..." multiline rows={4} />
 
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
           <Button type="submit" variant="contained" loading={isSubmitting}>
-            Post comment
+            Kirim Komentar
           </Button>
         </Box>
       </Box>

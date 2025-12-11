@@ -9,7 +9,7 @@ export function PostCommentList({ comments = [] }) {
   if (comments.length === 0) {
     return (
       <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', py: 3 }}>
-        No comments yet. Be the first to comment!
+        Belum ada komentar. Jadilah yang pertama berkomentar!
       </Typography>
     );
   }

@@ -44,7 +44,7 @@ export function PostDetailsHomeView({ post, latestPosts }) {
       const data = await getPostComments(post.id);
       setComments(data || []);
     } catch (error) {
-      toast.error('Failed to load comments');
+      toast.error('Gagal memuat komentar');
     } finally {
       setCommentsLoading(false);
     }
@@ -189,7 +189,7 @@ export function PostDetailsHomeView({ post, latestPosts }) {
               variant="body2"
               sx={{ color: 'text.secondary', textAlign: 'center', py: 3 }}
             >
-              Loading comments...
+              Memuat komentar...
             </Typography>
           ) : (
             <PostCommentList comments={comments} />

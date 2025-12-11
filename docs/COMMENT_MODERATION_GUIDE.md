@@ -1,205 +1,232 @@
-# Panduan Sistem Moderasi Komentar
+# 💬 Panduan Moderasi Komentar
 
-## Fitur yang Diimplementasikan
+## 📋 Fitur Moderasi Komentar
 
-### 1. Status Komentar
+Halaman moderasi komentar memungkinkan Anda untuk:
 
-Setiap komentar memiliki 3 status:
+- ✅ Melihat semua komentar (pending, approved, rejected)
+- ✅ Menyetujui komentar untuk ditampilkan
+- ✅ Menolak komentar spam atau tidak pantas
+- ✅ Menghapus komentar permanen
+- ✅ Filter berdasarkan status
 
-- **Pending** (⏳) - Komentar baru, menunggu approval admin
-- **Approved** (✅) - Komentar disetujui, tampil di public
-- **Rejected** (❌) - Komentar ditolak, tidak tampil di public
+---
 
-### 2. Notifikasi untuk Admin
+## 🚀 Cara Menggunakan
 
-Ketika ada komentar baru:
+### 1. Akses Halaman Moderasi
 
-- Notifikasi otomatis dibuat di database
-- Title: "New Comment (Pending Approval)"
-- Message: "[Nama] commented on your post. Click to approve or reject."
-- Link ke post yang dikomentar
+**Dashboard → Comments**
 
-### 3. Moderasi di Dashboard
+URL: `http://localhost:3032/dashboard/comments`
 
-Admin (pemilik post) bisa:
+### 2. Tab Filter Status
 
-- Lihat semua komentar termasuk yang pending
-- Approve komentar → tampil di public
-- Reject komentar → hide dari public
-- Badge "PENDING" atau "REJECTED" untuk identifikasi
+- **Semua** - Tampilkan semua komentar
+- **Menunggu** - Komentar yang perlu direview (status: pending)
+- **Disetujui** - Komentar yang sudah tampil di public (status: approved)
+- **Ditolak** - Komentar yang ditolak (status: rejected)
 
-### 4. Tampilan Public
+### 3. Informasi yang Ditampilkan
 
-Pengunjung hanya bisa lihat:
+Setiap komentar menampilkan:
 
-- Komentar dengan status "approved"
-- Komentar pending/rejected tidak tampil
+- **Avatar & Nama** - Foto dan nama user/guest
+- **Email** - Email guest (jika guest comment)
+- **Komentar** - Isi komentar (max 2 baris)
+- **Post** - Judul post yang dikomentari
+- **Status** - Label status (Menunggu/Disetujui/Ditolak)
+- **Tanggal** - Kapan komentar dibuat
 
-## Setup Database
+### 4. Aksi yang Tersedia
 
-### Langkah 1: Jalankan SQL Migration
+#### Untuk Komentar Pending (Menunggu):
 
-Buka Supabase SQL Editor dan jalankan:
+- ✅ **Setujui** (icon centang hijau) - Komentar akan tampil di public
+- ❌ **Tolak** (icon X merah) - Komentar tidak akan tampil
+
+#### Untuk Komentar Approved (Disetujui):
+
+- ❌ **Tolak** (icon X kuning) - Sembunyikan komentar dari public
+
+#### Untuk Komentar Rejected (Ditolak):
+
+- ✅ **Setujui** (icon centang hijau) - Tampilkan kembali di public
+
+#### Untuk Semua Komentar:
+
+- 🗑️ **Hapus** (icon trash merah) - Hapus permanen dari database
+
+---
+
+## 🔄 Alur Komentar
+
+### 1. User Submit Komentar
 
 ```
-supabase_migrations/add_comment_moderation.sql
+Guest/User → Tulis komentar → Kirim
 ```
 
-File ini akan:
+### 2. Komentar Masuk Database
 
-- Tambah kolom `status` ke tabel `post_comments`
-- Update RLS policy untuk filter berdasarkan status
-- Update trigger notifikasi
-- Set existing comments ke "approved"
-
-### Langkah 2: Verifikasi
-
-Cek di Supabase Table Editor → `post_comments`:
-
-- Kolom `status` sudah ada
-- Default value: 'pending'
-- Check constraint: ('pending', 'approved', 'rejected')
-
-## Cara Kerja
-
-### Skenario 1: Pengunjung Berkomentar
-
-1. Pengunjung tulis komentar di post Anda
-2. Komentar tersimpan dengan status "pending"
-3. Notifikasi dibuat untuk Anda
-4. Komentar **TIDAK** tampil di public
-
-### Skenario 2: Admin Moderasi
-
-1. Anda (admin) buka dashboard
-2. Lihat post dengan komentar pending (badge kuning "PENDING")
-3. Baca komentar
-4. Klik **Approve** → komentar tampil di public
-5. Atau klik **Reject** → komentar tetap hidden
-
-### Skenario 3: Komentar Sendiri
-
-1. Anda komentar di post sendiri
-2. Status otomatis "approved" (tidak perlu moderasi)
-3. Langsung tampil di public
-
-## UI/UX
-
-### Badge Status
-
-- 🟡 **PENDING** - Background kuning, menunggu approval
-- 🔴 **REJECTED** - Background merah, ditolak
-
-### Tombol Moderasi
-
-Hanya muncul untuk:
-
-- Pemilik post (admin)
-- Komentar dengan status "pending"
-
-Tombol:
-
-- ✅ **Approve** (hijau) - Setujui komentar
-- ❌ **Reject** (merah) - Tolak komentar
-
-### Warna Background
-
-- Pending: Kuning muda (warning.lighter)
-- Rejected: Merah muda (error.lighter)
-- Approved: Abu-abu (background.neutral)
-
-## Testing
-
-### Test 1: Komentar Baru
-
-1. Logout atau buka incognito
-2. Buka `/tentang-saya`
-3. Login sebagai user lain
-4. Tulis komentar
-5. Komentar tidak tampil di public
-6. Login sebagai admin
-7. Lihat komentar dengan badge "PENDING"
-
-### Test 2: Approve Komentar
-
-1. Klik tombol "Approve" di komentar pending
-2. Badge hilang
-3. Background berubah jadi abu-abu
-4. Refresh halaman public
-5. Komentar sekarang tampil
-
-### Test 3: Reject Komentar
-
-1. Klik tombol "Reject" di komentar pending
-2. Confirm dialog muncul
-3. Badge berubah jadi "REJECTED"
-4. Background merah muda
-5. Komentar tetap tidak tampil di public
-
-## Keamanan
-
-### RLS Policy
-
-```sql
--- Hanya tampilkan komentar yang:
--- 1. Status = approved (untuk semua orang)
--- 2. Komentar sendiri (untuk commenter)
--- 3. Semua komentar di post sendiri (untuk post owner)
+```
+Status: "pending" (menunggu)
+Komentar BELUM tampil di public
 ```
 
-### Benefit
+### 3. Admin Moderasi
 
-- ✅ Cegah spam
-- ✅ Cegah komentar tidak pantas
-- ✅ Kontrol penuh untuk admin
-- ✅ Pengunjung hanya lihat komentar yang disetujui
-
-## Notifikasi (Database)
-
-Notifikasi tersimpan di tabel `notifications`:
-
-```sql
-SELECT * FROM notifications
-WHERE type = 'comment'
-ORDER BY created_at DESC;
+```
+Dashboard → Comments → Review → Approve/Reject
 ```
 
-Struktur:
+### 4. Komentar Tampil
 
-- `user_id`: ID admin (pemilik post)
-- `type`: 'comment'
-- `title`: 'New Comment (Pending Approval)'
-- `message`: '[Nama] commented...'
-- `link`: Link ke post
-- `is_read`: false (belum dibaca)
-- `created_by`: ID commenter
+```
+Status: "approved"
+Komentar TAMPIL di halaman post public
+```
 
-## Next Steps (Opsional)
+---
 
-### 1. Notification Bell UI
+## 📊 Status Komentar
 
-Buat komponen di header untuk:
+### 🟡 Pending (Menunggu)
 
-- Tampilkan jumlah notifikasi unread
-- List notifikasi saat diklik
-- Mark as read
-- Link ke post yang dikomentar
+- Komentar baru yang belum direview
+- **Tidak tampil** di halaman public
+- Perlu action dari admin
 
-### 2. Bulk Actions
+### 🟢 Approved (Disetujui)
 
-Tambah fitur:
+- Komentar yang sudah disetujui
+- **Tampil** di halaman post public
+- User dapat melihat komentar ini
 
-- Approve all pending comments
-- Delete all rejected comments
-- Filter comments by status
+### 🔴 Rejected (Ditolak)
 
-### 3. Email Notification
+- Komentar spam atau tidak pantas
+- **Tidak tampil** di halaman public
+- Masih tersimpan di database (bisa disetujui lagi)
 
-Kirim email ke admin saat ada komentar baru
+---
 
-### 4. Auto-Approve
+## 💡 Tips Moderasi
 
-Setting untuk auto-approve komentar dari:
+### ✅ Setujui Komentar Jika:
 
-- User yang sudah pernah approved
-- User dengan reputation tinggi
+- Relevan dengan topik post
+- Tidak mengandung spam
+- Tidak mengandung kata-kata kasar
+- Memberikan feedback konstruktif
+- Bertanya dengan sopan
+
+### ❌ Tolak Komentar Jika:
+
+- Spam atau iklan
+- Mengandung link mencurigakan
+- Kata-kata kasar atau offensive
+- Tidak relevan dengan post
+- Duplicate comment
+
+### 🗑️ Hapus Komentar Jika:
+
+- Spam berulang dari user yang sama
+- Konten ilegal atau berbahaya
+- Sudah ditolak dan tidak perlu disimpan
+
+---
+
+## 🔐 Keamanan
+
+### RLS Policies
+
+Hanya post author yang bisa:
+
+- Melihat semua komentar di post mereka
+- Approve/reject komentar
+- Hapus komentar
+
+### Guest Comments
+
+- Guest harus isi nama dan email
+- Email tidak ditampilkan di public
+- Hanya admin yang bisa lihat email guest
+
+---
+
+## 🎯 Shortcut Keyboard
+
+- **Tab** - Pindah antar filter status
+- **Enter** - Approve komentar yang dipilih
+- **Delete** - Hapus komentar yang dipilih
+
+---
+
+## 📱 Responsive Design
+
+Halaman moderasi responsive untuk:
+
+- 💻 Desktop - Tampilan tabel penuh
+- 📱 Tablet - Tabel dengan scroll horizontal
+- 📱 Mobile - Card view (coming soon)
+
+---
+
+## 🐛 Troubleshooting
+
+### Komentar tidak muncul di list
+
+- Pastikan migration sudah dijalankan
+- Cek RLS policies di Supabase
+- Refresh halaman
+
+### Tidak bisa approve/reject
+
+- Pastikan Anda login sebagai post author
+- Cek console browser untuk error
+- Cek RLS policies
+
+### Error saat hapus komentar
+
+- Pastikan komentar tidak sedang digunakan
+- Cek foreign key constraints
+- Refresh dan coba lagi
+
+---
+
+## 📈 Statistik
+
+Di bagian atas tab, Anda bisa lihat:
+
+- Total semua komentar
+- Jumlah komentar pending
+- Jumlah komentar approved
+- Jumlah komentar rejected
+
+---
+
+## 🔄 Auto-Refresh
+
+Halaman akan auto-refresh setelah:
+
+- Approve komentar
+- Reject komentar
+- Hapus komentar
+
+Tidak perlu refresh manual!
+
+---
+
+## 📝 Best Practices
+
+1. **Review Rutin** - Cek komentar pending setiap hari
+2. **Respond Cepat** - Approve komentar bagus dengan cepat
+3. **Komunikasi** - Balas komentar yang bertanya
+4. **Konsisten** - Gunakan standar yang sama untuk semua komentar
+5. **Backup** - Jangan langsung hapus, tolak dulu untuk review
+
+---
+
+**Dibuat:** 11 Desember 2025
+**Update Terakhir:** 11 Desember 2025

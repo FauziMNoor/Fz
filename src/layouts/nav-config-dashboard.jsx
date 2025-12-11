@@ -58,6 +58,13 @@ export const navData = [
         ],
       },
       {
+        title: 'Comments',
+        path: paths.dashboard.comments,
+        icon: icon('ic-chat'),
+        info: <Label color="warning">Moderate</Label>,
+        caption: 'Moderate post comments',
+      },
+      {
         title: 'Portfolio',
         path: paths.dashboard.portfolio.root,
         icon: ICONS.portfolio,

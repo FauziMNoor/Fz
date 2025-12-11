@@ -260,39 +260,59 @@ export async function getTags() {
  * Get comments for a post
  */
 export async function getPostComments(postId) {
-  const { data, error } = await supabase
-    .from('post_comments')
-    .select(
-      `
-      id,
-      post_id,
-      user_id,
-      guest_name,
-      guest_email,
-      message,
-      status,
-      created_at,
-      user:profiles(full_name, avatar_url)
-    `
-    )
-    .eq('post_id', postId)
-    .eq('status', 'approved')
-    .order('created_at', { ascending: false });
+  try {
+    // Fetch approved comments for this post
+    const { data: comments, error: commentsError } = await supabase
+      .from('post_comments')
+      .select('*')
+      .eq('post_id', postId)
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false });
 
-  if (error) {
+    if (commentsError) {
+      logger.error('Error fetching comments:', commentsError);
+      throw commentsError;
+    }
+
+    if (!comments || comments.length === 0) {
+      return [];
+    }
+
+    // Get unique user IDs (only for logged-in users)
+    const userIds = [...new Set(comments.map((c) => c.user_id).filter(Boolean))];
+
+    // Fetch user profiles if there are any
+    let profiles = [];
+    if (userIds.length > 0) {
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .in('id', userIds);
+      profiles = profilesData || [];
+    }
+
+    // Create profile map
+    const profileMap = {};
+    profiles.forEach((profile) => {
+      profileMap[profile.id] = profile;
+    });
+
+    // Map the data to include user info
+    const mappedData = comments.map((comment) => {
+      const profile = profileMap[comment.user_id];
+
+      return {
+        ...comment,
+        user_name: profile?.full_name || comment.guest_name || 'Anonymous',
+        user_avatar: profile?.avatar_url || null,
+      };
+    });
+
+    return mappedData;
+  } catch (error) {
     logger.error('Error fetching comments:', error);
-    throw error;
+    throw new Error('Failed to fetch comments');
   }
-
-  // Map the data to include user info
-  const mappedData = (data || []).map((comment) => ({
-    ...comment,
-    user_name: comment.user?.full_name || comment.guest_name,
-    user_avatar: comment.user?.avatar_url || null,
-  }));
-
-  return mappedData;
-  return data;
 }
 
 /**
@@ -1073,6 +1093,90 @@ export async function rejectComment(commentId) {
   }
 
   return data;
+}
+
+/**
+ * Get all comments for moderation (admin only)
+ * Includes post title and user info
+ */
+export async function getAllCommentsForModeration(status = null) {
+  try {
+    // First, get comments
+    let query = supabase
+      .from('post_comments')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    // Filter by status if provided
+    if (status) {
+      query = query.eq('status', status);
+    }
+
+    const { data: comments, error: commentsError } = await query;
+
+    if (commentsError) {
+      logger.error('Error fetching comments:', commentsError);
+      throw commentsError;
+    }
+
+    if (!comments || comments.length === 0) {
+      return [];
+    }
+
+    // Get unique post IDs and user IDs
+    const postIds = [...new Set(comments.map((c) => c.post_id).filter(Boolean))];
+    const userIds = [...new Set(comments.map((c) => c.user_id).filter(Boolean))];
+
+    // Fetch posts
+    let posts = [];
+    if (postIds.length > 0) {
+      const { data: postsData } = await supabase
+        .from('posts')
+        .select('id, title, slug')
+        .in('id', postIds);
+      posts = postsData || [];
+    }
+
+    // Fetch user profiles
+    let profiles = [];
+    if (userIds.length > 0) {
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .in('id', userIds);
+      profiles = profilesData || [];
+    }
+
+    // Create maps for quick lookup
+    const postMap = {};
+    posts.forEach((post) => {
+      postMap[post.id] = post;
+    });
+
+    const profileMap = {};
+    profiles.forEach((profile) => {
+      profileMap[profile.id] = profile;
+    });
+
+    // Map the data
+    const mappedData = comments.map((comment) => {
+      const post = postMap[comment.post_id];
+      const profile = profileMap[comment.user_id];
+
+      return {
+        ...comment,
+        user_name: profile?.full_name || comment.guest_name || 'Anonymous',
+        user_avatar: profile?.avatar_url || null,
+        post_title: post?.title || 'Unknown Post',
+        post_slug: post?.slug || '',
+      };
+    });
+
+    return mappedData;
+  } catch (error) {
+    logger.error('getAllCommentsForModeration error:', error);
+    throw new Error('Failed to fetch comments');
+  }
 }
 
 // ============================================

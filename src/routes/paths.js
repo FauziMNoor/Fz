@@ -121,5 +121,7 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/menu`,
       items: (menuId) => `${ROOTS.DASHBOARD}/menu/${menuId}`,
     },
+    // Comments moderation
+    comments: `${ROOTS.DASHBOARD}/comments`,
   },
 };

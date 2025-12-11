@@ -1,5 +1,7 @@
 'use client';
 
+import { useState, useEffect, useCallback } from 'react';
+
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
@@ -15,7 +17,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { paths } from 'src/routes/paths';
 
 import { fShortenNumber } from 'src/utils/format-number';
+import { getPostComments, incrementPostViews } from 'src/lib/supabase-client';
 
+import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Markdown } from 'src/components/markdown';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
@@ -28,6 +32,43 @@ import { PostDetailsHero } from '../post-details-hero';
 // ----------------------------------------------------------------------
 
 export function PostDetailsHomeView({ post, latestPosts }) {
+  const [comments, setComments] = useState([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [viewCount, setViewCount] = useState(post?.view_count || 0);
+
+  const fetchComments = useCallback(async () => {
+    if (!post?.id) return;
+
+    try {
+      setCommentsLoading(true);
+      const data = await getPostComments(post.id);
+      setComments(data || []);
+    } catch (error) {
+      toast.error('Failed to load comments');
+    } finally {
+      setCommentsLoading(false);
+    }
+  }, [post?.id]);
+
+  useEffect(() => {
+    fetchComments();
+  }, [fetchComments]);
+
+  // Increment view count on mount
+  useEffect(() => {
+    if (post?.id) {
+      incrementPostViews(post.id).then((newCount) => {
+        if (newCount) {
+          setViewCount(newCount);
+        }
+      });
+    }
+  }, [post?.id]);
+
+  const handleCommentAdded = useCallback(() => {
+    fetchComments();
+  }, [fetchComments]);
+
   return (
     <>
       <PostDetailsHero
@@ -35,6 +76,8 @@ export function PostDetailsHomeView({ post, latestPosts }) {
         author={post?.author}
         coverUrl={post?.cover_url || post?.coverUrl || ''}
         createdAt={post?.created_at || post?.createdAt}
+        postUrl={typeof window !== 'undefined' ? window.location.href : ''}
+        viewCount={viewCount}
       />
 
       <Container
@@ -129,19 +172,28 @@ export function PostDetailsHomeView({ post, latestPosts }) {
             )}
           </Stack>
 
-          <Box sx={{ mb: 3, mt: 5, display: 'flex' }}>
+          <Box sx={{ mb: 3, mt: 5, display: 'flex', gap: 1, alignItems: 'center' }}>
             <Typography variant="h4">Comments</Typography>
 
             <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
-              ({post?.comments?.length || 0})
+              ({comments.length})
             </Typography>
           </Box>
 
-          <PostCommentForm />
+          <PostCommentForm postId={post?.id} onCommentAdded={handleCommentAdded} />
 
           <Divider sx={{ mt: 5, mb: 2 }} />
 
-          <PostCommentList comments={post?.comments || []} />
+          {commentsLoading ? (
+            <Typography
+              variant="body2"
+              sx={{ color: 'text.secondary', textAlign: 'center', py: 3 }}
+            >
+              Loading comments...
+            </Typography>
+          ) : (
+            <PostCommentList comments={comments} />
+          )}
         </Stack>
       </Container>
 

@@ -1,44 +1,31 @@
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 import { PostCommentItem } from './post-comment-item';
 
 // ----------------------------------------------------------------------
 
 export function PostCommentList({ comments = [] }) {
+  if (comments.length === 0) {
+    return (
+      <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', py: 3 }}>
+        No comments yet. Be the first to comment!
+      </Typography>
+    );
+  }
+
   return (
     <>
-      {comments.map((comment) => {
-        const hasReply = !!comment.replyComment.length;
-
-        return (
-          <Box key={comment.id}>
-            <PostCommentItem
-              name={comment.name}
-              message={comment.message}
-              postedAt={comment.postedAt}
-              avatarUrl={comment.avatarUrl}
-            />
-            {hasReply &&
-              comment.replyComment.map((reply) => {
-                const userReply = comment.users.find((user) => user.id === reply.userId);
-
-                return (
-                  <PostCommentItem
-                    key={reply.id}
-                    name={userReply?.name || ''}
-                    message={reply.message}
-                    postedAt={reply.postedAt}
-                    avatarUrl={userReply?.avatarUrl || ''}
-                    tagUser={reply.tagUser}
-                    hasReply
-                  />
-                );
-              })}
-          </Box>
-        );
-      })}
-
-      {/* Pagination removed - not functional */}
+      {comments.map((comment) => (
+        <Box key={comment.id}>
+          <PostCommentItem
+            name={comment.user_name || comment.guest_name || 'Anonymous'}
+            message={comment.message}
+            postedAt={comment.created_at}
+            avatarUrl={comment.user_avatar || '/assets/images/avatar/avatar-default.webp'}
+          />
+        </Box>
+      ))}
     </>
   );
 }

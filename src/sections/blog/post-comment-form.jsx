@@ -4,22 +4,32 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
 
+import { addPostComment } from 'src/lib/supabase-client';
+
+import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
+
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
 export const CommentSchema = zod.object({
   comment: zod.string().min(1, { message: 'Comment is required!' }),
+  guestName: zod.string().optional(),
+  guestEmail: zod.string().email().optional().or(zod.literal('')),
 });
 
 // ----------------------------------------------------------------------
 
-export function PostCommentForm() {
+export function PostCommentForm({ postId, onCommentAdded }) {
+  const { user } = useAuthContext();
+
   const defaultValues = {
     comment: '',
+    guestName: '',
+    guestEmail: '',
   };
 
   const methods = useForm({
@@ -35,39 +45,55 @@ export function PostCommentForm() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (!postId) {
+        toast.error('Post ID is missing');
+        return;
+      }
+
+      // If user is logged in, use their ID
+      if (user?.id) {
+        await addPostComment(postId, user.id, data.comment);
+      } else {
+        // Guest comment - require name and email
+        if (!data.guestName || !data.guestEmail) {
+          toast.error('Please provide your name and email');
+          return;
+        }
+        await addPostComment(postId, null, data.comment, data.guestName, data.guestEmail);
+      }
+
+      toast.success('Comment submitted! It will be visible after approval.');
       reset();
-      console.info('DATA', data);
+
+      // Refresh comments list
+      if (onCommentAdded) {
+        onCommentAdded();
+      }
     } catch (error) {
-      console.error(error);
+      toast.error('Failed to submit comment');
     }
   });
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
-      <Box sx={{ gap: 3, display: 'flex', flexDirection: 'column' }}>
-        <Field.Text
-          name="comment"
-          placeholder="Write some of your comments..."
-          multiline
-          rows={4}
-        />
-
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
-            <IconButton>
-              <Iconify icon="solar:gallery-add-bold" />
-            </IconButton>
-
-            <IconButton>
-              <Iconify icon="eva:attach-2-fill" />
-            </IconButton>
-
-            <IconButton>
-              <Iconify icon="eva:smiling-face-fill" />
-            </IconButton>
+      <Box sx={{ gap: 2, display: 'flex', flexDirection: 'column' }}>
+        {/* Guest fields - only show if not logged in */}
+        {!user && (
+          <Box sx={{ gap: 2, display: 'flex', flexDirection: { xs: 'column', sm: 'row' } }}>
+            <Field.Text name="guestName" placeholder="Your name *" required sx={{ flex: 1 }} />
+            <Field.Text
+              name="guestEmail"
+              placeholder="Your email *"
+              type="email"
+              required
+              sx={{ flex: 1 }}
+            />
           </Box>
+        )}
 
+        <Field.Text name="comment" placeholder="Write your comment..." multiline rows={4} />
+
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
           <Button type="submit" variant="contained" loading={isSubmitting}>
             Post comment
           </Button>

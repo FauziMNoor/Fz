@@ -79,6 +79,13 @@ export function PostItem({ post, detailsHref, sx, ...other }) {
           {mappedPost.title}
         </Link>
 
+        <Box sx={{ mt: 1, mb: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <Iconify width={16} icon="solar:pen-bold" sx={{ color: 'text.secondary' }} />
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            Penulis: {mappedPost.author.name}
+          </Typography>
+        </Box>
+
         <InfoBlock
           totalViews={mappedPost.totalViews}
           totalShares={mappedPost.totalShares}

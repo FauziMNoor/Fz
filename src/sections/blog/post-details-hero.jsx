@@ -16,7 +16,15 @@ import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export function PostDetailsHero({ sx, title, author, coverUrl, createdAt, ...other }) {
+export function PostDetailsHero({
+  sx,
+  title,
+  author,
+  coverUrl,
+  createdAt,
+  viewCount = 0,
+  ...other
+}) {
   const smUp = useMediaQuery((theme) => theme.breakpoints.up('sm'));
 
   const handleShare = (platform) => {
@@ -127,17 +135,32 @@ export function PostDetailsHero({ sx, title, author, coverUrl, createdAt, ...oth
                 sx={{ width: 64, height: 64, mr: 2 }}
               />
 
-              <ListItemText
-                sx={{ color: 'common.white' }}
-                primary={author.name}
-                secondary={fDate(createdAt)}
-                slotProps={{
-                  primary: { sx: { typography: 'subtitle1' } },
-                  secondary: {
-                    sx: { mt: 0.5, opacity: 0.64, color: 'inherit' },
-                  },
+              <Box sx={{ flex: 1 }}>
+                <ListItemText
+                  sx={{ color: 'common.white' }}
+                  primary={author.name}
+                  secondary={fDate(createdAt)}
+                  slotProps={{
+                    primary: { sx: { typography: 'subtitle1' } },
+                    secondary: {
+                      sx: { mt: 0.5, opacity: 0.64, color: 'inherit' },
+                    },
+                  }}
+                />
+              </Box>
+
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  color: 'common.white',
+                  opacity: 0.72,
                 }}
-              />
+              >
+                <Iconify icon="solar:eye-bold" width={20} />
+                <Typography variant="body2">{viewCount} views</Typography>
+              </Box>
             </Box>
           )}
 

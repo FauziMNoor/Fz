@@ -204,6 +204,26 @@ export async function deletePost(id) {
   return true;
 }
 
+/**
+ * Increment post view count
+ */
+export async function incrementPostViews(postId) {
+  try {
+    // Use RPC function to increment view count atomically
+    const { data, error } = await supabase.rpc('increment_post_views', { post_id: postId });
+
+    if (error) {
+      logger.error('Error incrementing post views:', error);
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    logger.error('Error incrementing post views:', error);
+    return null;
+  }
+}
+
 // ============================================
 // CATEGORIES
 // ============================================
@@ -241,13 +261,37 @@ export async function getTags() {
  */
 export async function getPostComments(postId) {
   const { data, error } = await supabase
-    .from('comments')
-    .select('*, author:profiles(*)')
+    .from('post_comments')
+    .select(
+      `
+      id,
+      post_id,
+      user_id,
+      guest_name,
+      guest_email,
+      message,
+      status,
+      created_at,
+      user:profiles(full_name, avatar_url)
+    `
+    )
     .eq('post_id', postId)
     .eq('status', 'approved')
     .order('created_at', { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    logger.error('Error fetching comments:', error);
+    throw error;
+  }
+
+  // Map the data to include user info
+  const mappedData = (data || []).map((comment) => ({
+    ...comment,
+    user_name: comment.user?.full_name || comment.guest_name,
+    user_avatar: comment.user?.avatar_url || null,
+  }));
+
+  return mappedData;
   return data;
 }
 

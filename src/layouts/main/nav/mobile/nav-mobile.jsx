@@ -4,10 +4,10 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Drawer from '@mui/material/Drawer';
 
-import { paths } from 'src/routes/paths';
 import { usePathname } from 'src/routes/hooks';
 
 import { Logo } from 'src/components/logo';
+import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 
 import { Nav, NavUl } from '../components';
@@ -89,9 +89,10 @@ export function NavMobile({ data, open, onClose, slots, sx }) {
             variant="contained"
             rel="noopener"
             target="_blank"
-            href={paths.minimalStore}
+            href="https://wa.me/6289623039600"
+            startIcon={<Iconify icon="logos:whatsapp-icon" width={20} />}
           >
-            Purchase
+            Hubungi Saya
           </Button>
         </Box>
       )}

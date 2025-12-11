@@ -224,7 +224,6 @@ export function UserProfileView() {
 
       <Card sx={{ mb: 3, height: 290 }}>
         <ProfileCover
-          role={profile?.role || 'User'}
           name={profile?.full_name || user?.displayName || user?.email}
           avatarUrl={profile?.avatar_url || user?.photoURL}
           coverUrl={_userAbout.coverUrl}

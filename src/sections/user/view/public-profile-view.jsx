@@ -103,7 +103,6 @@ export function PublicProfileView() {
     <Container maxWidth="lg" sx={{ py: 5 }}>
       <Card sx={{ mb: 3, height: 290 }}>
         <ProfileCover
-          role={profile?.role || 'User'}
           name={profile?.full_name || 'User'}
           avatarUrl={profile?.avatar_url}
           coverUrl={_userAbout.coverUrl}
